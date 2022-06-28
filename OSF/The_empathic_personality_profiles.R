@@ -140,22 +140,23 @@ DImp1.1 <- DImp
 #############################################################################################
 
 #create a vector of possible lambda values. These values will be examined in 
-#a nexted cross-validation procedure to find the optimal lambda that produces the lowest prediction erro
-  lambdas <- 10^seq(3, -2, by = -.1) 
+#a nexted cross-validation procedure to find the optimal lambda that produces the lowest prediction error
+ # lambdas <- 10^seq(3, -2, by = -.1) 
   
 #ridge regression function
-  Ridge <- function (DImp,gfold,relvar,lambdas) {
+  Ridge <- function (DImp,gfold,relvar) {
          #find the best lambda- 
-         #use either glmnet default range search by lambda=NULL or set search by lambda=lambdas  
+         #use glmnet default range search by lambda=NULL 
          #alpha=0 means we use Ridge regression (as opposed to lasso regression)
+         #nfolds=10 means that the nested cross-validation proceudre to find the optimal lambda is perdormed on 10 folds 
          set.seed(10000)
          cv_fit <- cv.glmnet(x=as.matrix(DImp[DImp$gfold != gfold,relvar[2:45]]),
                              y=DImp[DImp$gfold != gfold,relvar[1]],
                              alpha=0, lambda=NULL,nfolds=10)
-         opt_lambda <- cv_fit$lambda.min
-         opt_lambda_ind <- which(cv_fit$lambda==opt_lambda)
+         opt_lambda <- cv_fit$lambda.min          #find the optimal lambda which produces the lowest prediction error
+         opt_lambda_ind <- which(cv_fit$lambda==opt_lambda)   #find the optimal lambda index inside the vector
          
-         #what are the coefficients when the lambda is optimal
+         #what are the coefficients when the lambda is optimal?
          opt_coef <- as.matrix(cv_fit$glmnet.fit$beta[,opt_lambda_ind]) 
          
          #after finding the best lambda, train the entire train set with that lambda
@@ -167,103 +168,105 @@ DImp1.1 <- DImp
          y_pred <- predict(fit, s=opt_lambda, 
                            newx = as.matrix(DImp[DImp$gfold == gfold,relvar[2:45]]))
          
-         mse <- mean((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2)
+         mse <- mean((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2)     #squared difference between y and y predicted
          
-         mean_train <- mean(DImp[DImp$gfold != gfold,relvar[1]])
+         mean_train <- mean(DImp[DImp$gfold != gfold,relvar[1]])         #mean y (empathy score)
          Rholdout_numenator <- sum((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2) 
          Rholdout_denumenator <- sum((DImp[DImp$gfold == gfold,relvar[1]]-mean_train)^2) 
          Rholdout <- 1- (Rholdout_numenator/Rholdout_denumenator)
          
-         assign ("fit",fit,envir = .GlobalEnv)
-         assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)
-         assign ("opt_coef",opt_coef,envir = .GlobalEnv)
-         assign ("y_pred",y_pred,envir = .GlobalEnv)
-         assign ("mse", mse,envir = .GlobalEnv)
-         assign ("Rholdout", Rholdout, envir = .GlobalEnv)
+         assign ("fit",fit,envir = .GlobalEnv)                           #glmnet ridge regression results
+         assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)             #optimal lambda value
+         assign ("opt_coef",opt_coef,envir = .GlobalEnv)                 #items' coefficients when the lambda is optimal
+         assign ("y_pred",y_pred,envir = .GlobalEnv)                     #y predicted for each participant
+         assign ("mse", mse,envir = .GlobalEnv)                          #mse for the test set
+         assign ("Rholdout", Rholdout, envir = .GlobalEnv)               #Rholdout (????????????)
 }
 
-#scale all the BFI items so they all will mean=0 and SD=1
-for (i in 2:45) {DImp1.1[,relvar_emotional[i]] <-
-   scale(DImp1.1[,relvar_emotional[i]], scale=T)}
+#scale all the BFI items so they all will mean=0 and SD=1 
+  for (i in 2:45) {DImp1.1[,relvar_emotional[i]] <-
+     scale(DImp1.1[,relvar_emotional[i]], scale=T)}
 
 
-#doing Ridge regression on the folds 
+#doing Ridge regression on the folds - emotional empathy
 #fold 1
-Ridge(DImp=DImp1.1,gfold=1,relvar=relvar_emotional,lambdas=lambdas) 
-fit_emo11_1 <- fit
-opt_lambda_emo11_1 <- opt_lambda
-opt_coef_emo11_1 <- opt_coef
-y_pred_emo11_1 <- y_pred
-mse_emo11_1 <- mse
-Rholdout_emo11_1 <- Rholdout
+  Ridge(DImp=DImp1.1,gfold=1,relvar=relvar_emotional) 
+  fit_emo11_1 <- fit
+  opt_lambda_emo11_1 <- opt_lambda
+  opt_coef_emo11_1 <- opt_coef
+  y_pred_emo11_1 <- y_pred
+  mse_emo11_1 <- mse
+  Rholdout_emo11_1 <- Rholdout
 
 #fold 2
-Ridge(DImp=DImp1.1,gfold=2,relvar=relvar_emotional,lambdas=lambdas) 
-fit_emo11_2 <- fit
-opt_lambda_emo11_2 <- opt_lambda
-opt_coef_emo11_2 <- opt_coef
-y_pred_emo11_2 <- y_pred
-mse_emo11_2 <- mse
-Rholdout_emo11_2 <- Rholdout
+  Ridge(DImp=DImp1.1,gfold=2,relvar=relvar_emotional) 
+  fit_emo11_2 <- fit
+  opt_lambda_emo11_2 <- opt_lambda
+  opt_coef_emo11_2 <- opt_coef
+  y_pred_emo11_2 <- y_pred
+  mse_emo11_2 <- mse
+  Rholdout_emo11_2 <- Rholdout
 
 #fold 3
-Ridge(DImp=DImp1.1,gfold=3,relvar=relvar_emotional,lambdas=lambdas) 
-fit_emo11_3 <- fit
-opt_lambda_emo11_3 <- opt_lambda
-opt_coef_emo11_3 <- opt_coef
-y_pred_emo11_3 <- y_pred
-mse_emo11_3 <- mse
-Rholdout_emo11_3 <- Rholdout
+  Ridge(DImp=DImp1.1,gfold=3,relvar=relvar_emotional) 
+  fit_emo11_3 <- fit
+  opt_lambda_emo11_3 <- opt_lambda
+  opt_coef_emo11_3 <- opt_coef
+  y_pred_emo11_3 <- y_pred
+  mse_emo11_3 <- mse
+  Rholdout_emo11_3 <- Rholdout
 
 #fold 4
-Ridge(DImp=DImp1.1,gfold=4,relvar=relvar_emotional,lambdas=lambdas) 
-fit_emo11_4 <- fit
-opt_lambda_emo11_4 <- opt_lambda
-opt_coef_emo11_4 <- opt_coef
-y_pred_emo11_4 <- y_pred
-mse_emo11_4 <- mse
-Rholdout_emo11_4 <- Rholdout
+  Ridge(DImp=DImp1.1,gfold=4,relvar=relvar_emotional) 
+  fit_emo11_4 <- fit
+  opt_lambda_emo11_4 <- opt_lambda
+  opt_coef_emo11_4 <- opt_coef
+  y_pred_emo11_4 <- y_pred
+  mse_emo11_4 <- mse
+  Rholdout_emo11_4 <- Rholdout
 
 #fold 5
-Ridge(DImp=DImp1.1,gfold=5,relvar=relvar_emotional,lambdas=lambdas) 
-fit_emo11_5 <- fit
-opt_lambda_emo11_5 <- opt_lambda
-opt_coef_emo11_5 <- opt_coef
-y_pred_emo11_5 <- y_pred
-mse_emo11_5 <- mse
-Rholdout_emo11_5 <- Rholdout
+  Ridge(DImp=DImp1.1,gfold=5,relvar=relvar_emotional) 
+  fit_emo11_5 <- fit
+  opt_lambda_emo11_5 <- opt_lambda
+  opt_coef_emo11_5 <- opt_coef
+  y_pred_emo11_5 <- y_pred
+  mse_emo11_5 <- mse
+  Rholdout_emo11_5 <- Rholdout
 
 #fold 6
-Ridge(DImp=DImp1.1,gfold=6,relvar=relvar_emotional,lambdas=lambdas) 
-fit_emo11_6 <- fit
-opt_lambda_emo11_6 <- opt_lambda
-opt_coef_emo11_6 <- opt_coef
-y_pred_emo11_6 <- y_pred
-mse_emo11_6 <- mse
-Rholdout_emo11_6 <- Rholdout
+  Ridge(DImp=DImp1.1,gfold=6,relvar=relvar_emotional) 
+  fit_emo11_6 <- fit
+  opt_lambda_emo11_6 <- opt_lambda
+  opt_coef_emo11_6 <- opt_coef
+  y_pred_emo11_6 <- y_pred
+  mse_emo11_6 <- mse
+  Rholdout_emo11_6 <- Rholdout
 
 #computing the mean coefficients across the folds
-opt_coef_emo11_matrix <- as.data.frame(cbind (opt_coef_emo11_1,
-                                opt_coef_emo11_2,
-                                opt_coef_emo11_3,
-                                opt_coef_emo11_4,
-                                opt_coef_emo11_5,
-                                opt_coef_emo11_6))
-opt_coef_emo11_matrix$aveCoef <- rowMeans(opt_coef_emo11_matrix)
+  opt_coef_emo11_matrix <- as.data.frame(cbind (opt_coef_emo11_1,
+                                  opt_coef_emo11_2,
+                                  opt_coef_emo11_3,
+                                  opt_coef_emo11_4,
+                                  opt_coef_emo11_5,
+                                  opt_coef_emo11_6))
+  opt_coef_emo11_matrix$aveCoef <- rowMeans(opt_coef_emo11_matrix)
 
-#finding the mean correlation between outcome and predicted value across the folds
-cor_emo11 <-1:6
-for (i in 1:6) {
-   cor_emo11[i] <- cor.test(DImp1.1$EMPQ_emotional[DImp1.1$gfold ==i],
-                            eval(parse(text=paste0("y_pred_emo11_",i))))[4]}
-
-cor_emo11 <- as.numeric(cor_emo11)
-avecor_emo11 <- mean(cor_emo11)
+#finding the mean correlation between the outcome and predicted value (y pred) across the folds
+  cor_emo11 <-1:6
+  #first do this for each test set
+  for (i in 1:6) {
+     cor_emo11[i] <- cor.test(DImp1.1$EMPQ_emotional[DImp1.1$gfold ==i],
+                              eval(parse(text=paste0("y_pred_emo11_",i))))[4]}
+  
+  cor_emo11 <- as.numeric(cor_emo11)
+  #now average across all the folds
+  avecor_emo11 <- mean(cor_emo11)
 
 #computing the mean mse across the folds
-mse_emo11 <-1:6
-for (i in 1:6) { mse_emo11[i] <- eval(parse(text=paste0("mse_emo11_",i)))}
-avemse_emo11 <- mean(mse_emo11)
+  mse_emo11 <-1:6
+  for (i in 1:6) { mse_emo11[i] <- eval(parse(text=paste0("mse_emo11_",i)))}
+  avemse_emo11 <- mean(mse_emo11)
 
 #computing the mean Rholdout across the folds
 Rhold_emo11 <-1:6
