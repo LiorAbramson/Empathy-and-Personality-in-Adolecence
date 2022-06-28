@@ -266,68 +266,7 @@ DImp1.1 <- DImp
   avemse_emo11 <- mean(mse_emo11)
 
 
-#############################################################################################
-################## Specific items' coefficients visualization - Age 11 ######################
-#############################################################################################  
-  
-#allocate items to their original Big-Five domains
-  opt_coef_emo11_matrix$category <- NA
-
-#EXTRAVERSION
-  for (i in c(1,11,16,26,36)){
-    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "E"}
-  #reverse items
-  for (i in c(6,21,31)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
-  
-#AGREABELNESS
-  for (i in c(7,17,22,32,42)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "A"}
-  #reverse items
-  for (i in c(2,12,27,37)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
-
-#OPENESS
-  for (i in c(5,10,15,20,25,30,40,44)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "O"}
-  #reverse items
-  for (i in c(35,41)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
-
-#CONCIENCIOUSNESS
-  for (i in c(3,13,28,33,38)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "C"}
-  #reverse items
-  for (i in c(8,18,23,43)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
-  
-#NEUROTICISM
-  for (i in c(4,14,19,29,39)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "N"}
-  #reverse items
-  for (i in c(9,24,34)){
-     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
-  
-  BFI_labels <- read.csv ("../OSF/data/BFI items.csv")
-  
-  opt_coef_emo11_matrix$item <- rownames(opt_coef_emo11_matrix)
-  opt_coef_emo11_matrix <- cbind(opt_coef_emo11_matrix, BFI_labels)
-  
-  plotemo11 <- ggplot(data= opt_coef_emo11_matrix,
-               aes(reorder(x=opt_coef_emo11_matrix$label,opt_coef_emo11_matrix$aveCoef),
-               y=opt_coef_emo11_matrix$aveCoef, 
-               fill=opt_coef_emo11_matrix$category))+
-               geom_bar(stat="identity")+ coord_flip()+ 
-               ggtitle("Regression coefficients of  personality indicators")+
-               labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
-               scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
-               theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
-                       plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
-                       axis.title =element_text(size=12, face="bold", family="serif"),
-                       text=element_text(family="serif"))
-               
-
-##Cognitive empathy
+#Cognitive empathy
   
 #doing Ridge regression on the folds
 #fold 1
@@ -405,43 +344,105 @@ DImp1.1 <- DImp
   avemse_cog11 <- mean(mse_cog11)
 
   
-#visualize specific items' coefficients (predictive power of empathy)
+#############################################################################################
+################## Specific items' coefficients visualization - Age 11 ######################
+#############################################################################################  
 
+#emotional empathy
+    
+#allocate items to their original Big-Five domains
+  opt_coef_emo11_matrix$category <- NA
+  
+  #EXTRAVERSION
+  for (i in c(1,11,16,26,36)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "E"}
+  #reverse items
+  for (i in c(6,21,31)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
+  
+  #AGREABELNESS
+  for (i in c(7,17,22,32,42)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "A"}
+  #reverse items
+  for (i in c(2,12,27,37)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
+  
+  #OPENESS
+  for (i in c(5,10,15,20,25,30,40,44)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "O"}
+  #reverse items
+  for (i in c(35,41)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
+  
+  #CONCIENCIOUSNESS
+  for (i in c(3,13,28,33,38)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "C"}
+  #reverse items
+  for (i in c(8,18,23,43)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
+  
+  #NEUROTICISM
+  for (i in c(4,14,19,29,39)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "N"}
+  #reverse items
+  for (i in c(9,24,34)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
+  
+  BFI_labels <- read.csv ("../OSF/data/BFI items.csv")
+  
+  opt_coef_emo11_matrix$item <- rownames(opt_coef_emo11_matrix)
+  opt_coef_emo11_matrix <- cbind(opt_coef_emo11_matrix, BFI_labels)
+  
+  plotemo11 <- ggplot(data= opt_coef_emo11_matrix,
+                      aes(reorder(x=opt_coef_emo11_matrix$label,opt_coef_emo11_matrix$aveCoef),
+                          y=opt_coef_emo11_matrix$aveCoef, 
+                          fill=opt_coef_emo11_matrix$category))+
+    geom_bar(stat="identity")+ coord_flip()+ 
+    ggtitle("Regression coefficients of  personality indicators")+
+    labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
+    scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
+    theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
+                      plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
+                      axis.title =element_text(size=12, face="bold", family="serif"),
+                      text=element_text(family="serif"))
+  
+#cognitive empathy
+  
 #allocate items to their original Big-Five domains
   opt_coef_cog11_matrix$category <- NA
 
-#EXTRAVERSION
+  #EXTRAVERSION
   for (i in c(1,11,16,26,36)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "E"}
-#reverse items
+  #reverse items
   for (i in c(6,21,31)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
 
-#AGREABELNESS
+  #AGREABELNESS
   for (i in c(7,17,22,32,42)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "A"}
-#reverse items  
+  #reverse items  
   for (i in c(2,12,27,37)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
 
-#OPENESS
+  #OPENESS
   for (i in c(5,10,15,20,25,30,40,44)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "O"}
-#reverse items
+  #reverse items
   for (i in c(35,41)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
 
-#CONCIENCIOUSNESS
+  #CONCIENCIOUSNESS
   for (i in c(3,13,28,33,38)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "C"}
-#reverse items
+  #reverse items
   for (i in c(8,18,23,43)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
 
-#NEUROTICISM
+  #NEUROTICISM
   for (i in c(4,14,19,29,39)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "N"}
-#reverse items
+  #reverse items
   for (i in c(9,24,34)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
 
@@ -675,12 +676,98 @@ DImp1.1 <- DImp
 #check the correlation between age 11 and age 13 average items' coefficients
 #this indicates on age consistency in terms of specific nuances’ ability to predict empathy
   cor.test(opt_coef_emo11_matrix$aveCoef,opt_coef_emo13_matrix$aveCoef)
+  
+  
+  
+#cognitive empathy
+  
+#doing Ridge regression on the folds
+#fold 1
+  Ridge(DImp=D13Imp1.1,gfold=1,relvar=relvar_cognitive_13) 
+  fit_cog13_1 <- fit
+  opt_lambda_cog13_1 <- opt_lambda
+  opt_coef_cog13_1 <- opt_coef
+  y_pred_cog13_1 <- y_pred
+  mse_cog13_1 <- mse
+  
+#fold 2
+  Ridge(DImp=D13Imp1.1,gfold=2,relvar=relvar_cognitive_13) 
+  fit_cog13_2 <- fit
+  opt_lambda_cog13_2 <- opt_lambda
+  opt_coef_cog13_2 <- opt_coef
+  y_pred_cog13_2 <- y_pred
+  mse_cog13_2 <- mse
+  
+#fold 3
+  Ridge(DImp=D13Imp1.1,gfold=3,relvar=relvar_cognitive_13) 
+  fit_cog13_3 <- fit
+  opt_lambda_cog13_3 <- opt_lambda
+  opt_coef_cog13_3 <- opt_coef
+  y_pred_cog13_3 <- y_pred
+  mse_cog13_3 <- mse
+  
+#fold 4
+  Ridge(DImp=D13Imp1.1,gfold=4,relvar=relvar_cognitive_13) 
+  fit_cog13_4 <- fit
+  opt_lambda_cog13_4 <- opt_lambda
+  opt_coef_cog13_4 <- opt_coef
+  y_pred_cog13_4 <- y_pred
+  mse_cog13_4 <- mse
+  
+#fold 5
+  Ridge(DImp=D13Imp1.1,gfold=5,relvar=relvar_cognitive_13) 
+  fit_cog13_5 <- fit
+  opt_lambda_cog13_5 <- opt_lambda
+  opt_coef_cog13_5 <- opt_coef
+  y_pred_cog13_5 <- y_pred
+  mse_cog13_5 <- mse
+  
+#fold 6
+  Ridge(DImp=D13Imp1.1,gfold=6,relvar=relvar_cognitive_13) 
+  fit_cog13_6 <- fit
+  opt_lambda_cog13_6 <- opt_lambda
+  opt_coef_cog13_6 <- opt_coef
+  y_pred_cog13_6 <- y_pred
+  mse_cog13_6 <- mse
+  
+#computing the mean coefficients across the folds
+  opt_coef_cog13_matrix <- as.data.frame(cbind (opt_coef_cog13_1,
+                                                opt_coef_cog13_2,
+                                                opt_coef_cog13_3,
+                                                opt_coef_cog13_4,
+                                                opt_coef_cog13_5,
+                                                opt_coef_cog13_6))
+  opt_coef_cog13_matrix$aveCoef <- rowMeans(opt_coef_cog13_matrix)
+  
+#computing the mean correlation between outcome and predicted value across the folds
+  cor_cog13 <-1:6
+  for (i in 1:6) {
+    cor_cog13[i] <- cor.test(D13Imp1.1$EMPQ_cognitive[D13Imp1.1$gfold ==i],
+                             eval(parse(text=paste0("y_pred_cog13_",i))))[4]}
+  
+  cor_cog13 <- as.numeric(cor_cog13)
+  avecor_cog13 <- mean(cor_cog13)  #mean correlation
+  aveR2_cog13  <- avecor_cog13^2     #mean R2
+  
+#computing the mean mse across the folds
+  mse_cog13 <-1:6
+  for (i in 1:6) { mse_cog13[i] <- eval(parse(text=paste0("mse_cog13_",i)))}
+  avemse_cog13 <- mean(mse_cog13)
+  
+  
+#check the correlation between age 11 and age 13 average items' coefficients
+#this indicates on age consistency in terms of specific nuances’ ability to predict empathy
+  cor.test(opt_coef_cog11_matrix$aveCoef,opt_coef_cog13_matrix$aveCoef)
+  
+  
 
   
-###########################################################################################
-#Visualize the coefficients graph
-###########################################################################################
-
+#############################################################################################
+################## Specific items' coefficients visualization - Age 13 ######################
+#############################################################################################
+  
+#emotional empathy
+  
 #grouping according to the original scales
   opt_coef_emo13_matrix$category <- NA
 
@@ -736,88 +823,8 @@ DImp1.1 <- DImp
                            text=element_text(family="serif"))
 
 
+
 #cognitive empathy
-
-#doing Ridge regression on the folds
-#fold 1
-  Ridge(DImp=D13Imp1.1,gfold=1,relvar=relvar_cognitive_13) 
-  fit_cog13_1 <- fit
-  opt_lambda_cog13_1 <- opt_lambda
-  opt_coef_cog13_1 <- opt_coef
-  y_pred_cog13_1 <- y_pred
-  mse_cog13_1 <- mse
-
-#fold 2
-  Ridge(DImp=D13Imp1.1,gfold=2,relvar=relvar_cognitive_13) 
-  fit_cog13_2 <- fit
-  opt_lambda_cog13_2 <- opt_lambda
-  opt_coef_cog13_2 <- opt_coef
-  y_pred_cog13_2 <- y_pred
-  mse_cog13_2 <- mse
-
-#fold 3
-  Ridge(DImp=D13Imp1.1,gfold=3,relvar=relvar_cognitive_13) 
-  fit_cog13_3 <- fit
-  opt_lambda_cog13_3 <- opt_lambda
-  opt_coef_cog13_3 <- opt_coef
-  y_pred_cog13_3 <- y_pred
-  mse_cog13_3 <- mse
-
-#fold 4
-  Ridge(DImp=D13Imp1.1,gfold=4,relvar=relvar_cognitive_13) 
-  fit_cog13_4 <- fit
-  opt_lambda_cog13_4 <- opt_lambda
-  opt_coef_cog13_4 <- opt_coef
-  y_pred_cog13_4 <- y_pred
-  mse_cog13_4 <- mse
-
-#fold 5
-  Ridge(DImp=D13Imp1.1,gfold=5,relvar=relvar_cognitive_13) 
-  fit_cog13_5 <- fit
-  opt_lambda_cog13_5 <- opt_lambda
-  opt_coef_cog13_5 <- opt_coef
-  y_pred_cog13_5 <- y_pred
-  mse_cog13_5 <- mse
-
-#fold 6
-  Ridge(DImp=D13Imp1.1,gfold=6,relvar=relvar_cognitive_13) 
-  fit_cog13_6 <- fit
-  opt_lambda_cog13_6 <- opt_lambda
-  opt_coef_cog13_6 <- opt_coef
-  y_pred_cog13_6 <- y_pred
-  mse_cog13_6 <- mse
-
-#computing the mean coefficients across the folds
-  opt_coef_cog13_matrix <- as.data.frame(cbind (opt_coef_cog13_1,
-                                                opt_coef_cog13_2,
-                                                opt_coef_cog13_3,
-                                                opt_coef_cog13_4,
-                                                opt_coef_cog13_5,
-                                                opt_coef_cog13_6))
-  opt_coef_cog13_matrix$aveCoef <- rowMeans(opt_coef_cog13_matrix)
-
-#computing the mean correlation between outcome and predicted value across the folds
-  cor_cog13 <-1:6
-  for (i in 1:6) {
-   cor_cog13[i] <- cor.test(D13Imp1.1$EMPQ_cognitive[D13Imp1.1$gfold ==i],
-                            eval(parse(text=paste0("y_pred_cog13_",i))))[4]}
-
-  cor_cog13 <- as.numeric(cor_cog13)
-  avecor_cog13 <- mean(cor_cog13)  #mean correlation
-  aveR2_cog13  <- avecor_cog13^2     #mean R2
-
-#computing the mean mse across the folds
-  mse_cog13 <-1:6
-  for (i in 1:6) { mse_cog13[i] <- eval(parse(text=paste0("mse_cog13_",i)))}
-  avemse_cog13 <- mean(mse_cog13)
-
-
-#check the correlation between age 11 and age 13 average items' coefficients
-#this indicates on age consistency in terms of specific nuances’ ability to predict empathy
-  cor.test(opt_coef_cog11_matrix$aveCoef,opt_coef_cog13_matrix$aveCoef)
-
-
-#Visualize the coefficients graph
 
 #allocate items to their original Big-Five domains
   opt_coef_cog13_matrix$category <- NA
@@ -875,6 +882,9 @@ DImp1.1 <- DImp
 
 
 ###########################################################################################
+
+  #אני פה!!!!!!!!!!
+  
 #predicting age 13 with 11 and vice versa
 
 #creating folds in 11_13 dataset
