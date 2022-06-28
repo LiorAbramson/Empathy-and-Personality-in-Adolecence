@@ -192,7 +192,6 @@ DImp1.1 <- DImp
   opt_coef_emo11_1 <- opt_coef
   y_pred_emo11_1 <- y_pred
   mse_emo11_1 <- mse
-  Rholdout_emo11_1 <- Rholdout
 
 #fold 2
   Ridge(DImp=DImp1.1,gfold=2,relvar=relvar_emotional) 
@@ -201,7 +200,6 @@ DImp1.1 <- DImp
   opt_coef_emo11_2 <- opt_coef
   y_pred_emo11_2 <- y_pred
   mse_emo11_2 <- mse
-  Rholdout_emo11_2 <- Rholdout
 
 #fold 3
   Ridge(DImp=DImp1.1,gfold=3,relvar=relvar_emotional) 
@@ -210,7 +208,6 @@ DImp1.1 <- DImp
   opt_coef_emo11_3 <- opt_coef
   y_pred_emo11_3 <- y_pred
   mse_emo11_3 <- mse
-  Rholdout_emo11_3 <- Rholdout
 
 #fold 4
   Ridge(DImp=DImp1.1,gfold=4,relvar=relvar_emotional) 
@@ -219,7 +216,6 @@ DImp1.1 <- DImp
   opt_coef_emo11_4 <- opt_coef
   y_pred_emo11_4 <- y_pred
   mse_emo11_4 <- mse
-  Rholdout_emo11_4 <- Rholdout
 
 #fold 5
   Ridge(DImp=DImp1.1,gfold=5,relvar=relvar_emotional) 
@@ -228,7 +224,6 @@ DImp1.1 <- DImp
   opt_coef_emo11_5 <- opt_coef
   y_pred_emo11_5 <- y_pred
   mse_emo11_5 <- mse
-  Rholdout_emo11_5 <- Rholdout
 
 #fold 6
   Ridge(DImp=DImp1.1,gfold=6,relvar=relvar_emotional) 
@@ -237,7 +232,7 @@ DImp1.1 <- DImp
   opt_coef_emo11_6 <- opt_coef
   y_pred_emo11_6 <- y_pred
   mse_emo11_6 <- mse
-  Rholdout_emo11_6 <- Rholdout
+  
 
 #computing the mean coefficients across the folds
   opt_coef_emo11_matrix <- as.data.frame(cbind (opt_coef_emo11_1,
