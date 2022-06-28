@@ -171,16 +171,12 @@ DImp1.1 <- DImp
          mse <- mean((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2)     #squared difference between y and y predicted
          
          mean_train <- mean(DImp[DImp$gfold != gfold,relvar[1]])         #mean y (empathy score)
-         Rholdout_numenator <- sum((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2) 
-         Rholdout_denumenator <- sum((DImp[DImp$gfold == gfold,relvar[1]]-mean_train)^2) 
-         Rholdout <- 1- (Rholdout_numenator/Rholdout_denumenator)
          
          assign ("fit",fit,envir = .GlobalEnv)                           #glmnet ridge regression results
          assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)             #optimal lambda value
          assign ("opt_coef",opt_coef,envir = .GlobalEnv)                 #items' coefficients when the lambda is optimal
          assign ("y_pred",y_pred,envir = .GlobalEnv)                     #y predicted for each participant
          assign ("mse", mse,envir = .GlobalEnv)                          #mse for the test set
-         assign ("Rholdout", Rholdout, envir = .GlobalEnv)               #Rholdout (????????????)
 }
 
 #scale all the BFI items so they all will mean=0 and SD=1 
@@ -267,12 +263,6 @@ DImp1.1 <- DImp
   mse_emo11 <-1:6
   for (i in 1:6) { mse_emo11[i] <- eval(parse(text=paste0("mse_emo11_",i)))}
   avemse_emo11 <- mean(mse_emo11)
-
-#computing the mean Rholdout across the folds
-Rhold_emo11 <-1:6
-for (i in 1:6) { Rhold_emo11[i] <- eval(parse(text=paste0("Rholdout_emo11_",i)))}
-aveRhold_emo11 <- mean(Rhold_emo11)
-
 
 ############################################################################################
 #visualize coefficients results
