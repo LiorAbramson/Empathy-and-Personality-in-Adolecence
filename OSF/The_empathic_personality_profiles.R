@@ -10,7 +10,7 @@
   lapply(packages, require, character.only = TRUE)
 
 #Preparing the file
-  D <- read.csv("../OSF/data/Age11_EmpPer_anonymized.csv")
+  D <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_EmpPer_anonymized.csv")
   D <- D[D$isOut==0,]                      #take out children that should not be included (see supplementary method)
   D <- subset(D, !is.na(D$EMPQ_emotional)) #take out children with no empathy measures
 
@@ -18,13 +18,19 @@
 ######################### Data Preprocessing ################################################
 #############################################################################################
 
-#1) Handling missing values
+#Handling missing values
 
 #first count how many missing values are in each var:
   ind <- which(colnames(D)=="el_BFI1")
   descD <- describe(D[,ind:(ind+43)])
-  missingBFI11 <- (nrow(D)-descD$n)/nrow(D)   #calculate percentage of missing values
-  round(max(missingBFI11),4)                  #check what is the maximum of missing values in one variable
+  #calculate percentage of missing values for each item (descD$itemname[2])
+  missingBFI11 <- c()
+  for (i in 1:44){
+    eval(parse(text= paste0("missingBFI11[",i,"] <-as.numeric(descD$el_BFI",i,
+                            "$counts[2])/ nrow(D)")))
+  }
+  
+  max(missingBFI11)           #find the maximum percentage of missing values
 
 #Imputations of missing values for the Big5 (pmm)
   set.seed(12) #set the random vector to always be the same vector
@@ -55,7 +61,7 @@
   DImp5 <-cbind.data.frame(D[,c(1,2)],DImp5_B5, D[,varsEmp])
 
 
-#2) reverse items  (items' content description will be added soon)
+#reverse items  (items' content description will be added soon)
   CreateReverseItems_allData <-function(DImp) {
     DImp$el_BFI6_Rev <-  6-DImp$el_BFI6
     DImp$el_BFI21_Rev <- 6-DImp$el_BFI21
@@ -80,11 +86,7 @@
 CreateReverseItems_allData(DImp1)
 DImp1.1 <- DImp
 
-#############################################################################################
-######################### Ridge regression ##################################################
-#############################################################################################
-
-#defining the relevant variables
+#defining the relevant variables for the Ridge regression
   col <- colnames(DImp1.1)
   relvar_emotional <- c(which (col=="EMPQ_emotional"),
                         which (col=="el_BFI1"), which (col=="el_BFI2_Rev"), which (col=="el_BFI3"),which (col=="el_BFI4"),
@@ -136,7 +138,7 @@ DImp1.1 <- DImp
   
 
 #############################################################################################
-######################### Ridge regression ##################################################
+######################### Ridge regression function #########################################
 #############################################################################################
 
 #create a vector of possible lambda values. These values will be examined in 
@@ -168,7 +170,7 @@ DImp1.1 <- DImp
          y_pred <- predict(fit, s=opt_lambda, 
                            newx = as.matrix(DImp[DImp$gfold == gfold,relvar[2:45]]))
          
-         mse <- mean((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2)     #mean of the squared differences between y and y predicted in the test set
+         mse <- mean((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2)     #MSE: mean of the squared differences between y and y predicted in the test set
          
          assign ("fit",fit,envir = .GlobalEnv)                           #glmnet ridge regression results
          assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)             #optimal lambda value
@@ -177,12 +179,17 @@ DImp1.1 <- DImp
          assign ("mse", mse,envir = .GlobalEnv)                          #mse for the test set
 }
 
+#############################################################################################
+######################### Ridge regression - Age 11 #########################################
+#############################################################################################  
+
 #scale all the BFI items so they all will mean=0 and SD=1 
   for (i in 2:45) {DImp1.1[,relvar_emotional[i]] <-
      scale(DImp1.1[,relvar_emotional[i]], scale=T)}
 
+##Emotional empathy
 
-#doing Ridge regression on the folds - emotional empathy
+#doing Ridge regression on the folds 
 #fold 1
   Ridge(DImp=DImp1.1,gfold=1,relvar=relvar_emotional) 
   fit_emo11_1 <- fit
@@ -317,8 +324,9 @@ DImp1.1 <- DImp
                        text=element_text(family="serif"))
                
 
-
-#doing Ridge regression on the folds- cognitive empathy
+##Cognitive empathy
+  
+#doing Ridge regression on the folds
 #fold 1
   Ridge(DImp=DImp1.1,gfold=1,relvar=relvar_cognitive) 
   fit_cog11_1 <- fit
@@ -391,51 +399,52 @@ DImp1.1 <- DImp
   for (i in 1:6) { mse_cog11[i] <- eval(parse(text=paste0("mse_cog11_",i)))}
   avemse_cog11 <- mean(mse_cog11)
 
-###########################################################################################
-#Visualize the coefficients graph
 
-#grouping according to the original scales
-opt_coef_cog11_matrix$category <- NA
+  
+#visualize specific items' coefficients (predictive power of empathy)
+
+#allocate items to their original Big-Five domains
+  opt_coef_cog11_matrix$category <- NA
 
 #EXTRAVERSION
-for (i in c(1,11,16,26,36)){
+  for (i in c(1,11,16,26,36)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "E"}
 #reverse items
-for (i in c(6,21,31)){
+  for (i in c(6,21,31)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
 
 #AGREABELNESS
-for (i in c(7,17,22,32,42)){
+  for (i in c(7,17,22,32,42)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "A"}
-#reverse items
-for (i in c(2,12,27,37)){
+#reverse items  
+  for (i in c(2,12,27,37)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
 
 #OPENESS
-for (i in c(5,10,15,20,25,30,40,44)){
+  for (i in c(5,10,15,20,25,30,40,44)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "O"}
 #reverse items
-for (i in c(35,41)){
+  for (i in c(35,41)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
 
 #CONCIENCIOUSNESS
-for (i in c(3,13,28,33,38)){
+  for (i in c(3,13,28,33,38)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "C"}
 #reverse items
-for (i in c(8,18,23,43)){
+  for (i in c(8,18,23,43)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
 
 #NEUROTICISM
-for (i in c(4,14,19,29,39)){
+  for (i in c(4,14,19,29,39)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i)] <- "N"}
 #reverse items
-for (i in c(9,24,34)){
+  for (i in c(9,24,34)){
    opt_coef_cog11_matrix$category[rownames(opt_coef_cog11_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
 
-opt_coef_cog11_matrix$item <- rownames(opt_coef_cog11_matrix)
-opt_coef_cog11_matrix <- cbind(opt_coef_cog11_matrix, BFI_labels)
+  opt_coef_cog11_matrix$item <- rownames(opt_coef_cog11_matrix)
+  opt_coef_cog11_matrix <- cbind(opt_coef_cog11_matrix, BFI_labels)
 
-plotcog11 <- ggplot(data= opt_coef_cog11_matrix,
+  plotcog11 <- ggplot(data= opt_coef_cog11_matrix,
                     aes(reorder(x=opt_coef_cog11_matrix$label,opt_coef_cog11_matrix$aveCoef),
                     y=opt_coef_cog11_matrix$aveCoef, 
                     fill=opt_coef_cog11_matrix$category))+
@@ -447,42 +456,42 @@ plotcog11 <- ggplot(data= opt_coef_cog11_matrix,
                                     plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
                                     axis.title =element_text(size=12, face="bold", family="serif"),
                                     text=element_text(family="serif"))
+  
 
 #################################################################################################
-#############     AGE 13   ######################################################################
+################################## AGE 13  ######################################################
 #################################################################################################
 
 #preparing the file
-setwd("C:/Users/Lior Abramson/Dropbox/empathy and puberty/SVR")  
-D13 <- read.csv ("Age13_EmpPer_4SVR.csv")
-library(reshape)
-D13 <- rename(D13, c(ï..ifam="ifam"))    # change weird variable names
-D13 <- D13[D13$isOut==0,]                  #take out children that should not be included
-D13 <- subset(D13, !is.na(D13$EMPQ_emotional)) #take out children with no empathy measures
+  D13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_EmpPer_anonymized.csv")
+  D13 <- D13[D13$isOut==0,]                      #take out children that should not be included (see supplementary method)
+  D13 <- subset(D13, !is.na(D13$EMPQ_emotional)) #take out children with no empathy measures
 
 
 ####################Data preprocessing##########################################################
 
-# 1) Imputing missing values with pmm
-
-#first count how many missing values in each var:
-ind <- which(colnames(D13)=="tn_BFI1")
-library(psych)
-descD13 <- describe(D13[,ind:(ind+43)])
-missingBFI13 <- (nrow(D13)-descD13$n)/nrow(D13)
-round(max(missingBFI13),4)
-
-library("Hmisc")
-
-#Imputations of missing values for the Big5
-#Big5
-set.seed(12) #set the random vector to always be the same vector
-Imp13_B5 <- aregImpute (formula= ~tn_BFI1+ tn_BFI2+ tn_BFI3+ tn_BFI4+ tn_BFI5+ tn_BFI6+ tn_BFI7+ tn_BFI8+tn_BFI9+ tn_BFI10+
+#Handling missing values
+  
+#first count how many missing values are in each var:
+  ind <- which(colnames(D13)=="tn_BFI1")
+  descD13 <- describe(D13[,ind:(ind+43)])
+  #calculate percentage of missing values for each item (descD13$itemname[2])
+  missingBFI13 <- c()
+  for (i in 1:44){
+    eval(parse(text= paste0("missingBFI13[",i,"] <-as.numeric(descD13$tn_BFI",i,
+                            "$counts[2])/ nrow(D13)")))
+  }
+  max(missingBFI13)    #find the maximum percentage of missing values
+  
+  
+#Imputations of missing values for the Big5 (pmm)
+  set.seed(12) #set the random vector to always be the same vector
+  Imp13_B5 <- aregImpute (formula= ~tn_BFI1+ tn_BFI2+ tn_BFI3+ tn_BFI4+ tn_BFI5+ tn_BFI6+ tn_BFI7+ tn_BFI8+tn_BFI9+ tn_BFI10+
                            tn_BFI11+ tn_BFI12+ tn_BFI13+ tn_BFI14+ tn_BFI15+ tn_BFI16+ tn_BFI17+ tn_BFI18+tn_BFI19+ tn_BFI20+
                            tn_BFI21+ tn_BFI22+ tn_BFI23+ tn_BFI24+ tn_BFI25+ tn_BFI26+ tn_BFI27+ tn_BFI28+tn_BFI29+ tn_BFI30+
                            tn_BFI31+ tn_BFI32+ tn_BFI33+ tn_BFI34+ tn_BFI35+ tn_BFI36+ tn_BFI37+ tn_BFI38+tn_BFI39+ tn_BFI40+
                            tn_BFI41+ tn_BFI42+ tn_BFI43+ tn_BFI44, 
-                        data=D13, x=T,n.impute=5 , nk=0, type="pmm")
+                          data=D13, x=T,n.impute=5 , nk=0, type="pmm")
 
 
 #Creating five data sets with different imputed values
