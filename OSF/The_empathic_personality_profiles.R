@@ -15,7 +15,7 @@
   D <- subset(D, !is.na(D$EMPQ_emotional)) #take out children with no empathy measures
 
 #############################################################################################
-######################### Data Preprocessing ################################################
+######################### Data Preprocessing - Age 11 #######################################
 #############################################################################################
 
 #Handling missing values
@@ -119,7 +119,7 @@ DImp1.1 <- DImp
   colnames(DImp1.1)[relvar_emotional] <- newnames
 
 #dividing the 6 folds so two twins from the same family will always be in the same test fold
-#gfold is the variable allocating family to a sepcific fold
+#gfold is the variable allocating family to a specific fold
   unique_ifams <- unique(DImp1.1$ifam)
   set.seed(32189)
   unique_ifams <- sample(unique_ifams) 
@@ -257,7 +257,8 @@ DImp1.1 <- DImp
   
   cor_emo11 <- as.numeric(cor_emo11)
   #now average across all the folds
-  avecor_emo11 <- mean(cor_emo11)
+  avecor_emo11 <- mean(cor_emo11)   #mean correlation
+  aveR2_emo11  <- avecor_emo11^2    #mean R2
 
 #computing the mean mse across the folds
   mse_emo11 <-1:6
@@ -265,7 +266,9 @@ DImp1.1 <- DImp
   avemse_emo11 <- mean(mse_emo11)
 
 
-#visualize specific items' coefficients (predictive power of empathy)
+#############################################################################################
+################## Specific items' coefficients visualization - Age 11 ######################
+#############################################################################################  
   
 #allocate items to their original Big-Five domains
   opt_coef_emo11_matrix$category <- NA
@@ -392,13 +395,14 @@ DImp1.1 <- DImp
                               eval(parse(text=paste0("y_pred_cog11_",i))))[4]}
   
   cor_cog11 <- as.numeric(cor_cog11)
-  avecor_cog11 <- mean(cor_cog11)
+  avecor_cog11 <- mean(cor_cog11)  #mean correlation
+  aveR2_cog11  <- avecor_cog11^2    #mean R2
+  
 
 #computing the mean mse across the folds
   mse_cog11 <-1:6
   for (i in 1:6) { mse_cog11[i] <- eval(parse(text=paste0("mse_cog11_",i)))}
   avemse_cog11 <- mean(mse_cog11)
-
 
   
 #visualize specific items' coefficients (predictive power of empathy)
@@ -459,16 +463,13 @@ DImp1.1 <- DImp
   
 
 #################################################################################################
-################################## AGE 13  ######################################################
+############################ Data preprocessing - AGE 13  #######################################
 #################################################################################################
 
 #preparing the file
   D13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_EmpPer_anonymized.csv")
   D13 <- D13[D13$isOut==0,]                      #take out children that should not be included (see supplementary method)
   D13 <- subset(D13, !is.na(D13$EMPQ_emotional)) #take out children with no empathy measures
-
-
-####################Data preprocessing##########################################################
 
 #Handling missing values
   
@@ -495,30 +496,51 @@ DImp1.1 <- DImp
 
 
 #Creating five data sets with different imputed values
-D13Imp1_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=1,data=D13,list.out=T,pr=F))
-D13Imp2_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=2,data=D13,list.out=T,pr=F))
-D13Imp3_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=3,data=D13,list.out=T,pr=F))
-D13Imp4_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=4,data=D13,list.out=T,pr=F))
-D13Imp5_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=5,data=D13,list.out=T,pr=F))
+#DImp1 is the data frame reported in the paper. 
+#The overall prediction of empathy from personality was examined on the other 4 datasets as a robustness check
+  D13Imp1_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=1,data=D13,list.out=T,pr=F))
+  D13Imp2_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=2,data=D13,list.out=T,pr=F))
+  D13Imp3_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=3,data=D13,list.out=T,pr=F))
+  D13Imp4_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=4,data=D13,list.out=T,pr=F))
+  D13Imp5_B5 <-as.data.frame(impute.transcan(Imp13_B5,imputation=5,data=D13,list.out=T,pr=F))
 
-col <- colnames(D13)
-varsEmp <- c(which(col=="EMPQ_emotional"), which(col=="EMPQ_cognitive"), which(col=="EMPQ_IRI_motiv"))
+  col <- colnames(D13)
+  varsEmp <- c(which(col=="EMPQ_emotional"), which(col=="EMPQ_cognitive"))
 
-D13Imp1 <-cbind.data.frame(D13[,c(1,2)],D13Imp1_B5, D13[,varsEmp])
-D13Imp2 <-cbind.data.frame(D13[,c(1,2)],D13Imp2_B5, D13[,varsEmp])
-D13Imp3 <-cbind.data.frame(D13[,c(1,2)],D13Imp3_B5, D13[,varsEmp])
-D13Imp4 <-cbind.data.frame(D13[,c(1,2)],D13Imp4_B5, D13[,varsEmp])
-D13Imp5 <-cbind.data.frame(D13[,c(1,2)],D13Imp5_B5, D13[,varsEmp])
+  D13Imp1 <-cbind.data.frame(D13[,c(1,2)],D13Imp1_B5, D13[,varsEmp])
+  D13Imp2 <-cbind.data.frame(D13[,c(1,2)],D13Imp2_B5, D13[,varsEmp])
+  D13Imp3 <-cbind.data.frame(D13[,c(1,2)],D13Imp3_B5, D13[,varsEmp])
+  D13Imp4 <-cbind.data.frame(D13[,c(1,2)],D13Imp4_B5, D13[,varsEmp])
+  D13Imp5 <-cbind.data.frame(D13[,c(1,2)],D13Imp5_B5, D13[,varsEmp])
 
-###For now- I do everything only on D13Imp1. If correct- need to do everything 5 times 
-
-#2) reverse items-activate funtion first
-CreateReverseItems_allData_age13(D13Imp1)
-D13Imp1.1 <- DImp
+#reverse items  (items' content description will be added soon)
+  CreateReverseItems_allData_age13 <-function(DImp) {
+    DImp$tn_BFI6_Rev <-  6-DImp$tn_BFI6
+    DImp$tn_BFI21_Rev <- 6-DImp$tn_BFI21
+    DImp$tn_BFI31_Rev <- 6-DImp$tn_BFI31
+    DImp$tn_BFI2_Rev <-  6-DImp$tn_BFI2
+    DImp$tn_BFI12_Rev <- 6-DImp$tn_BFI12
+    DImp$tn_BFI27_Rev <- 6-DImp$tn_BFI27
+    DImp$tn_BFI37_Rev <- 6-DImp$tn_BFI37
+    DImp$tn_BFI8_Rev <-  6-DImp$tn_BFI8
+    DImp$tn_BFI18_Rev <- 6-DImp$tn_BFI18
+    DImp$tn_BFI23_Rev <- 6-DImp$tn_BFI23
+    DImp$tn_BFI43_Rev <- 6-DImp$tn_BFI43
+    DImp$tn_BFI9_Rev <-  6-DImp$tn_BFI9
+    DImp$tn_BFI24_Rev <- 6-DImp$tn_BFI24
+    DImp$tn_BFI34_Rev <- 6-DImp$tn_BFI34
+    DImp$tn_BFI35_Rev <- 6-DImp$tn_BFI35
+    DImp$tn_BFI41_Rev <- 6-DImp$tn_BFI41
+    
+    assign ("DImp",DImp,envir = .GlobalEnv)
+  }
+  
+  CreateReverseItems_allData_age13(D13Imp1)
+  D13Imp1.1 <- DImp
 
 #defining the relevant variables
-col <- colnames(D13Imp1.1)
-relvar_emotional_13 <- c(which (col=="EMPQ_emotional"),
+  col <- colnames(D13Imp1.1)
+  relvar_emotional_13 <- c(which (col=="EMPQ_emotional"),
                          which (col=="tn_BFI1"), which (col=="tn_BFI2_Rev"), which (col=="tn_BFI3"),which (col=="tn_BFI4"),
                          which (col=="tn_BFI5"),which (col=="tn_BFI6_Rev"),which (col=="tn_BFI7"),which (col=="tn_BFI8_Rev"),
                          which (col=="tn_BFI9_Rev"),which (col=="tn_BFI10"),which (col=="tn_BFI11"),which (col=="tn_BFI12_Rev"),
@@ -531,7 +553,7 @@ relvar_emotional_13 <- c(which (col=="EMPQ_emotional"),
                          which (col=="tn_BFI37_Rev"),which (col=="tn_BFI38"),which (col=="tn_BFI39"),which (col=="tn_BFI40"),
                          which (col=="tn_BFI41_Rev"),which (col=="tn_BFI42"),which (col=="tn_BFI43_Rev"),which (col=="tn_BFI44"))
 
-relvar_cognitive_13 <- c(which (col=="EMPQ_cognitive"),
+  relvar_cognitive_13 <- c(which (col=="EMPQ_cognitive"),
                          which (col=="tn_BFI1"), which (col=="tn_BFI2_Rev"), which (col=="tn_BFI3"),which (col=="tn_BFI4"),
                          which (col=="tn_BFI5"),which (col=="tn_BFI6_Rev"),which (col=="tn_BFI7"),which (col=="tn_BFI8_Rev"),
                          which (col=="tn_BFI9_Rev"),which (col=="tn_BFI10"),which (col=="tn_BFI11"),which (col=="tn_BFI12_Rev"),
@@ -544,154 +566,163 @@ relvar_cognitive_13 <- c(which (col=="EMPQ_cognitive"),
                          which (col=="tn_BFI37_Rev"),which (col=="tn_BFI38"),which (col=="tn_BFI39"),which (col=="tn_BFI40"),
                          which (col=="tn_BFI41_Rev"),which (col=="tn_BFI42"),which (col=="tn_BFI43_Rev"),which (col=="tn_BFI44"))
 
-newnames <- gsub(x=colnames(D13Imp1.1[,relvar_emotional_13]),pattern="tn_", replacement="")
-colnames(D13Imp1.1)[relvar_emotional_13] <- newnames
+#changing the names of age 11 and age 13 to be the same
+  newnames <- gsub(x=colnames(D13Imp1.1[,relvar_emotional_13]),pattern="tn_", replacement="")
+  colnames(D13Imp1.1)[relvar_emotional_13] <- newnames
 
 #dividing the 6 folds so two twins from the same family will always be in the same test fold
-unique_ifams_13 <- unique(D13Imp1.1$ifam)
-set.seed(32189)
-unique_ifams_13 <- sample(unique_ifams_13) 
+#gfold is the variable allocating family to a specific fold
+  unique_ifams_13 <- unique(D13Imp1.1$ifam)
+  set.seed(32189)
+  unique_ifams_13 <- sample(unique_ifams_13) 
 
-remainder<-length(unique_ifams_13)%%6
-nfold <- (length(unique_ifams_13)-remainder)/6
-gfold <- c(rep(1, times=nfold), rep(2, times=nfold), rep(3, times=nfold),
+  remainder<-length(unique_ifams_13)%%6
+  nfold <- (length(unique_ifams_13)-remainder)/6
+  gfold <- c(rep(1, times=nfold), rep(2, times=nfold), rep(3, times=nfold),
            rep(4, times=nfold), rep(5, times=nfold), rep(6, times=nfold))
-gfold <- c(gfold,1:remainder)
-unique_ifams_13 <- cbind(unique_ifams_13,gfold)
-ifams_13<- as.data.frame(rbind(unique_ifams_13, unique_ifams_13))
-colnames(ifams_13) <- c("ifam","gfold")
-ifams_13$ID<- c(rep(1,times=nrow(unique_ifams_13)),rep(4,times=nrow(unique_ifams_13)))
+  gfold <- c(gfold,1:remainder)
+  unique_ifams_13 <- cbind(unique_ifams_13,gfold)
+  ifams_13<- as.data.frame(rbind(unique_ifams_13, unique_ifams_13))
+  colnames(ifams_13) <- c("ifam","gfold")
+  ifams_13$ID<- c(rep(1,times=nrow(unique_ifams_13)),rep(4,times=nrow(unique_ifams_13)))  # allocate ID for each twin (ID 1=older twin, ID 4= younger twin) 
 
-D13Imp1.1<- merge(D13Imp1.1,ifams_13, by=c("ifam","ID"), all.x = T, all.y = F)
+  D13Imp1.1<- merge(D13Imp1.1,ifams_13, by=c("ifam","ID"), all.x = T, all.y = F)          # merge the gfold var with the data
+
+  
+#############################################################################################
+######################### Ridge regression - Age 13 #########################################
+#############################################################################################  
 
 #scale all the BFI items so they all will have mean=0 and SD=1
-for (i in 2:45) {D13Imp1.1[,relvar_emotional_13[i]] <-
-   scale(D13Imp1.1[,relvar_emotional_13[i]], scale=T)}
-
-
-#doing Ridge regression on the folds 
+  for (i in 2:45) {D13Imp1.1[,relvar_emotional_13[i]] <-
+       scale(D13Imp1.1[,relvar_emotional_13[i]], scale=T)}
 
 #emotional empathy
 
-Ridge(DImp=D13Imp1.1,gfold=1,relvar=relvar_emotional_13,lambdas=lambdas) 
-fit_emo13_1 <- fit
-opt_lambda_emo13_1 <- opt_lambda
-opt_coef_emo13_1 <- opt_coef
-y_pred_emo13_1 <- y_pred
-mse_emo13_1 <- mse
+#doing Ridge regression on the folds
+#fold 1
+  Ridge(DImp=D13Imp1.1,gfold=1,relvar=relvar_emotional_13) 
+  fit_emo13_1 <- fit
+  opt_lambda_emo13_1 <- opt_lambda
+  opt_coef_emo13_1 <- opt_coef
+  y_pred_emo13_1 <- y_pred
+  mse_emo13_1 <- mse
 
 #fold 2
-Ridge(DImp=D13Imp1.1,gfold=2,relvar=relvar_emotional_13,lambdas=lambdas) 
-fit_emo13_2 <- fit
-opt_lambda_emo13_2 <- opt_lambda
-opt_coef_emo13_2 <- opt_coef
-y_pred_emo13_2 <- y_pred
-mse_emo13_2 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=2,relvar=relvar_emotional_13) 
+  fit_emo13_2 <- fit
+  opt_lambda_emo13_2 <- opt_lambda
+  opt_coef_emo13_2 <- opt_coef
+  y_pred_emo13_2 <- y_pred
+  mse_emo13_2 <- mse
 
 #fold 3
-Ridge(DImp=D13Imp1.1,gfold=3,relvar=relvar_emotional_13,lambdas=lambdas) 
-fit_emo13_3 <- fit
-opt_lambda_emo13_3 <- opt_lambda
-opt_coef_emo13_3 <- opt_coef
-y_pred_emo13_3 <- y_pred
-mse_emo13_3 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=3,relvar=relvar_emotional_13) 
+  fit_emo13_3 <- fit
+  opt_lambda_emo13_3 <- opt_lambda
+  opt_coef_emo13_3 <- opt_coef
+  y_pred_emo13_3 <- y_pred
+  mse_emo13_3 <- mse
 
 #fold 4
-Ridge(DImp=D13Imp1.1,gfold=4,relvar=relvar_emotional_13,lambdas=lambdas) 
-fit_emo13_4 <- fit
-opt_lambda_emo13_4 <- opt_lambda
-opt_coef_emo13_4 <- opt_coef
-y_pred_emo13_4 <- y_pred
-mse_emo13_4 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=4,relvar=relvar_emotional_13) 
+  fit_emo13_4 <- fit
+  opt_lambda_emo13_4 <- opt_lambda
+  opt_coef_emo13_4 <- opt_coef
+  y_pred_emo13_4 <- y_pred
+  mse_emo13_4 <- mse
 
 #fold 5
-Ridge(DImp=D13Imp1.1,gfold=5,relvar=relvar_emotional_13,lambdas=lambdas) 
-fit_emo13_5 <- fit
-opt_lambda_emo13_5 <- opt_lambda
-opt_coef_emo13_5 <- opt_coef
-y_pred_emo13_5 <- y_pred
-mse_emo13_5 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=5,relvar=relvar_emotional_13) 
+  fit_emo13_5 <- fit
+  opt_lambda_emo13_5 <- opt_lambda
+  opt_coef_emo13_5 <- opt_coef
+  y_pred_emo13_5 <- y_pred
+  mse_emo13_5 <- mse
 
 #fold 6
-Ridge(DImp=D13Imp1.1,gfold=6,relvar=relvar_emotional_13,lambdas=lambdas) 
-fit_emo13_6 <- fit
-opt_lambda_emo13_6 <- opt_lambda
-opt_coef_emo13_6 <- opt_coef
-y_pred_emo13_6 <- y_pred
-mse_emo13_6 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=6,relvar=relvar_emotional_13) 
+  fit_emo13_6 <- fit
+  opt_lambda_emo13_6 <- opt_lambda
+  opt_coef_emo13_6 <- opt_coef
+  y_pred_emo13_6 <- y_pred
+  mse_emo13_6 <- mse
 
 #computing the mean coefficients across the folds
-opt_coef_emo13_matrix <- as.data.frame(cbind (opt_coef_emo13_1,
-                                              opt_coef_emo13_2,
-                                              opt_coef_emo13_3,
-                                              opt_coef_emo13_4,
-                                              opt_coef_emo13_5,
-                                              opt_coef_emo13_6))
-opt_coef_emo13_matrix$aveCoef <- rowMeans(opt_coef_emo13_matrix)
+  opt_coef_emo13_matrix <- as.data.frame(cbind (opt_coef_emo13_1,
+                                                opt_coef_emo13_2,
+                                                opt_coef_emo13_3,
+                                                opt_coef_emo13_4,
+                                                opt_coef_emo13_5,
+                                                opt_coef_emo13_6))
+  opt_coef_emo13_matrix$aveCoef <- rowMeans(opt_coef_emo13_matrix)
 
-#finding the mean correlation between outcome and predicted value across the folds
-cor_emo13 <-1:6
-for (i in 1:6) {
-   cor_emo13[i] <- cor.test(D13Imp1.1$EMPQ_emotional[D13Imp1.1$gfold ==i],
-                            eval(parse(text=paste0("y_pred_emo13_",i))))[4]}
-
-cor_emo13 <- as.numeric(cor_emo13)
-avecor_emo13 <- mean(cor_emo13)
-
-#check the correlation between age 11 and age 13 average coefficients
-cor.test(opt_coef_emo11_matrix$aveCoef,opt_coef_emo13_matrix$aveCoef)
-
+#computing the mean correlation between outcome and predicted value across the folds
+  cor_emo13 <-1:6
+  for (i in 1:6) {
+     cor_emo13[i] <- cor.test(D13Imp1.1$EMPQ_emotional[D13Imp1.1$gfold ==i],
+                              eval(parse(text=paste0("y_pred_emo13_",i))))[4]}
+  
+  cor_emo13 <- as.numeric(cor_emo13)
+  avecor_emo13 <- mean(cor_emo13)  #mean correlation
+  aveR2_emo13  <- avecor_emo13^2   #mean R2
+  
 #computing the mean mse across the folds
-mse_emo13 <-1:6
-for (i in 1:6) { mse_emo13[i] <- eval(parse(text=paste0("mse_emo13_",i)))}
-avemse_emo13 <- mean(mse_emo13)
+  mse_emo13 <-1:6
+  for (i in 1:6) { mse_emo13[i] <- eval(parse(text=paste0("mse_emo13_",i)))}
+  avemse_emo13 <- mean(mse_emo13)
 
+#check the correlation between age 11 and age 13 average items' coefficients
+#this indicates on age consistency in terms of specific nuances’ ability to predict empathy
+  cor.test(opt_coef_emo11_matrix$aveCoef,opt_coef_emo13_matrix$aveCoef)
+
+  
 ###########################################################################################
 #Visualize the coefficients graph
 ###########################################################################################
 
 #grouping according to the original scales
-opt_coef_emo13_matrix$category <- NA
+  opt_coef_emo13_matrix$category <- NA
 
 #EXTRAVERSION
-for (i in c(1,11,16,26,36)){
+  for (i in c(1,11,16,26,36)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i)] <- "E"}
 #reverse items
-for (i in c(6,21,31)){
+  for (i in c(6,21,31)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
 
-#AGREABELNESS
-for (i in c(7,17,22,32,42)){
+#AGREABELNESS 
+  for (i in c(7,17,22,32,42)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i)] <- "A"}
 #reverse items
-for (i in c(2,12,27,37)){
+  for (i in c(2,12,27,37)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
 
 #OPENESS
-for (i in c(5,10,15,20,25,30,40,44)){
+  for (i in c(5,10,15,20,25,30,40,44)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i)] <- "O"}
 #reverse items
-for (i in c(35,41)){
+  for (i in c(35,41)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
 
 #CONCIENCIOUSNESS
-for (i in c(3,13,28,33,38)){
+  for (i in c(3,13,28,33,38)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i)] <- "C"}
 #reverse items
-for (i in c(8,18,23,43)){
+  for (i in c(8,18,23,43)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
 
 #NEUROTICISM
-for (i in c(4,14,19,29,39)){
+  for (i in c(4,14,19,29,39)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i)] <- "N"}
 #reverse items
-for (i in c(9,24,34)){
+  for (i in c(9,24,34)){
    opt_coef_emo13_matrix$category[rownames(opt_coef_emo13_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
 
-opt_coef_emo13_matrix$item <- rownames(opt_coef_emo13_matrix)
-opt_coef_emo13_matrix <- cbind(opt_coef_emo13_matrix, BFI_labels)
+  opt_coef_emo13_matrix$item <- rownames(opt_coef_emo13_matrix)
+  opt_coef_emo13_matrix <- cbind(opt_coef_emo13_matrix, BFI_labels)
 
-plotemo13 <- ggplot(data= opt_coef_emo13_matrix,
+  plotemo13 <- ggplot(data= opt_coef_emo13_matrix,
              aes(reorder(x=opt_coef_emo13_matrix$label,opt_coef_emo13_matrix$aveCoef),
                  y=opt_coef_emo13_matrix$aveCoef, 
                  fill=opt_coef_emo13_matrix$category))+
@@ -704,137 +735,140 @@ plotemo13 <- ggplot(data= opt_coef_emo13_matrix,
                            axis.title =element_text(size=12, face="bold", family="serif"),
                            text=element_text(family="serif"))
 
-#########################################################################################
+
 #cognitive empathy
 
-Ridge(DImp=D13Imp1.1,gfold=1,relvar=relvar_cognitive_13,lambdas=lambdas) 
-fit_cog13_1 <- fit
-opt_lambda_cog13_1 <- opt_lambda
-opt_coef_cog13_1 <- opt_coef
-y_pred_cog13_1 <- y_pred
-mse_cog13_1 <- mse
+#doing Ridge regression on the folds
+#fold 1
+  Ridge(DImp=D13Imp1.1,gfold=1,relvar=relvar_cognitive_13) 
+  fit_cog13_1 <- fit
+  opt_lambda_cog13_1 <- opt_lambda
+  opt_coef_cog13_1 <- opt_coef
+  y_pred_cog13_1 <- y_pred
+  mse_cog13_1 <- mse
 
 #fold 2
-Ridge(DImp=D13Imp1.1,gfold=2,relvar=relvar_cognitive_13,lambdas=lambdas) 
-fit_cog13_2 <- fit
-opt_lambda_cog13_2 <- opt_lambda
-opt_coef_cog13_2 <- opt_coef
-y_pred_cog13_2 <- y_pred
-mse_cog13_2 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=2,relvar=relvar_cognitive_13) 
+  fit_cog13_2 <- fit
+  opt_lambda_cog13_2 <- opt_lambda
+  opt_coef_cog13_2 <- opt_coef
+  y_pred_cog13_2 <- y_pred
+  mse_cog13_2 <- mse
 
 #fold 3
-Ridge(DImp=D13Imp1.1,gfold=3,relvar=relvar_cognitive_13,lambdas=lambdas) 
-fit_cog13_3 <- fit
-opt_lambda_cog13_3 <- opt_lambda
-opt_coef_cog13_3 <- opt_coef
-y_pred_cog13_3 <- y_pred
-mse_cog13_3 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=3,relvar=relvar_cognitive_13) 
+  fit_cog13_3 <- fit
+  opt_lambda_cog13_3 <- opt_lambda
+  opt_coef_cog13_3 <- opt_coef
+  y_pred_cog13_3 <- y_pred
+  mse_cog13_3 <- mse
 
 #fold 4
-Ridge(DImp=D13Imp1.1,gfold=4,relvar=relvar_cognitive_13,lambdas=lambdas) 
-fit_cog13_4 <- fit
-opt_lambda_cog13_4 <- opt_lambda
-opt_coef_cog13_4 <- opt_coef
-y_pred_cog13_4 <- y_pred
-mse_cog13_4 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=4,relvar=relvar_cognitive_13) 
+  fit_cog13_4 <- fit
+  opt_lambda_cog13_4 <- opt_lambda
+  opt_coef_cog13_4 <- opt_coef
+  y_pred_cog13_4 <- y_pred
+  mse_cog13_4 <- mse
 
 #fold 5
-Ridge(DImp=D13Imp1.1,gfold=5,relvar=relvar_cognitive_13,lambdas=lambdas) 
-fit_cog13_5 <- fit
-opt_lambda_cog13_5 <- opt_lambda
-opt_coef_cog13_5 <- opt_coef
-y_pred_cog13_5 <- y_pred
-mse_cog13_5 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=5,relvar=relvar_cognitive_13) 
+  fit_cog13_5 <- fit
+  opt_lambda_cog13_5 <- opt_lambda
+  opt_coef_cog13_5 <- opt_coef
+  y_pred_cog13_5 <- y_pred
+  mse_cog13_5 <- mse
 
 #fold 6
-Ridge(DImp=D13Imp1.1,gfold=6,relvar=relvar_cognitive_13,lambdas=lambdas) 
-fit_cog13_6 <- fit
-opt_lambda_cog13_6 <- opt_lambda
-opt_coef_cog13_6 <- opt_coef
-y_pred_cog13_6 <- y_pred
-mse_cog13_6 <- mse
+  Ridge(DImp=D13Imp1.1,gfold=6,relvar=relvar_cognitive_13) 
+  fit_cog13_6 <- fit
+  opt_lambda_cog13_6 <- opt_lambda
+  opt_coef_cog13_6 <- opt_coef
+  y_pred_cog13_6 <- y_pred
+  mse_cog13_6 <- mse
 
 #computing the mean coefficients across the folds
-opt_coef_cog13_matrix <- as.data.frame(cbind (opt_coef_cog13_1,
-                                              opt_coef_cog13_2,
-                                              opt_coef_cog13_3,
-                                              opt_coef_cog13_4,
-                                              opt_coef_cog13_5,
-                                              opt_coef_cog13_6))
-opt_coef_cog13_matrix$aveCoef <- rowMeans(opt_coef_cog13_matrix)
+  opt_coef_cog13_matrix <- as.data.frame(cbind (opt_coef_cog13_1,
+                                                opt_coef_cog13_2,
+                                                opt_coef_cog13_3,
+                                                opt_coef_cog13_4,
+                                                opt_coef_cog13_5,
+                                                opt_coef_cog13_6))
+  opt_coef_cog13_matrix$aveCoef <- rowMeans(opt_coef_cog13_matrix)
 
-#finding the mean correlation between outcome and predicted value across the folds
-cor_cog13 <-1:6
-for (i in 1:6) {
+#computing the mean correlation between outcome and predicted value across the folds
+  cor_cog13 <-1:6
+  for (i in 1:6) {
    cor_cog13[i] <- cor.test(D13Imp1.1$EMPQ_cognitive[D13Imp1.1$gfold ==i],
                             eval(parse(text=paste0("y_pred_cog13_",i))))[4]}
 
-cor_cog13 <- as.numeric(cor_cog13)
-avecor_cog13 <- mean(cor_cog13)
+  cor_cog13 <- as.numeric(cor_cog13)
+  avecor_cog13 <- mean(cor_cog13)  #mean correlation
+  aveR2_cog13  <- avecor_cog13^2     #mean R2
 
 #computing the mean mse across the folds
-mse_cog13 <-1:6
-for (i in 1:6) { mse_cog13[i] <- eval(parse(text=paste0("mse_cog13_",i)))}
-avemse_cog13 <- mean(mse_cog13)
+  mse_cog13 <-1:6
+  for (i in 1:6) { mse_cog13[i] <- eval(parse(text=paste0("mse_cog13_",i)))}
+  avemse_cog13 <- mean(mse_cog13)
 
 
-#check the correlation between age 11 and age 13 average coefficients
-cor.test(opt_coef_cog11_matrix$aveCoef,opt_coef_cog13_matrix$aveCoef)
+#check the correlation between age 11 and age 13 average items' coefficients
+#this indicates on age consistency in terms of specific nuances’ ability to predict empathy
+  cor.test(opt_coef_cog11_matrix$aveCoef,opt_coef_cog13_matrix$aveCoef)
 
-###########################################################################################
+
 #Visualize the coefficients graph
 
-#grouping according to the original scales
-opt_coef_cog13_matrix$category <- NA
+#allocate items to their original Big-Five domains
+  opt_coef_cog13_matrix$category <- NA
 
 #EXTRAVERSION
-for (i in c(1,11,16,26,36)){
+  for (i in c(1,11,16,26,36)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i)] <- "E"}
 #reverse items
-for (i in c(6,21,31)){
+  for (i in c(6,21,31)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
 
 #AGREABELNESS
-for (i in c(7,17,22,32,42)){
+  for (i in c(7,17,22,32,42)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i)] <- "A"}
 #reverse items
-for (i in c(2,12,27,37)){
+  for (i in c(2,12,27,37)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
 
 #OPENESS
-for (i in c(5,10,15,20,25,30,40,44)){
+  for (i in c(5,10,15,20,25,30,40,44)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i)] <- "O"}
 #reverse items
-for (i in c(35,41)){
+  for (i in c(35,41)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
 
 #CONCIENCIOUSNESS
-for (i in c(3,13,28,33,38)){
+  for (i in c(3,13,28,33,38)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i)] <- "C"}
 #reverse items
-for (i in c(8,18,23,43)){
+  for (i in c(8,18,23,43)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
 
 #NEUROTICISM
-for (i in c(4,14,19,29,39)){
+  for (i in c(4,14,19,29,39)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i)] <- "N"}
 #reverse items
-for (i in c(9,24,34)){
+  for (i in c(9,24,34)){
    opt_coef_cog13_matrix$category[rownames(opt_coef_cog13_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
 
-opt_coef_cog13_matrix$item <- rownames(opt_coef_cog13_matrix)
-opt_coef_cog13_matrix <- cbind(opt_coef_cog13_matrix, BFI_labels)
+  opt_coef_cog13_matrix$item <- rownames(opt_coef_cog13_matrix)
+  opt_coef_cog13_matrix <- cbind(opt_coef_cog13_matrix, BFI_labels)
 
-library(ggplot2)
-plotcog13 <- ggplot(data= opt_coef_cog13_matrix,
-             aes(reorder(x=opt_coef_cog13_matrix$label,opt_coef_cog13_matrix$aveCoef),
+  plotcog13 <- ggplot(data= opt_coef_cog13_matrix,
+               aes(reorder(x=opt_coef_cog13_matrix$label,opt_coef_cog13_matrix$aveCoef),
                  y=opt_coef_cog13_matrix$aveCoef, 
                  fill=opt_coef_cog13_matrix$category))+
-             geom_bar(stat="identity")+ coord_flip()+ 
-             ggtitle("Regression coefficients of  personality indicators")+
-             labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
-             scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
-             theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
+               geom_bar(stat="identity")+ coord_flip()+ 
+               ggtitle("Regression coefficients of  personality indicators")+
+               labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
+               scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
+               theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
                            plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
                            axis.title =element_text(size=12, face="bold", family="serif"),
                            text=element_text(family="serif"))
