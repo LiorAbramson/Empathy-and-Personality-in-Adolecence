@@ -6,7 +6,7 @@
   cat ("\014")    #clean the R console
 
 #Packages
-  packages <- c('psych', 'Hmisc', 'glmnet')
+  packages <- c('psych', 'Hmisc', 'glmnet','ggplot2')
   lapply(packages, require, character.only = TRUE)
 
 #Preparing the file
@@ -55,7 +55,7 @@
   DImp5 <-cbind.data.frame(D[,c(1,2)],DImp5_B5, D[,varsEmp])
 
 
-#2) reverse items
+#2) reverse items  (items' content description will be added soon)
   CreateReverseItems_allData <-function(DImp) {
     DImp$el_BFI6_Rev <-  6-DImp$el_BFI6
     DImp$el_BFI21_Rev <- 6-DImp$el_BFI21
@@ -168,9 +168,7 @@ DImp1.1 <- DImp
          y_pred <- predict(fit, s=opt_lambda, 
                            newx = as.matrix(DImp[DImp$gfold == gfold,relvar[2:45]]))
          
-         mse <- mean((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2)     #squared difference between y and y predicted
-         
-         mean_train <- mean(DImp[DImp$gfold != gfold,relvar[1]])         #mean y (empathy score)
+         mse <- mean((DImp[DImp$gfold == gfold,relvar[1]]-y_pred)^2)     #mean of the squared differences between y and y predicted in the test set
          
          assign ("fit",fit,envir = .GlobalEnv)                           #glmnet ridge regression results
          assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)             #optimal lambda value
@@ -259,142 +257,139 @@ DImp1.1 <- DImp
   for (i in 1:6) { mse_emo11[i] <- eval(parse(text=paste0("mse_emo11_",i)))}
   avemse_emo11 <- mean(mse_emo11)
 
-############################################################################################
-#visualize coefficients results
 
-#grouping according to the original scales
-opt_coef_emo11_matrix$category <- NA
+#visualize specific items' coefficients (predictive power of empathy)
+  
+#allocate items to their original Big-Five domains
+  opt_coef_emo11_matrix$category <- NA
 
 #EXTRAVERSION
-for (i in c(1,11,16,26,36)){
-opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "E"}
-#reverse items
-for (i in c(6,21,31)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
-
+  for (i in c(1,11,16,26,36)){
+    opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "E"}
+  #reverse items
+  for (i in c(6,21,31)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "E"}
+  
 #AGREABELNESS
-for (i in c(7,17,22,32,42)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "A"}
-#reverse items
-for (i in c(2,12,27,37)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
+  for (i in c(7,17,22,32,42)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "A"}
+  #reverse items
+  for (i in c(2,12,27,37)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")] <- "A"}
 
 #OPENESS
-for (i in c(5,10,15,20,25,30,40,44)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "O"}
-#reverse items
-for (i in c(35,41)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
+  for (i in c(5,10,15,20,25,30,40,44)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "O"}
+  #reverse items
+  for (i in c(35,41)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "O"}
 
 #CONCIENCIOUSNESS
-for (i in c(3,13,28,33,38)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "C"}
-#reverse items
-for (i in c(8,18,23,43)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
-
+  for (i in c(3,13,28,33,38)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "C"}
+  #reverse items
+  for (i in c(8,18,23,43)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<- "C"}
+  
 #NEUROTICISM
-for (i in c(4,14,19,29,39)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "N"}
-#reverse items
-for (i in c(9,24,34)){
-   opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
+  for (i in c(4,14,19,29,39)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i)] <- "N"}
+  #reverse items
+  for (i in c(9,24,34)){
+     opt_coef_emo11_matrix$category[rownames(opt_coef_emo11_matrix)==paste0("BFI",i,"_Rev")]<-"N"}
+  
+  BFI_labels <- read.csv ("../OSF/data/BFI items.csv")
+  
+  opt_coef_emo11_matrix$item <- rownames(opt_coef_emo11_matrix)
+  opt_coef_emo11_matrix <- cbind(opt_coef_emo11_matrix, BFI_labels)
+  
+  plotemo11 <- ggplot(data= opt_coef_emo11_matrix,
+               aes(reorder(x=opt_coef_emo11_matrix$label,opt_coef_emo11_matrix$aveCoef),
+               y=opt_coef_emo11_matrix$aveCoef, 
+               fill=opt_coef_emo11_matrix$category))+
+               geom_bar(stat="identity")+ coord_flip()+ 
+               ggtitle("Regression coefficients of  personality indicators")+
+               labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
+               scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
+               theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
+                       plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
+                       axis.title =element_text(size=12, face="bold", family="serif"),
+                       text=element_text(family="serif"))
+               
 
-setwd("C:/Users/Lior Abramson/Dropbox/empathy and puberty/data")  
-BFI_labels <- read.csv ("BFI items.csv")
 
-opt_coef_emo11_matrix$item <- rownames(opt_coef_emo11_matrix)
-opt_coef_emo11_matrix <- cbind(opt_coef_emo11_matrix, BFI_labels)
-
-library(ggplot2)
-plotemo11 <- ggplot(data= opt_coef_emo11_matrix,
-             aes(reorder(x=opt_coef_emo11_matrix$label,opt_coef_emo11_matrix$aveCoef),
-             y=opt_coef_emo11_matrix$aveCoef, 
-             fill=opt_coef_emo11_matrix$category))+
-             geom_bar(stat="identity")+ coord_flip()+ 
-             ggtitle("Regression coefficients of  personality indicators")+
-             labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
-             scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
-             theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
-                     plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
-                     axis.title =element_text(size=12, face="bold", family="serif"),
-                     text=element_text(family="serif"))
-             
-
-##################cognitive empathy#########################################################
-
-#doing Ridge regression on the folds 
+#doing Ridge regression on the folds- cognitive empathy
 #fold 1
-Ridge(DImp=DImp1.1,gfold=1,relvar=relvar_cognitive,lambdas=lambdas) 
-fit_cog11_1 <- fit
-opt_lambda_cog11_1 <- opt_lambda
-opt_coef_cog11_1 <- opt_coef
-y_pred_cog11_1 <- y_pred
-mse_cog11_1 <- mse
+  Ridge(DImp=DImp1.1,gfold=1,relvar=relvar_cognitive) 
+  fit_cog11_1 <- fit
+  opt_lambda_cog11_1 <- opt_lambda
+  opt_coef_cog11_1 <- opt_coef
+  y_pred_cog11_1 <- y_pred
+  mse_cog11_1 <- mse
 
 #fold 2
-Ridge(DImp=DImp1.1,gfold=2,relvar=relvar_cognitive,lambdas=lambdas) 
-fit_cog11_2 <- fit
-opt_lambda_cog11_2 <- opt_lambda
-opt_coef_cog11_2 <- opt_coef
-y_pred_cog11_2 <- y_pred
-mse_cog11_2 <- mse
+  Ridge(DImp=DImp1.1,gfold=2,relvar=relvar_cognitive) 
+  fit_cog11_2 <- fit
+  opt_lambda_cog11_2 <- opt_lambda
+  opt_coef_cog11_2 <- opt_coef
+  y_pred_cog11_2 <- y_pred
+  mse_cog11_2 <- mse
 
 #fold 3
-Ridge(DImp=DImp1.1,gfold=3,relvar=relvar_cognitive,lambdas=lambdas) 
-fit_cog11_3 <- fit
-opt_lambda_cog11_3 <- opt_lambda
-opt_coef_cog11_3 <- opt_coef
-y_pred_cog11_3 <- y_pred
-mse_cog11_3 <- mse
+  Ridge(DImp=DImp1.1,gfold=3,relvar=relvar_cognitive) 
+  fit_cog11_3 <- fit
+  opt_lambda_cog11_3 <- opt_lambda
+  opt_coef_cog11_3 <- opt_coef
+  y_pred_cog11_3 <- y_pred
+  mse_cog11_3 <- mse
 
 #fold 4
-Ridge(DImp=DImp1.1,gfold=4,relvar=relvar_cognitive,lambdas=lambdas) 
-fit_cog11_4 <- fit
-opt_lambda_cog11_4 <- opt_lambda
-opt_coef_cog11_4 <- opt_coef
-y_pred_cog11_4 <- y_pred
-mse_cog11_4 <- mse
+  Ridge(DImp=DImp1.1,gfold=4,relvar=relvar_cognitive) 
+  fit_cog11_4 <- fit
+  opt_lambda_cog11_4 <- opt_lambda
+  opt_coef_cog11_4 <- opt_coef
+  y_pred_cog11_4 <- y_pred
+  mse_cog11_4 <- mse
 
 #fold 5
-Ridge(DImp=DImp1.1,gfold=5,relvar=relvar_cognitive,lambdas=lambdas) 
-fit_cog11_5 <- fit
-opt_lambda_cog11_5 <- opt_lambda
-opt_coef_cog11_5 <- opt_coef
-y_pred_cog11_5 <- y_pred
-mse_cog11_5 <- mse
+  Ridge(DImp=DImp1.1,gfold=5,relvar=relvar_cognitive) 
+  fit_cog11_5 <- fit
+  opt_lambda_cog11_5 <- opt_lambda
+  opt_coef_cog11_5 <- opt_coef
+  y_pred_cog11_5 <- y_pred
+  mse_cog11_5 <- mse
 
 #fold 6
-Ridge(DImp=DImp1.1,gfold=6,relvar=relvar_cognitive,lambdas=lambdas) 
-fit_cog11_6 <- fit
-opt_lambda_cog11_6 <- opt_lambda
-opt_coef_cog11_6 <- opt_coef
-y_pred_cog11_6 <- y_pred
-mse_cog11_6 <- mse
+  Ridge(DImp=DImp1.1,gfold=6,relvar=relvar_cognitive) 
+  fit_cog11_6 <- fit
+  opt_lambda_cog11_6 <- opt_lambda
+  opt_coef_cog11_6 <- opt_coef
+  y_pred_cog11_6 <- y_pred
+  mse_cog11_6 <- mse
 
 #computing the mean coefficients across the folds
-opt_coef_cog11_matrix <- as.data.frame(cbind (opt_coef_cog11_1,
+  opt_coef_cog11_matrix <- as.data.frame(cbind (opt_coef_cog11_1,
                                               opt_coef_cog11_2,
                                               opt_coef_cog11_3,
                                               opt_coef_cog11_4,
                                               opt_coef_cog11_5,
                                               opt_coef_cog11_6))
-opt_coef_cog11_matrix$aveCoef <- rowMeans(opt_coef_cog11_matrix)
+  opt_coef_cog11_matrix$aveCoef <- rowMeans(opt_coef_cog11_matrix)
+
 
 #finding the mean correlation between outcome and predicted value across the folds
-
-cor_cog11 <-1:6
-for (i in 1:6) {
-   cor_cog11[i] <- cor.test(DImp1.1$EMPQ_cognitive[DImp1.1$gfold ==i],
-                            eval(parse(text=paste0("y_pred_cog11_",i))))[4]}
-
-cor_cog11 <- as.numeric(cor_cog11)
-avecor_cog11 <- mean(cor_cog11)
+  cor_cog11 <-1:6
+  for (i in 1:6) {
+     cor_cog11[i] <- cor.test(DImp1.1$EMPQ_cognitive[DImp1.1$gfold ==i],
+                              eval(parse(text=paste0("y_pred_cog11_",i))))[4]}
+  
+  cor_cog11 <- as.numeric(cor_cog11)
+  avecor_cog11 <- mean(cor_cog11)
 
 #computing the mean mse across the folds
-mse_cog11 <-1:6
-for (i in 1:6) { mse_cog11[i] <- eval(parse(text=paste0("mse_cog11_",i)))}
-avemse_cog11 <- mean(mse_cog11)
+  mse_cog11 <-1:6
+  for (i in 1:6) { mse_cog11[i] <- eval(parse(text=paste0("mse_cog11_",i)))}
+  avemse_cog11 <- mean(mse_cog11)
 
 ###########################################################################################
 #Visualize the coefficients graph
