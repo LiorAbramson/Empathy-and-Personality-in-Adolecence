@@ -1,0 +1,276 @@
+
+ 
+ ! Cross-lagged model based on a cholesky decomposition
+!received from Kim Saudino, May 2015
+  #DEFINE NVAR 4
+#ngroups 4
+
+ G1: MODEL PARAMETERS ! ESTIMATE FOR TWINS
+data calc
+BEGIN MATRICES;
+ X Lower nvar nvar FREE  ! GENETIC PARAMETERS
+ Y Lower nvar nvar FREE  ! SHARED ENVIRONMENT PARAMETERS
+ Z Lower nvar nvar FREE  ! NONSHARED ENVIRONMENT PARAMETERS
+I ident 8 8 
+Q iden 2 2
+P Full 8 8  ! cross lagged RAW UNITS
+ H FULL  1 1              ! SCALAR .5
+ R  FULL  1 1              ! Added by Lior. SCALAR .25.
+
+end matrices;
+
+Begin Algebra;
+A=X*X';
+C=Y*Y';
+E=Z*Z';
+
+
+
+End Algebra;
+
+         Specify  X  
+                           1  
+                           2 3
+                           0 0 4 
+                           0 0 5 6
+
+        Specify Y  
+                          7 
+                          8 9
+                          0 0 10 
+                          0 0 11 12
+
+         Specify Z 
+                         13 
+                         14 15 
+                         0 0 16 
+                         0 0 17 18
+
+        Specify P  
+                      0  0    0  0  0   0   0   0
+                      0  0    0  0  0   0   0   0
+                      19 20 0  0  0   0   0   0
+                      21 22 0  0  0   0   0   0
+                      0   0   0  0  0   0   0   0 
+                      0   0   0  0  0   0   0   0
+                      0   0   0  0  19 20 0   0
+                      0   0   0  0  21 22 0   0
+
+  ! path19 is b11, 20 is b21, 21 is b12 and 22 is b22      
+                    
+Matrix H .5
+Matrix R .25 !Added by Lior
+
+st 6 x 1 1
+st .5 x 2 1
+st .6 x 2 2
+st 5 x 3 3
+st .3 x 4 3
+st .5 x 4 4
+
+st .5 y 1 1
+st -.7 y 2 1
+st 0.000008 y 2 2
+st 2 y 3 3
+st -.005 y 4 3
+st -0.0000000007 y 4 4
+
+st 3 z 1 1
+st .085 z 2 1
+st -.5 z 2 2
+st 3 z 3 3
+st .05 z 4 3
+st .5 z 4 4
+
+!START .5 X 1 1
+! START .5 X 2 1
+! START .5 X 2 2
+! START 0 Y 1 1
+! START 0 Y 2 1
+! START 0 Y 2 2
+! START  .5 Z 1 1
+! START .5 Z 2 1
+! START .5 Z 2 2
+
+ END
+ 
+  
+G2: MZ TWIN PAIRS
+
+Data NInput_vars=20 !NObservations=1000
+
+ Missing=999
+ Rectangular file=C:\Users\ShaiW\Wide_4Mx_numeric_residualized.dat ! read in raw datafile, must be in same directory
+
+ LABELS     
+ifam zygosity sex_B	sex_A	
+premo11B	premo13B	empemo11B	empemo13B	
+prcog11B	prcog13B	empcog11B	empcog13B 
+premo11A	premo13A	empemo11A	empemo13A	
+prcog11A	prcog13A	empcog11A	empcog13A 
+
+
+
+ Select if zygosity=1 ; 		! select MZ's
+!Select if PB7a>-10;
+!Select if PB8a>-10;
+
+Select premo11A empemo11A premo13A empemo13A premo11B empemo11B premo13B empemo13B;
+
+ MATRICES= GROUP 1
+K Full 8 1 Free
+Means K/
+ COVARIANCES
+                         ( (I-P)~ *(A+C+E	| A+C _
+                      		A+C   	| A+C+E) *	  ((I-P)~)' )  /
+ OPTION RSIDUAL
+ END
+ 
+  G3: DZ TWIN PAIRS
+ Data NInput_vars=20 !NObservations=1000
+
+ Missing=999 ! missing values = -1.000
+ Rectangular file=C:\Users\ShaiW\Wide_4Mx_numeric_residualized.dat ! read in raw datafile, must be in same directory
+
+ LABELS  
+ifam zygosity sex_B	sex_A	
+premo11B	premo13B	empemo11B	empemo13B	
+prcog11B	prcog13B	empcog11B	empcog13B 
+premo11A	premo13A	empemo11A	empemo13A	
+prcog11A	prcog13A	empcog11A	empcog13A 
+
+ Select if   zygosity=2 ; 		! select DZ's
+!Select if PB7a>-10;
+!Select if PB8a>-10;
+ 
+Select premo11A empemo11A premo13A empemo13A premo11B empemo11B premo13B empemo13B;
+
+ MATRICES= GROUP 1
+K Full 8 1 Free
+Means K/
+ COVARIANCES
+                    ((I-P)~ *(A+C+E	| H@A+R@C _
+                      		H@A+R@C	| A+C+E) *   ((I-P)~)')  /
+
+!the R@ was added by Lior
+
+!Bound -1  1 P 3 1 P 4 1 P 4 2 P 3 2 
+
+
+OPTION RSIDUAL
+ END group;
+
+ G4: CALCULATE GENETIC / ENVIRONMENTAL CORRELATIONS
+ DATA CALC
+ BEGIN MATRICES;
+ A COMP 4 4 =A1
+ C COMP 4 4 =C1
+ E COMP 4 4 =E1
+ P FULL 4 4            ! RECIPROCAL CAUSATION PARAMETERS
+S FULL 2 2    ! SAME AS P, BUT 2*2 MATRICES FOR LATER CALCULATION
+ I IDEN 4 4
+   
+   M FULL   2 2 FIXED; !COEFFICIENTS TO PULL OUT SUBMTARIX FOR STANDARDIZATION OF B
+   N FULL   2 2 FIXED; !COEFFICIENTS TO PULL OUT SUBMTARIX FOR STANDARDIZATION OF B
+   
+END MATRICES;
+
+ SP P
+ 0   0   0   0
+ 0   0   0   0
+ 19 20  0   0
+ 21 22  0   0
+
+ SP S
+ 19 20 
+ 21 22  
+ 
+MATRIX M
+1 1 2 2
+
+MATRIX N
+3 3 4 4
+
+ BEGIN ALGEBRA;
+
+
+ B=((I-P)~ *(A+C+E ) * ((I-P)~)')  ;   !TOTAL VAR/COV MATRIX OF THE 4 VARIABLES
+Q=( (I-P)~ *A * (((I-P)~)') ) % B | ( (I-P)~ *C * (((I-P)~)') ) % B | ( (I-P)~ *E * (((I-P)~)') ) % B ;   ! % EXPLAINED VAR TOTAL variance
+
+!R=A%B | C%B | E%B ;    ! % EXPLAINED VAR OF RESIDUAL A,C,E
+!T=\STND(B)|\STND(A)| \STND(C) | \STND(E);
+
+   O = \SQRT(\V2D(\D2V(\PART(B,M))));
+   D = \SQRT(\V2D(\D2V(\PART(B,N))));
+   W = D~*S*O;      ! THESE ARE THE STANDARDIZED LOADINGS for the b paths
+
+!M= ( (I-P)~ *A * (((I-P)~)') ) % B;
+!N=  ( (I-P)~ *C * (((I-P)~)') ) % B;
+!O= ( (I-P)~ *E * (((I-P)~)') ) % B;
+
+!G, J, L are split from R -- separated so we can get CI if wanted
+!for the first 2 vars, it should be same as Q, that is the h2/c2/e2; for var3 var4, it's the residual variances R 
+G= A%B; 
+J= C%B;
+L=E%B;
+
+F= \STND(B); !same as T, split  -- estimates phenotypic corr from model
+U= \stnd(A); ! calculates rg 
+V= \stnd(C);	! calculates rc 
+T= \stnd(E);	! calculates re
+
+
+End Algebra;
+
+Interval @95 Q 1 1 Q 1 5 Q 1 9  !var1's h2, c2, e2  #ACE time 1 predicted
+Interval @95 Q 2 2 Q 2 6 Q 2 10  !var2's h2, c2, e2   #ACE time 1 empathy
+Interval @95 Q 3 3 Q 3 7 Q 3 11  !var3's h2, c2, e2 (TOTAL including  transmitted from first age as well as new at 2nd age)
+Interval @95 Q 4 4 Q 4 8 Q 4 12 !var4's h2, c2, e2 (TOTAL including transmitted from first age as well as new at 2nd age) 
+
+Interval @95 U 4 2 1 U 4 4 3 V 4 2 1 V 4 4 3 T 4 2 1 T 4 4 3 ! U  is  rg V1 V2, rg of residuals for V3 V4, V is rc for V1 V2, and rc for residuals V3 V 4, T is re for V1 V2 and re residuals V3 V4
+
+Interval @95 W 1 1 W 2 2  W 1 2 W 2 1 ! b paths, 19, 22, 20, 21
+
+INTERVALS  G 4 3 3 G 4 4 4  G 4 4 3! a2 residual V1, a2 residual V2 + correlation between residuals
+INTERVALS J 4 3 3 J 4 4 4 J 4 4 3 ! c2 residuals + correlation between residuals
+INTERVALS L 4 3 3 L 4 4 4  L 4 4 3 !e2 residuals + correlation between residuals
+
+Interval @95 F 4 2 1 F 4 4 3 F 4 4 1 F 4 3 2!added by Ariel - phenotypic correlation
+
+options multiple
+Option sat=2222.715,3864 !from basic 4 variable saturated model
+options multiple ISSub
+END
+
+!drop x 1 1 1 x 1 2 1 x 1 3 3  x 1 4 3 x 1 4 4
+!end
+
+!SAVE ace.MXS
+!drop y 1 1 1 y 1 2 2 y 1 2 1 y 1 3 3  y 1 4 3 y 1 4 4 ! all shared environment effects were nonsig.
+
+!drop  X 1 1 1 X 1 2 2 X 1 2 1 X 1 3 3  X 1 4 3 X 1 4 4 ! drop the additive effects that were nonsig.
+!drop 20 21 !dropping cross-lagged effects
+!drop  X 1 3 3   X 1 4 4 ! drop the additive effects at age 13 that were nonsig.
+!drop  X 1 4 3  ! dropping rG additive correlation in age 13
+!drop  X 1 1 1
+!drop  X 1 2 1 X 1 4 3
+!end
+
+!for cognitive empathy
+!drop y 1 1 1 y 1 2 2 ! dropping dominant effects at age 11 that were nonsig.
+!drop  y 1 2 1  ! dropping rG dominant correlation at age 11
+!end
+
+!for emotional empathy
+drop  x 1 2 1 x 1 4 3  ! dropping rG additive correlation at both ages
+end
+
+!equate p 1 3 1 p 1 4 2 ! trying to equate the autoregressive paths
+!equate p 1 3 2 p 1 4 1 ! trying to equate the cross-lagged paths
+!end
+
+!test the significance of the dominant personality residual  D component
+drop G 4 4 4
+end 
+
+
