@@ -1153,7 +1153,8 @@ DImp1.1 <- DImp
                           y=DImp1.1[,relvar_emotional[1]], 
                           alpha = 0, lambda = opt_lambda_emo11)
 
-#now check the prediction
+#now check the prediction (notice that the training and testing sets are the same,
+#so this is not exactly "prediction")
   y_pred_emo11_all <- as.numeric(predict(fit_emo11_all, s=opt_lambda_emo11, 
                                  newx = as.matrix(DImp1.1[,relvar_emotional[2:45]])))
 
@@ -1181,7 +1182,8 @@ DImp1.1 <- DImp
                         y=DImp1.1[,relvar_cognitive[1]], 
                         alpha = 0, lambda = opt_lambda_cog11)
 
-#now check the prediction
+#now check the prediction (notice that the training and testing sets are the same,
+#so this is not exactly "prediction")
   y_pred_cog11_all <- as.numeric(predict(fit_cog11_all, s=opt_lambda_cog11, 
                             newx = as.matrix(DImp1.1[,relvar_cognitive[2:45]])))
 
@@ -1209,7 +1211,8 @@ DImp1.1 <- DImp
                         y=D13Imp1.1[,relvar_emotional_13[1]], 
                         alpha = 0, lambda = opt_lambda_emo13)
 
-#now check the prediction
+#now check the prediction (notice that the training and testing sets are the same,
+  #so this is not exactly "prediction")
   y_pred_emo13_all <- as.numeric(predict(fit_emo13_all, s=opt_lambda_emo13, 
                                  newx = as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]])))
 
@@ -1237,7 +1240,8 @@ DImp1.1 <- DImp
                         y=D13Imp1.1[,relvar_cognitive_13[1]], 
                         alpha = 0, lambda = opt_lambda_cog13)
 
-#now check the prediction
+#now check the prediction (notice that because the training and testing sets are the same 
+#this is not exactly "prediction")
   y_pred_cog13_all <- as.numeric(predict(fit_cog13_all, s=opt_lambda_cog13, 
                                  newx = as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]])))
 
@@ -1404,26 +1408,43 @@ DImp1.1 <- DImp
 
 
 ######################################################################################################
-###### checking the prediction on the panel example ##################################################
+###### checking the model prediction on an independent, non-twin sample ##############################
 ######################################################################################################
 
-#export file
-setwd("C:/Users/Lior Abramson/Dropbox/empathy and puberty/Panel sample")  
-DPan <- read.csv ("panel_results_2.9.20_PerEmp.csv")
+#import data (called panel sample)
+  DPan <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/panel_results_PerEmp.csv")
 
-#reversing items- activate the function first
-CreateReverseItems_allData_panel(DPan)
+#reversing items
+  CreateReverseItems_allData_panel <-function(DPan) {
+    
+    DPan$BFI6_Rev <- 6-DPan$BFI6
+    DPan$BFI21_Rev <- 6-DPan$BFI21
+    DPan$BFI31_Rev <- 6-DPan$BFI31
+    DPan$BFI2_Rev <- 6-DPan$BFI2
+    DPan$BFI12_Rev <- 6-DPan$BFI12
+    DPan$BFI27_Rev <- 6-DPan$BFI27
+    DPan$BFI37_Rev <- 6-DPan$BFI37
+    DPan$BFI8_Rev <- 6-DPan$BFI8
+    DPan$BFI18_Rev <- 6-DPan$BFI18
+    DPan$BFI23_Rev <- 6-DPan$BFI23
+    DPan$BFI43_Rev <- 6-DPan$BFI43
+    DPan$BFI9_Rev <- 6-DPan$BFI9
+    DPan$BFI24_Rev <- 6-DPan$BFI24
+    DPan$BFI34_Rev <- 6-DPan$BFI34
+    DPan$BFI35_Rev <- 6-DPan$BFI35
+    DPan$BFI41_Rev <- 6-DPan$BFI41
+    
+    assign ("DPan",DPan,envir = .GlobalEnv)
+    
+  }
+  
+  CreateReverseItems_allData_panel (DPan)
 
-#eliminate children who are too young (elementary school)
-DPan <- DPan[DPan$isOut==0,]
+#remove children who are too young (elementary school)
+  DPan <- DPan[DPan$isOut==0,]
 
-#find rows that all has same value
-keep <- apply(DPan, 1, function(x) length(unique(x[!is.na(x)])) != 1)
-#remove rows with same value
-DPan <- DPan[keep,]
-
-col <- colnames(DPan)
-relvar_emotional_panel <- c(which (col=="EMPQ_emotional"),
+  col <- colnames(DPan)
+  relvar_emotional_panel <- c(which (col=="EMPQ_emotional"),
                             which (col=="BFI1"), which (col=="BFI2_Rev"), which (col=="BFI3"),which (col=="BFI4"),
                             which (col=="BFI5"),which (col=="BFI6_Rev"),which (col=="BFI7"),which (col=="BFI8_Rev"),
                             which (col=="BFI9_Rev"),which (col=="BFI10"),which (col=="BFI11"),which (col=="BFI12_Rev"),
@@ -1436,7 +1457,7 @@ relvar_emotional_panel <- c(which (col=="EMPQ_emotional"),
                             which (col=="BFI37_Rev"),which (col=="BFI38"),which (col=="BFI39"),which (col=="BFI40"),
                             which (col=="BFI41_Rev"),which (col=="BFI42"),which (col=="BFI43_Rev"),which (col=="BFI44"))
 
-relvar_cognitive_panel <- c(which(col=="EMPQ_cognitive"),
+  relvar_cognitive_panel <- c(which(col=="EMPQ_cognitive"),
                             which (col=="BFI1"), which (col=="BFI2_Rev"), which (col=="BFI3"),which (col=="BFI4"),
                             which (col=="BFI5"),which (col=="BFI6_Rev"),which (col=="BFI7"),which (col=="BFI8_Rev"),
                             which (col=="BFI9_Rev"),which (col=="BFI10"),which (col=="BFI11"),which (col=="BFI12_Rev"),
@@ -1449,74 +1470,46 @@ relvar_cognitive_panel <- c(which(col=="EMPQ_cognitive"),
                             which (col=="BFI37_Rev"),which (col=="BFI38"),which (col=="BFI39"),which (col=="BFI40"),
                             which (col=="BFI41_Rev"),which (col=="BFI42"),which (col=="BFI43_Rev"),which (col=="BFI44"))
 
-#create the Big5 factors
-col <- colnames(DPan)
-relvar_DPan_extraversion <- c(which(col=="BFI1"),which(col=="BFI11"),which(col=="BFI16"),
-                              which(col=="BFI26"),which(col=="BFI36"),which(col=="BFI6_Rev"),
-                              which(col=="BFI21_Rev"),which(col=="BFI31_Rev"))
 
-relvar_DPan_agreeableness <- c(which(col=="BFI7"),which(col=="BFI17"),which(col=="BFI22"),
-                               which(col=="BFI32"),which(col=="BFI42"),which(col=="BFI2_Rev"),
-                               which(col=="BFI12_Rev"),which(col=="BFI27_Rev"),which(col=="BFI37_Rev"))
-
-relvar_DPan_neuroticism <- c(which(col=="BFI4"),which(col=="BFI14"),which(col=="BFI19"),
-                             which(col=="BFI29"),which(col=="BFI39"),which(col=="BFI9_Rev"),
-                             which(col=="BFI24_Rev"),which(col=="BFI34_Rev"))
-
-relvar_DPan_consciousnesses <- c(which(col=="BFI3"),which(col=="BFI13"),which(col=="BFI28"),
-                                 which(col=="BFI33"),which(col=="BFI38"),which(col=="BFI8_Rev"),
-                                 which(col=="BFI18_Rev"),which(col=="BFI23_Rev"),which(col=="BFI43_Rev"))
+#scale all the BFI items so they all will have mean=0 and SD=1
+  for (i in 2:45) {DPan[,relvar_emotional_panel[i]] <-
+     scale(DPan[,relvar_emotional_panel[i]], scale=T)}
 
 
-relvar_DPan_openness <- c(which(col=="BFI5"),which(col=="BFI10"),which(col=="BFI15"),
-                          which(col=="BFI20"),which(col=="BFI25"),which(col=="BFI30"),
-                          which(col=="BFI40"),which(col=="BFI44"),which(col=="BFI35_Rev"),
-                          which(col=="BFI41_Rev"))
-
-
-DPan$EXTRAVERSION <- rowMeans(DPan[,relvar_DPan_extraversion], na.rm=T)
-DPan$AGREEABLENESS <- rowMeans(DPan[,relvar_DPan_agreeableness], na.rm=T)
-DPan$NEUROTICISM <- rowMeans(DPan[,relvar_DPan_neuroticism], na.rm=T)
-DPan$CONSCIOUSNESSES <- rowMeans(DPan[,relvar_DPan_consciousnesses], na.rm=T)
-DPan$OPENNESS <- rowMeans(DPan[,relvar_DPan_openness], na.rm=T)
-
-
-#scale all the BFI items so they all will have mean=0 and SD=1 (do it only after creating the big5)
-for (i in 2:45) {DPan[,relvar_emotional_panel[i]] <-
-   scale(DPan[,relvar_emotional_panel[i]], scale=T)}
-
-#check prediction of age 11 model
-y_pred_emo_panel <- predict(fit_emo11_all, s=opt_lambda_emo11, 
+#check prediction of age 11 model- use the model that was done on the entire sample
+#emotional empathy
+  y_pred_emo_panel <- predict(fit_emo11_all, s=opt_lambda_emo11, 
                             newx = as.matrix(DPan[,relvar_emotional_panel[2:45]]))
 
-cor_panel_emo11<- cor.test(DPan$EMPQ_emotional, y_pred_emo_panel)
-R2_panel_emo11 <- as.numeric(cor_panel_emo11$estimate)^2
-mse_emo_panel11 <- mean((DPan[,relvar_emotional_panel[1]]-y_pred_emo_panel)^2)
-
+  cor_panel_emo11<- cor.test(DPan$EMPQ_emotional, y_pred_emo_panel)
+  R2_panel_emo11 <- as.numeric(cor_panel_emo11$estimate)^2
+  mse_panel_emo11 <- mean((DPan[,relvar_emotional_panel[1]]-y_pred_emo_panel)^2)
 
 #cognitive empathy
-y_pred_cog_panel <- predict(fit_cog11_all, s=opt_lambda_cog11, 
+  y_pred_cog_panel <- predict(fit_cog11_all, s=opt_lambda_cog11, 
                             newx = as.matrix(DPan[,relvar_cognitive_panel[2:45]]))
 
-cor_panel_cog11 <- cor.test(DPan$EMPQ_cognitive, y_pred_cog_panel)
-R2_panel_cog11 <- as.numeric(cor_panel_cog11$estimate)^2
-mse_cog_panel11 <- mean((DPan[,relvar_cognitive_panel[1]]-y_pred_cog_panel)^2)
+  cor_panel_cog11 <- cor.test(DPan$EMPQ_cognitive, y_pred_cog_panel)
+  R2_panel_cog11 <- as.numeric(cor_panel_cog11$estimate)^2
+  mse_panel_cog11 <- mean((DPan[,relvar_cognitive_panel[1]]-y_pred_cog_panel)^2)
 
 
-#Now check the prediction of age 13
-y_pred_emo13_panel <- predict(fit_emo13_all, s=opt_lambda_emo13, 
-                              newx = as.matrix(DPan[,relvar_emotional_panel[2:45]]))
-cor_panel_emo13 <- cor.test(DPan$EMPQ_emotional, y_pred_emo13_panel)
-R2_panel_emo13 <- as.numeric(cor_panel_emo13$estimate)^2
-mse_emo13_panel <- mean((DPan[,relvar_emotional_panel[1]]-y_pred_emo13_panel)^2)
-
-
-y_pred_cog13_panel <- predict(fit_cog13_all, s=opt_lambda_cog13, 
-                              newx = as.matrix(DPan[,relvar_cognitive_panel[2:45]]))
-
-cor_panel_cog13 <- cor.test(DPan$EMPQ_cognitive, y_pred_cog13_panel)
-R2_panel_cog13 <- as.numeric(cor_panel_cog13$estimate)^2
-mse_cog13_panel <- mean((DPan[,relvar_cognitive_panel[1]]-y_pred_cog13_panel)^2)
+#check the prediction of the age 13 model - use the model that was done on the entire sample
+#emotional empathy
+  y_pred_emo13_panel <- predict(fit_emo13_all, s=opt_lambda_emo13, 
+                                newx = as.matrix(DPan[,relvar_emotional_panel[2:45]]))
+  
+  cor_panel_emo13 <- cor.test(DPan$EMPQ_emotional, y_pred_emo13_panel)
+  R2_panel_emo13  <- as.numeric(cor_panel_emo13$estimate)^2
+  mse_panel_emo13 <- mean((DPan[,relvar_emotional_panel[1]]-y_pred_emo13_panel)^2)
+  
+#cognitive empathy
+  y_pred_cog13_panel <- predict(fit_cog13_all, s=opt_lambda_cog13, 
+                                newx = as.matrix(DPan[,relvar_cognitive_panel[2:45]]))
+  
+  cor_panel_cog13 <- cor.test(DPan$EMPQ_cognitive, y_pred_cog13_panel)
+  R2_panel_cog13  <- as.numeric(cor_panel_cog13$estimate)^2
+  mse_panel_cog13 <- mean((DPan[,relvar_cognitive_panel[1]]-y_pred_cog13_panel)^2)
 
 
 #####################################################################################################
