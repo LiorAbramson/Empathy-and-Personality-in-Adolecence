@@ -6,7 +6,7 @@
   cat ("\014")    #clean the R console
 
 #Packages
-  packages <- c('psych', 'Hmisc', 'glmnet','ggplot2')
+  packages <- c('psych', 'Hmisc', 'glmnet','ggplot2', 'reshape')
   lapply(packages, require, character.only = TRUE)
 
 #Preparing the file
@@ -1112,6 +1112,24 @@ DImp1.1 <- DImp
   for (i in 1:6) { mse_cog[i] <- eval(parse(text=paste0("mse_cog_",i)))}
   avemse_cog <- mean(mse_cog)
 
+  
+
+#what is the range of optimal lambda values across all age analyses 
+#(reported in the Appendix 2)
+  min(opt_lambda_cog11_1,opt_lambda_cog11_2,opt_lambda_cog11_3,opt_lambda_cog11_4,opt_lambda_cog11_5,opt_lambda_cog11_6,
+      opt_lambda_cog13_1,opt_lambda_cog13_2,opt_lambda_cog13_3,opt_lambda_cog13_4,opt_lambda_cog13_5,opt_lambda_cog13_6,
+      opt_lambda_emo11_1,opt_lambda_emo11_2,opt_lambda_emo11_3,opt_lambda_emo11_4,opt_lambda_emo11_5,opt_lambda_emo11_6,
+      opt_lambda_emo13_1,opt_lambda_emo13_2,opt_lambda_emo13_3,opt_lambda_emo13_4,opt_lambda_emo13_5,opt_lambda_emo13_6,
+      opt_lambda_cog_1,opt_lambda_cog_2,opt_lambda_cog_3,opt_lambda_cog_4,opt_lambda_cog_5,opt_lambda_cog_6,
+      opt_lambda_emo_1,opt_lambda_emo_2,opt_lambda_emo_3,opt_lambda_emo_4,opt_lambda_emo_5,opt_lambda_emo_6)
+  
+  max(opt_lambda_cog11_1,opt_lambda_cog11_2,opt_lambda_cog11_3,opt_lambda_cog11_4,opt_lambda_cog11_5,opt_lambda_cog11_6,
+      opt_lambda_cog13_1,opt_lambda_cog13_2,opt_lambda_cog13_3,opt_lambda_cog13_4,opt_lambda_cog13_5,opt_lambda_cog13_6,
+      opt_lambda_emo11_1,opt_lambda_emo11_2,opt_lambda_emo11_3,opt_lambda_emo11_4,opt_lambda_emo11_5,opt_lambda_emo11_6,
+      opt_lambda_emo13_1,opt_lambda_emo13_2,opt_lambda_emo13_3,opt_lambda_emo13_4,opt_lambda_emo13_5,opt_lambda_emo13_6,
+      opt_lambda_cog_1,opt_lambda_cog_2,opt_lambda_cog_3,opt_lambda_cog_4,opt_lambda_cog_5,opt_lambda_cog_6,
+      opt_lambda_emo_1,opt_lambda_emo_2,opt_lambda_emo_3,opt_lambda_emo_4,opt_lambda_emo_5,opt_lambda_emo_6)
+  
 
 ############################################################################################
 ####### Building the new predictors on the entire dataset for further analyses #############
@@ -1136,8 +1154,8 @@ DImp1.1 <- DImp
                           alpha = 0, lambda = opt_lambda_emo11)
 
 #now check the prediction
-  y_pred_emo11_all <- predict(fit_emo11_all, s=opt_lambda_emo11, 
-                            newx = as.matrix(DImp1.1[,relvar_emotional[2:45]]))
+  y_pred_emo11_all <- as.numeric(predict(fit_emo11_all, s=opt_lambda_emo11, 
+                                 newx = as.matrix(DImp1.1[,relvar_emotional[2:45]])))
 
   cor_emo11_all <- as.numeric (cor.test(DImp1.1$EMPQ_emotional, y_pred_emo11_all)[4])
   R2_emo11_all  <- cor_emo11_all^2
@@ -1164,8 +1182,8 @@ DImp1.1 <- DImp
                         alpha = 0, lambda = opt_lambda_cog11)
 
 #now check the prediction
-  y_pred_cog11_all <- predict(fit_cog11_all, s=opt_lambda_cog11, 
-                            newx = as.matrix(DImp1.1[,relvar_cognitive[2:45]]))
+  y_pred_cog11_all <- as.numeric(predict(fit_cog11_all, s=opt_lambda_cog11, 
+                            newx = as.matrix(DImp1.1[,relvar_cognitive[2:45]])))
 
   cor_cog11_all <- as.numeric (cor.test(DImp1.1$EMPQ_cognitive, y_pred_cog11_all)[4])
   R2_cog11_all  <- cor_cog11_all^2
@@ -1192,8 +1210,8 @@ DImp1.1 <- DImp
                         alpha = 0, lambda = opt_lambda_emo13)
 
 #now check the prediction
-  y_pred_emo13_all <- predict(fit_emo13_all, s=opt_lambda_emo13, 
-                            newx = as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]]))
+  y_pred_emo13_all <- as.numeric(predict(fit_emo13_all, s=opt_lambda_emo13, 
+                                 newx = as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]])))
 
   cor_emo13_all <- as.numeric (cor.test(D13Imp1.1$EMPQ_emotional, y_pred_emo13_all)[4])
   R2_emo13_all  <- cor_emo13_all^2
@@ -1202,7 +1220,7 @@ DImp1.1 <- DImp
 #attaching the predicted values to the dataset
   D13Imp1.1$predicted_emotional_13 <- y_pred_emo13_all
 
-
+  
 #cognitive empathy
   set.seed(10000)
   cv_fit_cog13 <- cv.glmnet(x=as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]]),
@@ -1220,8 +1238,8 @@ DImp1.1 <- DImp
                         alpha = 0, lambda = opt_lambda_cog13)
 
 #now check the prediction
-  y_pred_cog13_all <- predict(fit_cog13_all, s=opt_lambda_cog13, 
-                            newx = as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]]))
+  y_pred_cog13_all <- as.numeric(predict(fit_cog13_all, s=opt_lambda_cog13, 
+                                 newx = as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]])))
 
   cor_cog13_all <- as.numeric (cor.test(D13Imp1.1$EMPQ_cognitive, y_pred_cog13_all)[4])
   R2_cog13_all  <- cor_cog13_all^2
@@ -1232,183 +1250,158 @@ DImp1.1 <- DImp
   D13Imp1.1$predicted_cognitive_13 <- y_pred_cog13_all
 
   
-##########################################################################################
 #Examining the relation between the entire data analysis and the cross-validation analysis
 #(reported in the supplementary materials)
 
 #relation between items coefficients
-cor.test(opt_coef_emo11_all,opt_coef_emo11_matrix$aveCoef)
-cor.test(opt_coef_cog11_all,opt_coef_cog11_matrix$aveCoef)
-cor.test(opt_coef_emo13_all,opt_coef_emo13_matrix$aveCoef)
-cor.test(opt_coef_cog13_all,opt_coef_cog13_matrix$aveCoef)
+  cor.test(opt_coef_emo11_all,opt_coef_emo11_matrix$aveCoef)
+  cor.test(opt_coef_cog11_all,opt_coef_cog11_matrix$aveCoef)
+  cor.test(opt_coef_emo13_all,opt_coef_emo13_matrix$aveCoef)
+  cor.test(opt_coef_cog13_all,opt_coef_cog13_matrix$aveCoef)
 #all > .99
 
-#relation between predictive scores
-y_pred_emo11_1_mat <- cbind(DImp1.1[DImp1.1$gfold==1,1:2], y_pred_emo11_1)
-y_pred_emo11_2_mat <- cbind(DImp1.1[DImp1.1$gfold==2,1:2], y_pred_emo11_2)
-y_pred_emo11_3_mat <- cbind(DImp1.1[DImp1.1$gfold==3,1:2], y_pred_emo11_3)
-y_pred_emo11_4_mat <- cbind(DImp1.1[DImp1.1$gfold==4,1:2], y_pred_emo11_4)
-y_pred_emo11_5_mat <- cbind(DImp1.1[DImp1.1$gfold==5,1:2], y_pred_emo11_5)
-y_pred_emo11_6_mat <- cbind(DImp1.1[DImp1.1$gfold==6,1:2], y_pred_emo11_6)
+#relation between predictive scores- emotional empathy age 11
+#organize all the predicted values from the cross-validation analysis into one variable
+  y_pred_emo11_1_mat <- cbind(DImp1.1[DImp1.1$gfold==1,1:2], y_pred_emo11_1)
+  y_pred_emo11_2_mat <- cbind(DImp1.1[DImp1.1$gfold==2,1:2], y_pred_emo11_2)
+  y_pred_emo11_3_mat <- cbind(DImp1.1[DImp1.1$gfold==3,1:2], y_pred_emo11_3)
+  y_pred_emo11_4_mat <- cbind(DImp1.1[DImp1.1$gfold==4,1:2], y_pred_emo11_4)
+  y_pred_emo11_5_mat <- cbind(DImp1.1[DImp1.1$gfold==5,1:2], y_pred_emo11_5)
+  y_pred_emo11_6_mat <- cbind(DImp1.1[DImp1.1$gfold==6,1:2], y_pred_emo11_6)
 
-y_pred_emo11_mat <- rbind(y_pred_emo11_1_mat,
-                          y_pred_emo11_2_mat,
-                          y_pred_emo11_3_mat,
-                          y_pred_emo11_4_mat,
-                          y_pred_emo11_5_mat,
-                          y_pred_emo11_6_mat)
-colnames(y_pred_emo11_mat)[3] <- "predictedKfold"
-y_pred_emo11_mat <- merge(y_pred_emo11_mat, 
-                          DImp1.1[,c(1:2, which(colnames(DImp1.1)=="predicted_emotional_11"))],
-                          all.x=T, all.y=T)
-cor.test(y_pred_emo11_mat$predictedKfold,y_pred_emo11_mat$predicted_emotional_11)
-
-
-#cognitive empathy 11
-y_pred_cog11_1_mat <- cbind(DImp1.1[DImp1.1$gfold==1,1:2], y_pred_cog11_1)
-y_pred_cog11_2_mat <- cbind(DImp1.1[DImp1.1$gfold==2,1:2], y_pred_cog11_2)
-y_pred_cog11_3_mat <- cbind(DImp1.1[DImp1.1$gfold==3,1:2], y_pred_cog11_3)
-y_pred_cog11_4_mat <- cbind(DImp1.1[DImp1.1$gfold==4,1:2], y_pred_cog11_4)
-y_pred_cog11_5_mat <- cbind(DImp1.1[DImp1.1$gfold==5,1:2], y_pred_cog11_5)
-y_pred_cog11_6_mat <- cbind(DImp1.1[DImp1.1$gfold==6,1:2], y_pred_cog11_6)
-
-y_pred_cog11_mat <- rbind(y_pred_cog11_1_mat,
-                          y_pred_cog11_2_mat,
-                          y_pred_cog11_3_mat,
-                          y_pred_cog11_4_mat,
-                          y_pred_cog11_5_mat,
-                          y_pred_cog11_6_mat)
-colnames(y_pred_cog11_mat)[3] <- "predictedKfold"
-y_pred_cog11_mat <- merge(y_pred_cog11_mat, 
-                          DImp1.1[,c(1:2, which(colnames(DImp1.1)=="predicted_cognitive_11"))],
-                          all.x=T, all.y=T)
-cor.test(y_pred_cog11_mat$predictedKfold,y_pred_cog11_mat$predicted_cognitive_11)
+  y_pred_emo11_mat <- rbind(y_pred_emo11_1_mat,
+                            y_pred_emo11_2_mat,
+                            y_pred_emo11_3_mat,
+                            y_pred_emo11_4_mat,
+                            y_pred_emo11_5_mat,
+                            y_pred_emo11_6_mat)
+  
+  colnames(y_pred_emo11_mat)[3] <- "predictedKfold"
+  y_pred_emo11_mat <- merge(y_pred_emo11_mat, 
+                            DImp1.1[,c(1:2, which(colnames(DImp1.1)=="predicted_emotional_11"))],
+                            all.x=T, all.y=T)
+  #now check the correlation
+  cor.test(y_pred_emo11_mat$predictedKfold,y_pred_emo11_mat$predicted_emotional_11)
 
 
-#AGE 13
-#Emotional empathy
-y_pred_emo13_1_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==1,1:2], y_pred_emo13_1)
-y_pred_emo13_2_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==2,1:2], y_pred_emo13_2)
-y_pred_emo13_3_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==3,1:2], y_pred_emo13_3)
-y_pred_emo13_4_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==4,1:2], y_pred_emo13_4)
-y_pred_emo13_5_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==5,1:2], y_pred_emo13_5)
-y_pred_emo13_6_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==6,1:2], y_pred_emo13_6)
+#relation between predictive scores- cognitive empathy age 11
+#organize all the predicted values from the cross-validation analysis into one variable
+  y_pred_cog11_1_mat <- cbind(DImp1.1[DImp1.1$gfold==1,1:2], y_pred_cog11_1)
+  y_pred_cog11_2_mat <- cbind(DImp1.1[DImp1.1$gfold==2,1:2], y_pred_cog11_2)
+  y_pred_cog11_3_mat <- cbind(DImp1.1[DImp1.1$gfold==3,1:2], y_pred_cog11_3)
+  y_pred_cog11_4_mat <- cbind(DImp1.1[DImp1.1$gfold==4,1:2], y_pred_cog11_4)
+  y_pred_cog11_5_mat <- cbind(DImp1.1[DImp1.1$gfold==5,1:2], y_pred_cog11_5)
+  y_pred_cog11_6_mat <- cbind(DImp1.1[DImp1.1$gfold==6,1:2], y_pred_cog11_6)
 
-y_pred_emo13_mat <- rbind(y_pred_emo13_1_mat,
-                          y_pred_emo13_2_mat,
-                          y_pred_emo13_3_mat,
-                          y_pred_emo13_4_mat,
-                          y_pred_emo13_5_mat,
-                          y_pred_emo13_6_mat)
-colnames(y_pred_emo13_mat)[3] <- "predictedKfold"
-y_pred_emo13_mat <- merge(y_pred_emo13_mat, 
-                          D13Imp1.1[,c(1:2, which(colnames(D13Imp1.1)=="predicted_emotional_13"))],
-                          all.x=T, all.y=T)
-cor.test(y_pred_emo13_mat$predictedKfold,y_pred_emo13_mat$predicted_emotional_13)
+  y_pred_cog11_mat <- rbind(y_pred_cog11_1_mat,
+                            y_pred_cog11_2_mat,
+                            y_pred_cog11_3_mat,
+                            y_pred_cog11_4_mat,
+                            y_pred_cog11_5_mat,
+                            y_pred_cog11_6_mat)
+  colnames(y_pred_cog11_mat)[3] <- "predictedKfold"
+  y_pred_cog11_mat <- merge(y_pred_cog11_mat, 
+                            DImp1.1[,c(1:2, which(colnames(DImp1.1)=="predicted_cognitive_11"))],
+                            all.x=T, all.y=T)
+  #now check the correlation
+  cor.test(y_pred_cog11_mat$predictedKfold,y_pred_cog11_mat$predicted_cognitive_11)
 
 
-#cognitive empathy 13
-y_pred_cog13_1_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==1,1:2], y_pred_cog13_1)
-y_pred_cog13_2_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==2,1:2], y_pred_cog13_2)
-y_pred_cog13_3_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==3,1:2], y_pred_cog13_3)
-y_pred_cog13_4_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==4,1:2], y_pred_cog13_4)
-y_pred_cog13_5_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==5,1:2], y_pred_cog13_5)
-y_pred_cog13_6_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==6,1:2], y_pred_cog13_6)
+#relation between predictive scores- emotional empathy age 13
+#organize all the predicted values from the cross-validation analysis into one variable
+  y_pred_emo13_1_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==1,1:2], y_pred_emo13_1)
+  y_pred_emo13_2_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==2,1:2], y_pred_emo13_2)
+  y_pred_emo13_3_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==3,1:2], y_pred_emo13_3)
+  y_pred_emo13_4_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==4,1:2], y_pred_emo13_4)
+  y_pred_emo13_5_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==5,1:2], y_pred_emo13_5)
+  y_pred_emo13_6_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==6,1:2], y_pred_emo13_6)
 
-y_pred_cog13_mat <- rbind(y_pred_cog13_1_mat,
-                          y_pred_cog13_2_mat,
-                          y_pred_cog13_3_mat,
-                          y_pred_cog13_4_mat,
-                          y_pred_cog13_5_mat,
-                          y_pred_cog13_6_mat)
-colnames(y_pred_cog13_mat)[3] <- "predictedKfold"
-y_pred_cog13_mat <- merge(y_pred_cog13_mat, 
+  y_pred_emo13_mat <- rbind(y_pred_emo13_1_mat,
+                            y_pred_emo13_2_mat,
+                            y_pred_emo13_3_mat,
+                            y_pred_emo13_4_mat,
+                            y_pred_emo13_5_mat,
+                            y_pred_emo13_6_mat)
+  colnames(y_pred_emo13_mat)[3] <- "predictedKfold"
+  y_pred_emo13_mat <- merge(y_pred_emo13_mat, 
+                            D13Imp1.1[,c(1:2, which(colnames(D13Imp1.1)=="predicted_emotional_13"))],
+                            all.x=T, all.y=T)
+  #now check the correlation
+  cor.test(y_pred_emo13_mat$predictedKfold,y_pred_emo13_mat$predicted_emotional_13)
+
+
+#relation between predictive scores- cognitive empathy age 13
+#organize all the predicted values from the cross-validation analysis into one variable
+  y_pred_cog13_1_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==1,1:2], y_pred_cog13_1)
+  y_pred_cog13_2_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==2,1:2], y_pred_cog13_2)
+  y_pred_cog13_3_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==3,1:2], y_pred_cog13_3)
+  y_pred_cog13_4_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==4,1:2], y_pred_cog13_4)
+  y_pred_cog13_5_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==5,1:2], y_pred_cog13_5)
+  y_pred_cog13_6_mat <- cbind(D13Imp1.1[D13Imp1.1$gfold==6,1:2], y_pred_cog13_6)
+
+  y_pred_cog13_mat <- rbind(y_pred_cog13_1_mat,
+                            y_pred_cog13_2_mat,
+                            y_pred_cog13_3_mat,
+                            y_pred_cog13_4_mat,
+                            y_pred_cog13_5_mat,
+                            y_pred_cog13_6_mat)
+ colnames(y_pred_cog13_mat)[3] <- "predictedKfold"
+  y_pred_cog13_mat <- merge(y_pred_cog13_mat, 
                           D13Imp1.1[,c(1:2, which(colnames(D13Imp1.1)=="predicted_cognitive_13"))],
                           all.x=T, all.y=T)
-cor.test(y_pred_cog13_mat$predictedKfold,y_pred_cog13_mat$predicted_cognitive_13)
+  #now check the correlation
+  cor.test(y_pred_cog13_mat$predictedKfold,y_pred_cog13_mat$predicted_cognitive_13)
 
 
-#####################################################################################################
-#what is the range of optimal lambda values
-min(opt_lambda_cog11_1,opt_lambda_cog11_2,opt_lambda_cog11_3,opt_lambda_cog11_4,opt_lambda_cog11_5,opt_lambda_cog11_6,
-    opt_lambda_cog13_1,opt_lambda_cog13_2,opt_lambda_cog13_3,opt_lambda_cog13_4,opt_lambda_cog13_5,opt_lambda_cog13_6,
-    opt_lambda_emo11_1,opt_lambda_emo11_2,opt_lambda_emo11_3,opt_lambda_emo11_4,opt_lambda_emo11_5,opt_lambda_emo11_6,
-    opt_lambda_emo13_1,opt_lambda_emo13_2,opt_lambda_emo13_3,opt_lambda_emo13_4,opt_lambda_emo13_5,opt_lambda_emo13_6,
-    opt_lambda_cog_1,opt_lambda_cog_2,opt_lambda_cog_3,opt_lambda_cog_4,opt_lambda_cog_5,opt_lambda_cog_6,
-    opt_lambda_emo_1,opt_lambda_emo_2,opt_lambda_emo_3,opt_lambda_emo_4,opt_lambda_emo_5,opt_lambda_emo_6)
+#########################################################################################
+###### Exporting the variables to csv for further analyses ##############################
+#########################################################################################
 
-max(opt_lambda_cog11_1,opt_lambda_cog11_2,opt_lambda_cog11_3,opt_lambda_cog11_4,opt_lambda_cog11_5,opt_lambda_cog11_6,
-    opt_lambda_cog13_1,opt_lambda_cog13_2,opt_lambda_cog13_3,opt_lambda_cog13_4,opt_lambda_cog13_5,opt_lambda_cog13_6,
-    opt_lambda_emo11_1,opt_lambda_emo11_2,opt_lambda_emo11_3,opt_lambda_emo11_4,opt_lambda_emo11_5,opt_lambda_emo11_6,
-    opt_lambda_emo13_1,opt_lambda_emo13_2,opt_lambda_emo13_3,opt_lambda_emo13_4,opt_lambda_emo13_5,opt_lambda_emo13_6,
-    opt_lambda_cog_1,opt_lambda_cog_2,opt_lambda_cog_3,opt_lambda_cog_4,opt_lambda_cog_5,opt_lambda_cog_6,
-    opt_lambda_emo_1,opt_lambda_emo_2,opt_lambda_emo_3,opt_lambda_emo_4,opt_lambda_emo_5,opt_lambda_emo_6)
-
-######################################################################################################
-###### Exporting the variables to csv for further analyses ###########################################
-######################################################################################################
-
-DImp1.1 <- rename(DImp1.1, c(EMPQ_emotional="EMPQ_emotional_11",
+#changing names to include age 
+  DImp1.1 <- rename(DImp1.1, c(EMPQ_emotional="EMPQ_emotional_11",
                              EMPQ_cognitive="EMPQ_cognitive_11",
                              EMPQ_IRI_motiv="EMPQ_IRI_motiv_11"))
 
 
-D13Imp1.1 <- rename(D13Imp1.1, c(EMPQ_emotional="EMPQ_emotional_13",
+  D13Imp1.1 <- rename(D13Imp1.1, c(EMPQ_emotional="EMPQ_emotional_13",
                                  EMPQ_cognitive="EMPQ_cognitive_13",
                                  EMPQ_IRI_motiv="EMPQ_IRI_motiv_13"))
 
-D <- rename(D, c(EXTRAVERSION="EXTRAVERSION_11",
-                 AGREEABLE="AGREEABLE_11",
-                 CONSCIENTIOUS="CONSCIENTIOUS_11",
-                 NEUROTICISM="NEUROTICISM_11",
-                 OPENESS="OPENESS_11"))
 
-D13 <- rename(D13, c(EXTRAVERSION="EXTRAVERSION_13",
-                 AGREEABLE="AGREEABLE_13",
-                 CONSCIENTIOUS="CONSCIENTIOUS_13",
-                 NEUROTICISM="NEUROTICISM_13",
-                 OPENESS="OPENESS_13"))
+#import general unidentified participants details of the Longitudinal Israeli Study of Twins 
+  participants_details <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/participants_details.csv")
 
+  col <- colnames((participants_details))
+  relvar_participants_details <- c(which (col=="ifam"), which (col=="ID"),
+                                   which (col=="sex"), which (col=="zygosity"),which (col=="zygoAcc3")) 
 
-setwd("C:/Users/Lior Abramson/Dropbox/empathy and puberty/data/raw files")  
-Managing <- read.csv ("ManagingFile_03_06_19_vars2cases.csv")
-
-library(reshape)
-Managing <- rename(Managing, c(ï..ifam="ifam"))    # change weird variable names
-
-col <- colnames((Managing))
-relvar_demographics <- c(which (col=="ifam"), which (col=="ID"),
-                         which (col=="sex"), which (col=="zygosity"),which (col=="zygoAcc3")) 
-
-col <- colnames((D))
-relvar_demographics_11 <- c(which (col=="ifam"), which (col=="ID"), which (col=="OnlineManual"),
-                            which (col=="EXTRAVERSION_11"),which (col=="AGREEABLE_11"),which (col=="CONSCIENTIOUS_11"),
-                            which (col=="NEUROTICISM_11"),which (col=="OPENESS_11"))
+  col <- colnames((D))
+  relvar_more_details_11 <- c(which (col=="ifam"), which (col=="ID"), which (col=="OnlineManual"))
                           
-col <- colnames((DImp1.1))
-relvar_D11 <-  c(which (col=="ifam"), which (col=="ID"), 
-                 which(col=="EMPQ_emotional_11"), which(col=="EMPQ_cognitive_11"), which(col=="EMPQ_IRI_motiv_11"),
-                 which(col=="predicted_emotional_11"), which(col=="predicted_cognitive_11"))
+  col <- colnames((DImp1.1))
+  relvar_D11 <-  c(which (col=="ifam"), which (col=="ID"), 
+                  which(col=="EMPQ_emotional_11"), which(col=="EMPQ_cognitive_11"),
+                  which(col=="predicted_emotional_11"), which(col=="predicted_cognitive_11"))
 
-col <- colnames((D13))
-relvar_demographics_13 <- c(which (col=="ifam"), which (col=="ID"), which (col=="OnlineManual13"),
-                            which (col=="EXTRAVERSION_13"),which (col=="AGREEABLE_13"),which (col=="CONSCIENTIOUS_13"),
-                            which (col=="NEUROTICISM_13"),which (col=="OPENESS_13"))
+  col <- colnames((D13))
+  relvar_more_details_13 <- c(which (col=="ifam"), which (col=="ID"), which (col=="OnlineManual13"))
                           
+  col <- colnames((D13Imp1.1))
+  relvar_D13 <-  c(which (col=="ifam"), which (col=="ID"), 
+                  which(col=="EMPQ_emotional_13"), which(col=="EMPQ_cognitive_13"),
+                  which(col=="predicted_emotional_13"), which(col=="predicted_cognitive_13"))
 
-col <- colnames((D13Imp1.1))
-relvar_D13 <-  c(which (col=="ifam"), which (col=="ID"), 
-                 which(col=="EMPQ_emotional_13"), which(col=="EMPQ_cognitive_13"), which(col=="EMPQ_IRI_motiv_13"),
-                 which(col=="predicted_emotional_13"), which(col=="predicted_cognitive_13"))
+#merge final vars from all datasets
+  Dfinal11 <- merge (D[,relvar_more_details_11],DImp1.1[,relvar_D11], by=c("ifam","ID"), all.y = T)
+  Dfinal13 <- merge (D13[,relvar_more_details_13],D13Imp1.1[,relvar_D13], by=c("ifam","ID"), all.y = T)
+  Dfinal_11_13 <- merge(Dfinal11,Dfinal13, by=c("ifam","ID"), all.x=T, all.y=T)
+  Dfinal_11_13 <- merge(Dfinal_11_13, participants_details[,relvar_participants_details],
+                         by=c("ifam","ID"), all.x=T, all.y=F)
+  
 
-DSVRres11 <- merge (D[,relvar_demographics_11],DImp1.1[,relvar_D11], by=c("ifam","ID"), all.y = T)
-DSVRres13 <- merge (D13[,relvar_demographics_13],D13Imp1.1[,relvar_D13], by=c("ifam","ID"), all.y = T)
-DSVRres_11_13 <- merge(DSVRres11,DSVRres13, by=c("ifam","ID"), all.x=T, all.y=T)
-DSVRres_11_13 <- merge(DSVRres_11_13, Managing[,relvar_demographics],by=c("ifam","ID"), all.x=T, all.y=F)
+#export to csv
+  write.csv(Dfinal_11_13,row.names=F,"~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Dfinal_11_13.csv")
 
-library(xlsx)
-setwd("C:/Users/Lior Abramson/Dropbox/empathy and puberty/SVR")  
-write.csv(DSVRres_11_13,row.names=F,"C:/Users/Lior Abramson/Dropbox/empathy and puberty/SVR/DSVRres_11_13.csv")
 
 ######################################################################################################
 ###### checking the prediction on the panel example ##################################################
