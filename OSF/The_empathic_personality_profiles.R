@@ -44,7 +44,8 @@
 
 #Creating five data sets with different imputed values
 #DImp1 is the data frame reported in the paper. 
-#The overall prediction of empathy from personality was examined on the other 4 datasets as a robustness check
+#The overall prediction of empathy from personality was examined on the other 4 datasets 
+#as a robustness check (see appendix)
   DImp1_B5 <-as.data.frame(impute.transcan(Imp_B5,imputation=1,data=D,list.out=T,pr=F))
   DImp2_B5 <-as.data.frame(impute.transcan(Imp_B5,imputation=2,data=D,list.out=T,pr=F))
   DImp3_B5 <-as.data.frame(impute.transcan(Imp_B5,imputation=3,data=D,list.out=T,pr=F))
@@ -82,9 +83,9 @@
     
     assign ("DImp",DImp,envir = .GlobalEnv)
   }
-  
-CreateReverseItems_allData(DImp1)
-DImp1.1 <- DImp
+ 
+CreateReverseItems_allData(DImp1)    #if you want to check another imputed dataset, enter it instead of DImp1
+DImp1.1 <- DImp                  
 
 #defining the relevant variables for the Ridge regression
   col <- colnames(DImp1.1)
@@ -142,19 +143,20 @@ DImp1.1 <- DImp
 #############################################################################################
 
 #create a vector of possible lambda values. These values will be examined in 
-#a nexted cross-validation procedure to find the optimal lambda that produces the lowest prediction error
- # lambdas <- 10^seq(3, -2, by = -.1) 
+#a nested cross-validation procedure to find the optimal lambda that produces the lowest prediction error
+
   
 #ridge regression function
   Ridge <- function (DImp,gfold,relvar) {
          #find the best lambda- 
          #use glmnet default range search by lambda=NULL 
-         #alpha=0 means we use Ridge regression (as opposed to lasso regression)
-         #nfolds=10 means that the nested cross-validation proceudre to find the optimal lambda is perdormed on 10 folds 
+         #alpha=0 means we use Ridge regression (as opposed to Lasso regression)
+         #nfolds=10 means that the nested cross-validation procedure for finding the optimal lambda is performed on 10 folds 
          set.seed(10000)
          cv_fit <- cv.glmnet(x=as.matrix(DImp[DImp$gfold != gfold,relvar[2:45]]),
                              y=DImp[DImp$gfold != gfold,relvar[1]],
                              alpha=0, lambda=NULL,nfolds=10)
+         
          opt_lambda <- cv_fit$lambda.min          #find the optimal lambda which produces the lowest prediction error
          opt_lambda_ind <- which(cv_fit$lambda==opt_lambda)   #find the optimal lambda index inside the vector
          
@@ -248,7 +250,7 @@ DImp1.1 <- DImp
                                   opt_coef_emo11_6))
   opt_coef_emo11_matrix$aveCoef <- rowMeans(opt_coef_emo11_matrix)
 
-#finding the mean correlation between the outcome and predicted value (y pred) across the folds
+#finding the mean correlation between the outcome and the predicted value (y pred) across the folds
   cor_emo11 <-1:6
   #first do this for each test set
   for (i in 1:6) {
@@ -393,18 +395,19 @@ DImp1.1 <- DImp
   opt_coef_emo11_matrix$item <- rownames(opt_coef_emo11_matrix)
   opt_coef_emo11_matrix <- cbind(opt_coef_emo11_matrix, BFI_labels)
   
+  
   plotemo11 <- ggplot(data= opt_coef_emo11_matrix,
                       aes(reorder(x=opt_coef_emo11_matrix$label,opt_coef_emo11_matrix$aveCoef),
                           y=opt_coef_emo11_matrix$aveCoef, 
                           fill=opt_coef_emo11_matrix$category))+
-    geom_bar(stat="identity")+ coord_flip()+ 
-    ggtitle("Regression coefficients of  personality indicators")+
-    labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
-    scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
-    theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
-                      plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
-                      axis.title =element_text(size=12, face="bold", family="serif"),
-                      text=element_text(family="serif"))
+                          geom_bar(stat="identity")+ coord_flip()+ 
+                          ggtitle("Regression coefficients of  personality indicators")+
+                          labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
+                          scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
+                          theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
+                          plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
+                          axis.title =element_text(size=12, face="bold", family="serif"),
+                          text=element_text(family="serif"))
   
 #cognitive empathy
   
@@ -458,9 +461,9 @@ DImp1.1 <- DImp
                     labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
                     scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
                     theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
-                                    plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
-                                    axis.title =element_text(size=12, face="bold", family="serif"),
-                                    text=element_text(family="serif"))
+                    plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
+                    axis.title =element_text(size=12, face="bold", family="serif"),
+                    text=element_text(family="serif"))
   
 
 #################################################################################################
@@ -493,7 +496,7 @@ DImp1.1 <- DImp
                            tn_BFI21+ tn_BFI22+ tn_BFI23+ tn_BFI24+ tn_BFI25+ tn_BFI26+ tn_BFI27+ tn_BFI28+tn_BFI29+ tn_BFI30+
                            tn_BFI31+ tn_BFI32+ tn_BFI33+ tn_BFI34+ tn_BFI35+ tn_BFI36+ tn_BFI37+ tn_BFI38+tn_BFI39+ tn_BFI40+
                            tn_BFI41+ tn_BFI42+ tn_BFI43+ tn_BFI44, 
-                          data=D13, x=T,n.impute=5 , nk=0, type="pmm")
+                           data=D13, x=T,n.impute=5 , nk=0, type="pmm")
 
 
 #Creating five data sets with different imputed values
@@ -536,7 +539,7 @@ DImp1.1 <- DImp
     assign ("DImp",DImp,envir = .GlobalEnv)
   }
   
-  CreateReverseItems_allData_age13(D13Imp1)
+  CreateReverseItems_allData_age13(D13Imp1)   #if you want to check another imputed dataset, enter it instead of D13Imp1
   D13Imp1.1 <- DImp
 
 #defining the relevant variables
@@ -810,17 +813,17 @@ DImp1.1 <- DImp
   opt_coef_emo13_matrix <- cbind(opt_coef_emo13_matrix, BFI_labels)
 
   plotemo13 <- ggplot(data= opt_coef_emo13_matrix,
-             aes(reorder(x=opt_coef_emo13_matrix$label,opt_coef_emo13_matrix$aveCoef),
-                 y=opt_coef_emo13_matrix$aveCoef, 
-                 fill=opt_coef_emo13_matrix$category))+
-             geom_bar(stat="identity")+ coord_flip()+ 
-             ggtitle("Regression coefficients of  personality indicators")+
-             labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
-             scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
-             theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
-                           plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
-                           axis.title =element_text(size=12, face="bold", family="serif"),
-                           text=element_text(family="serif"))
+                      aes(reorder(x=opt_coef_emo13_matrix$label,opt_coef_emo13_matrix$aveCoef),
+                      y=opt_coef_emo13_matrix$aveCoef, 
+                      fill=opt_coef_emo13_matrix$category))+
+                      geom_bar(stat="identity")+ coord_flip()+ 
+                      ggtitle("Regression coefficients of  personality indicators")+
+                      labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
+                      scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
+                      theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
+                      plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
+                      axis.title =element_text(size=12, face="bold", family="serif"),
+                      text=element_text(family="serif"))
 
 
 
@@ -868,356 +871,370 @@ DImp1.1 <- DImp
   opt_coef_cog13_matrix <- cbind(opt_coef_cog13_matrix, BFI_labels)
 
   plotcog13 <- ggplot(data= opt_coef_cog13_matrix,
-               aes(reorder(x=opt_coef_cog13_matrix$label,opt_coef_cog13_matrix$aveCoef),
-                 y=opt_coef_cog13_matrix$aveCoef, 
-                 fill=opt_coef_cog13_matrix$category))+
-               geom_bar(stat="identity")+ coord_flip()+ 
-               ggtitle("Regression coefficients of  personality indicators")+
-               labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
-               scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
-               theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
-                           plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
-                           axis.title =element_text(size=12, face="bold", family="serif"),
-                           text=element_text(family="serif"))
+                      aes(reorder(x=opt_coef_cog13_matrix$label,opt_coef_cog13_matrix$aveCoef),
+                      y=opt_coef_cog13_matrix$aveCoef, 
+                      fill=opt_coef_cog13_matrix$category))+
+                      geom_bar(stat="identity")+ coord_flip()+ 
+                      ggtitle("Regression coefficients of  personality indicators")+
+                      labs(x="Personality indicator", y="Regression coefficient", fill="Big5 scale")+
+                      scale_fill_manual(values=c("#F8A6F8", "#F7563B", "#F59D3D", "#433FF3", "#5FD3D3"))+
+                      theme_bw()+ theme(legend.position=c(0.95, 0.15), legend.title = element_text(size=12),
+                      plot.title=element_text(size=16, face="bold", family="serif",hjust = 0.5),
+                      axis.title =element_text(size=12, face="bold", family="serif"),
+                      text=element_text(family="serif"))
 
-
-###########################################################################################
-
-  #אני פה!!!!!!!!!!
-  
-#predicting age 13 with 11 and vice versa
-
-#creating folds in 11_13 dataset
-ifams_1113 <- merge(DImp1.1[,c(1:2,which(colnames(DImp1.1)=="gfold"))],
-                           D13Imp1.1[,c(1:2,which(colnames(D13Imp1.1)=="gfold"))],
-                           by=c("ifam","ID"), all.x=T, all.y=T)
-
-unique_ifams_1113 <- unique(ifams_1113$ifam)
-set.seed(32189)
-unique_ifams_1113 <- sample(unique_ifams_1113) 
-
-remainder<-length(unique_ifams_1113)%%6
-nfold <- (length(unique_ifams_1113)-remainder)/6
-gfold <- c(rep(1, times=nfold), rep(2, times=nfold), rep(3, times=nfold),
-           rep(4, times=nfold), rep(5, times=nfold), rep(6, times=nfold))
-gfold <- c(gfold,1:remainder)
-unique_ifams_1113 <- cbind(unique_ifams_1113,gfold)
-ifams_1113<- as.data.frame(rbind(unique_ifams_1113, unique_ifams_1113))
-colnames(ifams_1113) <- c("ifam","gfold1113")
-ifams_1113$ID<- c(rep(1,times=nrow(unique_ifams_1113)),rep(4,times=nrow(unique_ifams_1113)))
-
-DImp1.1<- merge(DImp1.1,ifams_1113, by=c("ifam","ID"), all.x = T, all.y = F)
-D13Imp1.1<- merge(D13Imp1.1,ifams_1113, by=c("ifam","ID"), all.x = T, all.y = F)
-
-#adapting the Ridge function
-Ridge1113 <- function (DImp11,DImp13, gfold,relvar,lambdas) {
-   #find the best lambda- 
-   #use either glmnet default range search by lambda=NULL or set search by lambda=lambdas  
-   set.seed(10000)
-   cv_fit <- cv.glmnet(x=as.matrix(DImp11[DImp11$gfold1113 != gfold,relvar[2:45]]),
-                       y=DImp11[DImp11$gfold1113 != gfold,relvar[1]],
-                       alpha=0, lambda=NULL,nfolds=10)
-   opt_lambda <- cv_fit$lambda.min
-   opt_lambda_ind <- which(cv_fit$lambda==opt_lambda)
-   
-   #what are the coefficients when the lambda is optimal
-   opt_coef <- as.matrix(cv_fit$glmnet.fit$beta[,opt_lambda_ind]) 
-   
-   #after finding the best lambda, train the entire train set with that lambda
-   fit <- glmnet(x=as.matrix(DImp11[DImp11$gfold1113 != gfold,relvar[2:45]]), 
-                 y=DImp11[DImp11$gfold1113 != gfold,relvar[1]], 
-                 alpha = 0, lambda = opt_lambda)
-   
-   #now check the prediction on the test set
-   y_pred <- predict(fit, s=opt_lambda, 
-                     newx = as.matrix(DImp13[DImp13$gfold1113 == gfold,relvar[2:45]]))
-   
-   mse <- mean((DImp13[DImp13$gfold1113 == gfold,relvar[1]]-y_pred)^2)
-   
-   assign ("fit",fit,envir = .GlobalEnv)
-   assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)
-   assign ("opt_coef",opt_coef,envir = .GlobalEnv)
-   assign ("y_pred",y_pred,envir = .GlobalEnv)
-   assign ("mse",mse,envir = .GlobalEnv)
-}
-
-
-#emotional empathy
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=1,
-          relvar=relvar_emotional,
-          lambdas=lambdas) 
-fit_emo_1 <- fit
-opt_lambda_emo_1 <- opt_lambda
-opt_coef_emo_1 <- opt_coef
-y_pred_emo_1 <- y_pred
-mse_emo_1 <- mse
-
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=2,
-          relvar=relvar_emotional,
-          lambdas=lambdas) 
-fit_emo_2 <- fit
-opt_lambda_emo_2 <- opt_lambda
-opt_coef_emo_2 <- opt_coef
-y_pred_emo_2 <- y_pred
-mse_emo_2 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=3,
-          relvar=relvar_emotional,
-          lambdas=lambdas) 
-fit_emo_3 <- fit
-opt_lambda_emo_3 <- opt_lambda
-opt_coef_emo_3 <- opt_coef
-y_pred_emo_3 <- y_pred
-mse_emo_3 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=4,
-          relvar=relvar_emotional,
-          lambdas=lambdas) 
-fit_emo_4 <- fit
-opt_lambda_emo_4 <- opt_lambda
-opt_coef_emo_4 <- opt_coef
-y_pred_emo_4 <- y_pred
-mse_emo_4 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=5,
-          relvar=relvar_emotional,
-          lambdas=lambdas) 
-fit_emo_5 <- fit
-opt_lambda_emo_5 <- opt_lambda
-opt_coef_emo_5 <- opt_coef
-y_pred_emo_5 <- y_pred
-mse_emo_5 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=6,
-          relvar=relvar_emotional,
-          lambdas=lambdas) 
-fit_emo_6 <- fit
-opt_lambda_emo_6 <- opt_lambda
-opt_coef_emo_6 <- opt_coef
-y_pred_emo_6 <- y_pred
-mse_emo_6 <- mse
-
-opt_coef_emo_matrix <- as.data.frame(cbind (opt_coef_emo_1,
-                                            opt_coef_emo_2,
-                                            opt_coef_emo_3,
-                                            opt_coef_emo_4,
-                                            opt_coef_emo_5,
-                                            opt_coef_emo_6))
-opt_coef_emo_matrix$aveCoef <- rowMeans(opt_coef_emo_matrix)
-
-#finding the mean correlation between outcome and predicted value across the folds
-cor_emo <-1:6
-for (i in 1:6) {
-   cor_emo[i] <- cor.test(D13Imp1.1$EMPQ_emotional[D13Imp1.1$gfold1113 ==i],
-                          eval(parse(text=paste0("y_pred_emo_",i))))[4]}
-
-cor_emo <- as.numeric(cor_emo)
-avecor_emo <- mean(cor_emo)
-
-#computing the mean mse across the folds
-mse_emo <-1:6
-for (i in 1:6) { mse_emo[i] <- eval(parse(text=paste0("mse_emo_",i)))}
-avemse_emo <- mean(mse_emo)
-
-#cognitive empathy
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=1,
-          relvar=relvar_cognitive,
-          lambdas=lambdas) 
-fit_cog_1 <- fit
-opt_lambda_cog_1 <- opt_lambda
-opt_coef_cog_1 <- opt_coef
-y_pred_cog_1 <- y_pred
-mse_cog_1 <- mse
-
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=2,
-          relvar=relvar_cognitive,
-          lambdas=lambdas) 
-fit_cog_2 <- fit
-opt_lambda_cog_2 <- opt_lambda
-opt_coef_cog_2 <- opt_coef
-y_pred_cog_2 <- y_pred
-mse_cog_2 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=3,
-          relvar=relvar_cognitive,
-          lambdas=lambdas) 
-fit_cog_3 <- fit
-opt_lambda_cog_3 <- opt_lambda
-opt_coef_cog_3 <- opt_coef
-y_pred_cog_3 <- y_pred
-mse_cog_3 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=4,
-          relvar=relvar_cognitive,
-          lambdas=lambdas) 
-fit_cog_4 <- fit
-opt_lambda_cog_4 <- opt_lambda
-opt_coef_cog_4 <- opt_coef
-y_pred_cog_4 <- y_pred
-mse_cog_4 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=5,
-          relvar=relvar_cognitive,
-          lambdas=lambdas) 
-fit_cog_5 <- fit
-opt_lambda_cog_5 <- opt_lambda
-opt_coef_cog_5 <- opt_coef
-y_pred_cog_5 <- y_pred
-mse_cog_5 <- mse
-
-Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=6,
-          relvar=relvar_cognitive,
-          lambdas=lambdas) 
-fit_cog_6 <- fit
-opt_lambda_cog_6 <- opt_lambda
-opt_coef_cog_6 <- opt_coef
-y_pred_cog_6 <- y_pred
-mse_cog_6 <- mse
-
-opt_coef_cog_matrix <- as.data.frame(cbind (opt_coef_cog_1,
-                                            opt_coef_cog_2,
-                                            opt_coef_cog_3,
-                                            opt_coef_cog_4,
-                                            opt_coef_cog_5,
-                                            opt_coef_cog_6))
-opt_coef_cog_matrix$aveCoef <- rowMeans(opt_coef_cog_matrix)
-
-#finding the mean correlation between outcome and predicted value across the folds
-
-cor_cog <-1:6
-for (i in 1:6) {
-   cor_cog[i] <- cor.test(D13Imp1.1$EMPQ_cognitive[D13Imp1.1$gfold1113 ==i],
-                          eval(parse(text=paste0("y_pred_cog_",i))))[4]}
-
-cor_cog <- as.numeric(cor_cog)
-avecor_cog <- mean(cor_cog)
-
-#computing the mean mse across the folds
-mse_cog <-1:6
-for (i in 1:6) { mse_cog[i] <- eval(parse(text=paste0("mse_cog_",i)))}
-avemse_cog <- mean(mse_cog)
-
-#overall, it seems that predicting age 13 from age 11 is very similar to predicting
-#age 13 from age 13. Hence, the ages are equivalent
 
 #############################################################################################
-####### Building the new predictors on the entire dataset ###########################################################
+##################### Ridge regression - Training age 11 and testing Age 13 #################
+#############################################################################################  
+
+#creating folds in the combined 11_13 dataset
+#gfold1113 indicates the twin pair's fold in this analysis
+  ifams_1113 <- merge(DImp1.1[,c(1:2,which(colnames(DImp1.1)=="gfold"))],
+                             D13Imp1.1[,c(1:2,which(colnames(D13Imp1.1)=="gfold"))],
+                             by=c("ifam","ID"), all.x=T, all.y=T)
+  
+  unique_ifams_1113 <- unique(ifams_1113$ifam)
+  set.seed(32189)
+  unique_ifams_1113 <- sample(unique_ifams_1113) 
+  
+  remainder<-length(unique_ifams_1113)%%6
+  nfold <- (length(unique_ifams_1113)-remainder)/6
+  gfold <- c(rep(1, times=nfold), rep(2, times=nfold), rep(3, times=nfold),
+             rep(4, times=nfold), rep(5, times=nfold), rep(6, times=nfold))
+  gfold <- c(gfold,1:remainder)
+  unique_ifams_1113 <- cbind(unique_ifams_1113,gfold)
+  ifams_1113<- as.data.frame(rbind(unique_ifams_1113, unique_ifams_1113))
+  colnames(ifams_1113) <- c("ifam","gfold1113")
+  ifams_1113$ID<- c(rep(1,times=nrow(unique_ifams_1113)),rep(4,times=nrow(unique_ifams_1113)))
+  
+  DImp1.1<- merge(DImp1.1,ifams_1113, by=c("ifam","ID"), all.x = T, all.y = F)
+  D13Imp1.1<- merge(D13Imp1.1,ifams_1113, by=c("ifam","ID"), all.x = T, all.y = F)
+  
+
+#adapting the Ridge function to the age 11-age 13 analysis
+  Ridge1113 <- function (DImp11,DImp13, gfold,relvar) {
+     #find the best lambda- 
+     set.seed(10000)
+     #train set comes from age 11
+     cv_fit <- cv.glmnet(x=as.matrix(DImp11[DImp11$gfold1113 != gfold,relvar[2:45]]),
+                         y=DImp11[DImp11$gfold1113 != gfold,relvar[1]],
+                         alpha=0, lambda=NULL,nfolds=10)
+     
+     opt_lambda <- cv_fit$lambda.min
+     opt_lambda_ind <- which(cv_fit$lambda==opt_lambda)
+     
+     #what are the coefficients when the lambda is optimal
+     opt_coef <- as.matrix(cv_fit$glmnet.fit$beta[,opt_lambda_ind]) 
+     
+     #after finding the best lambda, train the entire train set with that lambda
+     fit <- glmnet(x=as.matrix(DImp11[DImp11$gfold1113 != gfold,relvar[2:45]]), 
+                   y=DImp11[DImp11$gfold1113 != gfold,relvar[1]], 
+                   alpha = 0, lambda = opt_lambda)
+     
+     #now check the prediction on the test set at age 13
+     y_pred <- predict(fit, s=opt_lambda, 
+                       newx = as.matrix(DImp13[DImp13$gfold1113 == gfold,relvar[2:45]]))
+     
+     mse <- mean((DImp13[DImp13$gfold1113 == gfold,relvar[1]]-y_pred)^2)
+     
+     assign ("fit",fit,envir = .GlobalEnv)
+     assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)
+     assign ("opt_coef",opt_coef,envir = .GlobalEnv)
+     assign ("y_pred",y_pred,envir = .GlobalEnv)
+     assign ("mse",mse,envir = .GlobalEnv)
+  }
+  
+
+#emotional empathy
+  
+#doing Ridge regression on the folds 
+  
+#fold 1
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=1,
+            relvar=relvar_emotional) 
+  fit_emo_1 <- fit
+  opt_lambda_emo_1 <- opt_lambda
+  opt_coef_emo_1 <- opt_coef
+  y_pred_emo_1 <- y_pred
+  mse_emo_1 <- mse
+
+#fold 2
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=2,
+            relvar=relvar_emotional) 
+  fit_emo_2 <- fit
+  opt_lambda_emo_2 <- opt_lambda
+  opt_coef_emo_2 <- opt_coef
+  y_pred_emo_2 <- y_pred
+  mse_emo_2 <- mse
+
+#fold 3
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=3,
+          relvar=relvar_emotional) 
+  fit_emo_3 <- fit
+  opt_lambda_emo_3 <- opt_lambda
+  opt_coef_emo_3 <- opt_coef
+  y_pred_emo_3 <- y_pred
+  mse_emo_3 <- mse
+
+#fold 4
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=4,
+            relvar=relvar_emotional) 
+  fit_emo_4 <- fit
+  opt_lambda_emo_4 <- opt_lambda
+  opt_coef_emo_4 <- opt_coef
+  y_pred_emo_4 <- y_pred
+  mse_emo_4 <- mse
+
+#fold 5
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=5,
+          relvar=relvar_emotional) 
+  fit_emo_5 <- fit
+  opt_lambda_emo_5 <- opt_lambda
+  opt_coef_emo_5 <- opt_coef
+  y_pred_emo_5 <- y_pred
+  mse_emo_5 <- mse
+
+#fold 6
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=6,
+          relvar=relvar_emotional) 
+  fit_emo_6 <- fit
+  opt_lambda_emo_6 <- opt_lambda
+  opt_coef_emo_6 <- opt_coef
+  y_pred_emo_6 <- y_pred
+  mse_emo_6 <- mse
+
+#computing the mean coefficients across the folds
+  opt_coef_emo_matrix <- as.data.frame(cbind (opt_coef_emo_1,
+                                              opt_coef_emo_2,
+                                              opt_coef_emo_3,
+                                              opt_coef_emo_4,
+                                              opt_coef_emo_5,
+                                              opt_coef_emo_6))
+  opt_coef_emo_matrix$aveCoef <- rowMeans(opt_coef_emo_matrix)
+
+#finding the mean correlation between the outcome and the predicted value across the folds
+  cor_emo <-1:6
+  for (i in 1:6) {
+     cor_emo[i] <- cor.test(D13Imp1.1$EMPQ_emotional[D13Imp1.1$gfold1113 ==i],
+                            eval(parse(text=paste0("y_pred_emo_",i))))[4]}
+  
+  cor_emo <- as.numeric(cor_emo)
+  avecor_emo <- mean(cor_emo)   #mean correlation
+  aveR2_emo  <- avecor_emo^2    #mean R2
+
+#computing the mean mse across the folds
+  mse_emo <-1:6
+  for (i in 1:6) { mse_emo[i] <- eval(parse(text=paste0("mse_emo_",i)))}
+  avemse_emo <- mean(mse_emo)
+
+
+#cognitive empathy
+  
+#doing Ridge regression on the folds 
+
+#fold 1
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=1,
+            relvar=relvar_cognitive) 
+  fit_cog_1 <- fit
+  opt_lambda_cog_1 <- opt_lambda
+  opt_coef_cog_1 <- opt_coef
+  y_pred_cog_1 <- y_pred
+  mse_cog_1 <- mse
+
+#fold 2
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=2,
+            relvar=relvar_cognitive) 
+  fit_cog_2 <- fit
+  opt_lambda_cog_2 <- opt_lambda
+  opt_coef_cog_2 <- opt_coef
+  y_pred_cog_2 <- y_pred
+  mse_cog_2 <- mse
+
+#fold 3
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=3,
+            relvar=relvar_cognitive) 
+  fit_cog_3 <- fit
+  opt_lambda_cog_3 <- opt_lambda
+  opt_coef_cog_3 <- opt_coef
+  y_pred_cog_3 <- y_pred
+  mse_cog_3 <- mse
+
+#fold 4
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=4,
+            relvar=relvar_cognitive) 
+  fit_cog_4 <- fit
+  opt_lambda_cog_4 <- opt_lambda
+  opt_coef_cog_4 <- opt_coef
+  y_pred_cog_4 <- y_pred
+  mse_cog_4 <- mse
+
+#fold 5
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=5,
+          relvar=relvar_cognitive) 
+  fit_cog_5 <- fit
+  opt_lambda_cog_5 <- opt_lambda
+  opt_coef_cog_5 <- opt_coef
+  y_pred_cog_5 <- y_pred
+  mse_cog_5 <- mse
+
+#fold 6
+  Ridge1113(DImp11=DImp1.1,DImp13=D13Imp1.1, gfold=6,
+          relvar=relvar_cognitive) 
+  fit_cog_6 <- fit
+  opt_lambda_cog_6 <- opt_lambda
+  opt_coef_cog_6 <- opt_coef
+  y_pred_cog_6 <- y_pred
+  mse_cog_6 <- mse
+
+#computing the mean coefficients across the folds
+  opt_coef_cog_matrix <- as.data.frame(cbind (opt_coef_cog_1,
+                                              opt_coef_cog_2,
+                                              opt_coef_cog_3,
+                                              opt_coef_cog_4,
+                                              opt_coef_cog_5,
+                                              opt_coef_cog_6))
+  opt_coef_cog_matrix$aveCoef <- rowMeans(opt_coef_cog_matrix)
+
+
+#finding the mean correlation between outcome and predicted value across the folds
+  cor_cog <-1:6
+  for (i in 1:6) {
+     cor_cog[i] <- cor.test(D13Imp1.1$EMPQ_cognitive[D13Imp1.1$gfold1113 ==i],
+                            eval(parse(text=paste0("y_pred_cog_",i))))[4]}
+  
+     cor_cog <- as.numeric(cor_cog)
+     avecor_cog <- mean(cor_cog)   #mean correlation 
+     aveR2_cog  <- avecor_cog^2    #mean R2
+
+#computing the mean mse across the folds
+  mse_cog <-1:6
+  for (i in 1:6) { mse_cog[i] <- eval(parse(text=paste0("mse_cog_",i)))}
+  avemse_cog <- mean(mse_cog)
+
+
+############################################################################################
+####### Building the new predictors on the entire dataset for further analyses #############
+####### (i.e., no test set) ################################################################
 ############################################################################################
 
 #age 11
 #emotional empathy
-set.seed(10000)
-cv_fit_emo11 <- cv.glmnet(x=as.matrix(DImp1.1[,relvar_emotional[2:45]]),
-                          y=DImp1.1[,relvar_emotional[1]],
-                          alpha=0, lambda=NULL, nfolds=10)
-opt_lambda_emo11 <- cv_fit_emo11$lambda.min
-opt_lambda_ind_emo11 <- which(cv_fit_emo11$lambda==opt_lambda_emo11)
+  set.seed(10000)
+  cv_fit_emo11 <- cv.glmnet(x=as.matrix(DImp1.1[,relvar_emotional[2:45]]),
+                            y=DImp1.1[,relvar_emotional[1]],
+                            alpha=0, lambda=NULL, nfolds=10)
+  opt_lambda_emo11 <- cv_fit_emo11$lambda.min
+  opt_lambda_ind_emo11 <- which(cv_fit_emo11$lambda==opt_lambda_emo11)
 
 #what are the coefficients when the lambda is optimal
-opt_coef_emo11_all <- as.matrix(cv_fit_emo11$glmnet.fit$beta[,opt_lambda_ind_emo11]) 
+  opt_coef_emo11_all <- as.matrix(cv_fit_emo11$glmnet.fit$beta[,opt_lambda_ind_emo11]) 
 
 #after finding the best lambda, train the entire set (train and test sets are the same)
-fit_emo11_all <- glmnet(x=as.matrix(DImp1.1[,relvar_emotional[2:45]]), 
-                        y=DImp1.1[,relvar_emotional[1]], 
-                        alpha = 0, lambda = opt_lambda_emo11)
+  fit_emo11_all <- glmnet(x=as.matrix(DImp1.1[,relvar_emotional[2:45]]), 
+                          y=DImp1.1[,relvar_emotional[1]], 
+                          alpha = 0, lambda = opt_lambda_emo11)
 
 #now check the prediction
-y_pred_emo11_all <- predict(fit_emo11_all, s=opt_lambda_emo11, 
+  y_pred_emo11_all <- predict(fit_emo11_all, s=opt_lambda_emo11, 
                             newx = as.matrix(DImp1.1[,relvar_emotional[2:45]]))
 
-cor.test(DImp1.1$EMPQ_emotional, y_pred_emo11_all)
-mse_emo11_all <- mean((DImp1.1[,relvar_emotional[1]]-y_pred_emo11_all)^2)
+  cor_emo11_all <- as.numeric (cor.test(DImp1.1$EMPQ_emotional, y_pred_emo11_all)[4])
+  R2_emo11_all  <- cor_emo11_all^2
+  mse_emo11_all <- mean((DImp1.1[,relvar_emotional[1]]-y_pred_emo11_all)^2)
 
 #attaching the predicted values to the dataset
-DImp1.1$predicted_emotional_11 <- y_pred_emo11_all
+  DImp1.1$predicted_emotional_11 <- y_pred_emo11_all
 
 #age 11
 #cognitive empathy
-set.seed(10000)
-cv_fit_cog11 <- cv.glmnet(x=as.matrix(DImp1.1[,relvar_cognitive[2:45]]),
-                          y=DImp1.1[,relvar_cognitive[1]],
-                          alpha=0, lambda=NULL, nfolds=10)
-opt_lambda_cog11 <- cv_fit_cog11$lambda.min
-opt_lambda_ind_cog11 <- which(cv_fit_cog11$lambda==opt_lambda_cog11)
+  set.seed(10000)
+  cv_fit_cog11 <- cv.glmnet(x=as.matrix(DImp1.1[,relvar_cognitive[2:45]]),
+                            y=DImp1.1[,relvar_cognitive[1]],
+                            alpha=0, lambda=NULL, nfolds=10)
+  opt_lambda_cog11 <- cv_fit_cog11$lambda.min
+  opt_lambda_ind_cog11 <- which(cv_fit_cog11$lambda==opt_lambda_cog11)
 
 #what are the coefficients when the lambda is optimal
-opt_coef_cog11_all <- as.matrix(cv_fit_cog11$glmnet.fit$beta[,opt_lambda_ind_cog11]) 
+  opt_coef_cog11_all <- as.matrix(cv_fit_cog11$glmnet.fit$beta[,opt_lambda_ind_cog11]) 
 
 #after finding the best lambda, train the entire set (train and test sets are the same)
-fit_cog11_all <- glmnet(x=as.matrix(DImp1.1[,relvar_cognitive[2:45]]), 
+  fit_cog11_all <- glmnet(x=as.matrix(DImp1.1[,relvar_cognitive[2:45]]), 
                         y=DImp1.1[,relvar_cognitive[1]], 
                         alpha = 0, lambda = opt_lambda_cog11)
 
 #now check the prediction
-y_pred_cog11_all <- predict(fit_cog11_all, s=opt_lambda_cog11, 
+  y_pred_cog11_all <- predict(fit_cog11_all, s=opt_lambda_cog11, 
                             newx = as.matrix(DImp1.1[,relvar_cognitive[2:45]]))
 
-cor.test(DImp1.1$EMPQ_cognitive, y_pred_cog11_all)
-mse_cog11_all <- mean((DImp1.1[,relvar_cognitive[1]]-y_pred_cog11_all)^2)
+  cor_cog11_all <- as.numeric (cor.test(DImp1.1$EMPQ_cognitive, y_pred_cog11_all)[4])
+  R2_cog11_all  <- cor_cog11_all^2
+  mse_cog11_all <- mean((DImp1.1[,relvar_cognitive[1]]-y_pred_cog11_all)^2)
 
 #attaching the predicted values to the dataset
-DImp1.1$predicted_cognitive_11 <- y_pred_cog11_all
+  DImp1.1$predicted_cognitive_11 <- y_pred_cog11_all
 
 #age 13
 #emotional empathy
-set.seed(10000)
-cv_fit_emo13 <- cv.glmnet(x=as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]]),
-                          y=D13Imp1.1[,relvar_emotional_13[1]],
-                          alpha=0, lambda=NULL, nfolds=10)
-opt_lambda_emo13 <- cv_fit_emo13$lambda.min
-opt_lambda_ind_emo13 <- which(cv_fit_emo13$lambda==opt_lambda_emo13)
+  set.seed(10000)
+  cv_fit_emo13 <- cv.glmnet(x=as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]]),
+                            y=D13Imp1.1[,relvar_emotional_13[1]],
+                            alpha=0, lambda=NULL, nfolds=10)
+  opt_lambda_emo13 <- cv_fit_emo13$lambda.min
+  opt_lambda_ind_emo13 <- which(cv_fit_emo13$lambda==opt_lambda_emo13)
 
 #what are the coefficients when the lambda is optimal
-opt_coef_emo13_all <- as.matrix(cv_fit_emo13$glmnet.fit$beta[,opt_lambda_ind_emo13]) 
+  opt_coef_emo13_all <- as.matrix(cv_fit_emo13$glmnet.fit$beta[,opt_lambda_ind_emo13]) 
 
 #after finding the best lambda, train the entire set (train and test sets are the same)
-fit_emo13_all <- glmnet(x=as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]]), 
+  fit_emo13_all <- glmnet(x=as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]]), 
                         y=D13Imp1.1[,relvar_emotional_13[1]], 
                         alpha = 0, lambda = opt_lambda_emo13)
 
 #now check the prediction
-y_pred_emo13_all <- predict(fit_emo13_all, s=opt_lambda_emo13, 
+  y_pred_emo13_all <- predict(fit_emo13_all, s=opt_lambda_emo13, 
                             newx = as.matrix(D13Imp1.1[,relvar_emotional_13[2:45]]))
 
-cor.test(D13Imp1.1$EMPQ_emotional, y_pred_emo13_all)
-mse_emo13_all <- mean((D13Imp1.1[,relvar_emotional_13[1]]-y_pred_emo13_all)^2)
-
+  cor_emo13_all <- as.numeric (cor.test(D13Imp1.1$EMPQ_emotional, y_pred_emo13_all)[4])
+  R2_emo13_all  <- cor_emo13_all^2
+  mse_emo13_all <- mean((D13Imp1.1[,relvar_emotional_13[1]]-y_pred_emo13_all)^2)
+  
 #attaching the predicted values to the dataset
-D13Imp1.1$predicted_emotional_13 <- y_pred_emo13_all
+  D13Imp1.1$predicted_emotional_13 <- y_pred_emo13_all
 
 
 #cognitive empathy
-set.seed(10000)
-cv_fit_cog13 <- cv.glmnet(x=as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]]),
-                          y=D13Imp1.1[,relvar_cognitive_13[1]],
-                          alpha=0, lambda=NULL, nfolds=10)
-opt_lambda_cog13 <- cv_fit_cog13$lambda.min
-opt_lambda_ind_cog13 <- which(cv_fit_cog13$lambda==opt_lambda_cog13)
+  set.seed(10000)
+  cv_fit_cog13 <- cv.glmnet(x=as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]]),
+                            y=D13Imp1.1[,relvar_cognitive_13[1]],
+                            alpha=0, lambda=NULL, nfolds=10)
+  opt_lambda_cog13 <- cv_fit_cog13$lambda.min
+  opt_lambda_ind_cog13 <- which(cv_fit_cog13$lambda==opt_lambda_cog13)
 
 #what are the coefficients when the lambda is optimal
-opt_coef_cog13_all <- as.matrix(cv_fit_cog13$glmnet.fit$beta[,opt_lambda_ind_cog13]) 
+  opt_coef_cog13_all <- as.matrix(cv_fit_cog13$glmnet.fit$beta[,opt_lambda_ind_cog13]) 
 
 #after finding the best lambda, train the entire set (train and test sets are the same)
-fit_cog13_all <- glmnet(x=as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]]), 
+  fit_cog13_all <- glmnet(x=as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]]), 
                         y=D13Imp1.1[,relvar_cognitive_13[1]], 
                         alpha = 0, lambda = opt_lambda_cog13)
 
 #now check the prediction
-y_pred_cog13_all <- predict(fit_cog13_all, s=opt_lambda_cog13, 
+  y_pred_cog13_all <- predict(fit_cog13_all, s=opt_lambda_cog13, 
                             newx = as.matrix(D13Imp1.1[,relvar_cognitive_13[2:45]]))
 
-cor.test(D13Imp1.1$EMPQ_cognitive, y_pred_cog13_all)
-mse_cog13_all <- mean((D13Imp1.1[,relvar_cognitive_13[1]]-y_pred_cog13_all)^2)
-
+  cor_cog13_all <- as.numeric (cor.test(D13Imp1.1$EMPQ_cognitive, y_pred_cog13_all)[4])
+  R2_cog13_all  <- cor_cog13_all^2
+  mse_cog13_all <- mean((D13Imp1.1[,relvar_cognitive_13[1]]-y_pred_cog13_all)^2)
+  
+  
 #attaching the predicted values to the dataset
-D13Imp1.1$predicted_cognitive_13 <- y_pred_cog13_all
+  D13Imp1.1$predicted_cognitive_13 <- y_pred_cog13_all
 
+  
 ##########################################################################################
 #Examining the relation between the entire data analysis and the cross-validation analysis
+#(reported in the supplementary materials)
 
 #relation between items coefficients
 cor.test(opt_coef_emo11_all,opt_coef_emo11_matrix$aveCoef)
