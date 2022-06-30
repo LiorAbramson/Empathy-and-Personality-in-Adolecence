@@ -1511,5 +1511,397 @@ DImp1.1 <- DImp
   cor_panel_cog13 <- cor.test(DPan$EMPQ_cognitive, y_pred_cog13_panel)
   R2_panel_cog13  <- as.numeric(cor_panel_cog13$estimate)^2
   mse_panel_cog13 <- mean((DPan[,relvar_cognitive_panel[1]]-y_pred_cog13_panel)^2)
+  
+  
+#############################################################################################
+###### Significance testing with permutations test ##########################################
+#############################################################################################
 
+#function for preparing the scrambled data for the permutation process
+#The folds (i.e., which family is in each fold) do not change, nor do the variables.
+#the only thing that changes, inside the function, is the data (DImp). 
+#Each time the empathy variable is scrambled, so there is no real relation between 
+#personality and empathy (because the empathy measure does not really belong to the child)
+  
+  ScrambleEmpathyVar <- function (DImp,relvar,yname){  
+    #randomize the empathy variable- switch between families but not between individuals to keep
+    #the dependency between twins
+    DImpPerm <- DImp[,c(which(colnames(DImp)=="ifam",which(colnames(DImp)=="ID")),relvar, which (colnames(DImp)=="gfold"))]
+    #turn to wide format- each family has one row
+    DImpPermWide <- reshape(DImpPerm, v.names = colnames(DImpPerm[3:(3+length(relvar)-1)]),
+                            timevar = "ID", idvar = "ifam", direction="wide") 
+    
+    DImpPermWide_y <- DImpPermWide[,c(which(colnames(DImpPermWide)=="ifam"),
+                                      which(colnames(DImpPermWide)==paste0(yname,".1")),
+                                      which(colnames(DImpPermWide)==paste0(yname,".4")))]
+    
+    #to keep the proportion of missing twins , I scramble separately families with both twins,
+    #families with just twin A, and  families with just twin B
+    DImpPermWide_y_both <- na.omit(DImpPermWide_y)
+    DImpPermWide_y_TA <- DImpPermWide_y[is.na(DImpPermWide_y[,3]),]   #take only families with no twin B
+    DImpPermWide_y_TB <- DImpPermWide_y[is.na(DImpPermWide_y[,2]),]   #take only families with no twin A
+    
+    #now scramble the ifam variable so there is no relation between ifam and real empathy score
+    DImpPermWide_y_both$ifam<- sample(DImpPermWide_y_both$ifam)
+    DImpPermWide_y_TA$ifam<- sample(DImpPermWide_y_TA$ifam)
+    DImpPermWide_y_TB$ifam<- sample(DImpPermWide_y_TB$ifam)
+    
+    DImpPermWide_y <- rbind (DImpPermWide_y_both,DImpPermWide_y_TA,DImpPermWide_y_TB) 
+    
+    #change name of the scrambled empathy variable
+    colnames(DImpPermWide_y)[2] <- "EMPQ_perm.1"
+    colnames(DImpPermWide_y)[3] <- "EMPQ_perm.4"
+    
+    #merge the variables to the file. Now each family recieves the scores of another family
+    DImpPermWide <- merge (DImpPermWide,DImpPermWide_y,by="ifam", all.x=T, all.y=T)
+    #turn back to long format (each twin has a row)
+    DImpPerm <- reshape(DImpPermWide,
+                        varying = colnames(DImpPermWide)[-c(which(colnames(DImpPermWide)=="ifam"),
+                                                            which(colnames(DImpPermWide)=="gfold"))],
+                        timevar = "ID", idvar = "ifam",direction="long") 
+    DImpPerm <- na.omit(DImpPerm)    #delete missing rows
+    
+    assign ("DImpPerm", DImpPerm,envir = .GlobalEnv)
+  }
+  
+  
+#function for preparing the scrambled data for age 13
+#The only thing that changed is that the order of the columns was switched.
+#This is because in age 13 the first family has only twin B data, which makes Twin B come before twin A. 
+  
+  ScrambleEmpathyVar13 <- function (DImp,relvar,yname){  
+    #randomize the empathy variable- switch between families but not between individuals to keep
+    #the dependency between twins
+    DImpPerm <- DImp[,c(1:2,relvar, which (colnames(DImp)=="gfold"))]
+    DImpPermWide <- reshape(DImpPerm, v.names = colnames(DImpPerm[3:(3+length(relvar)-1)]),
+                            timevar = "ID", idvar = "ifam", direction="wide") 
+    
+    DImpPermWide_y <- DImpPermWide[,c(which(colnames(DImpPermWide)=="ifam"),
+                                      which(colnames(DImpPermWide)==paste0(yname,".1")),
+                                      which(colnames(DImpPermWide)==paste0(yname,".4")))]
+    
+    #to keep the proportion of missing twins , I scramble separately families with both twins,
+    #families with just twin A, and families with just twin B
+    DImpPermWide_y_both <- na.omit(DImpPermWide_y)
+    DImpPermWide_y_TA <- DImpPermWide_y[is.na(DImpPermWide_y[,3]),]
+    DImpPermWide_y_TB <- DImpPermWide_y[is.na(DImpPermWide_y[,2]),] 
+    
+    #now scramble the ifam variable 
+    DImpPermWide_y_both$ifam<- sample(DImpPermWide_y_both$ifam)
+    DImpPermWide_y_TA$ifam<- sample(DImpPermWide_y_TA$ifam)
+    DImpPermWide_y_TB$ifam<- sample(DImpPermWide_y_TB$ifam)
+    
+    DImpPermWide_y <- rbind (DImpPermWide_y_both,DImpPermWide_y_TA,DImpPermWide_y_TB)
+    
+    #change name of the empathy variable
+    colnames(DImpPermWide_y)[2] <- "EMPQ_perm.1"
+    colnames(DImpPermWide_y)[3] <- "EMPQ_perm.4"
+    
+    ##this is what changed from the age 11 function- change the order of the columns so twin B will come first
+    DImpPermWide_y <- DImpPermWide_y[,c(1,3,2)]
+    
+    #merge the variables to the file. Now each family receives the scores of another family
+    DImpPermWide <- merge (DImpPermWide,DImpPermWide_y,by="ifam", all.x=T, all.y=T)
+    #turn back to long format (each twin has a row)
+    DImpPerm <- reshape(DImpPermWide,
+                        varying = colnames(DImpPermWide)[-c(which(colnames(DImpPermWide)=="ifam"),
+                                                            which(colnames(DImpPermWide)=="gfold"))],
+                        timevar = "ID", idvar = "ifam",direction="long") 
+    DImpPerm <- na.omit(DImpPerm)    #delete missing rows
+    
+    assign ("DImpPerm", DImpPerm,envir = .GlobalEnv)
+  }
+  
+  
+#function for preparing the age 11 scrambled data for the analysis of age 11 and 13 together 
+#The only thing that changed from the regular function is that gfold is named gfold1113
+  
+  ScrambleEmpathyVarBothAges <- function (DImp,relvar,yname){  
+    #randomize the empathy variable- switch between families and not between individuals to keep
+    #the dependency between twins
+    library(reshape)
+    DImpPerm <- DImp[,c(1:2,relvar, which (colnames(DImp)=="gfold1113"))]
+    DImpPermWide <- reshape(DImpPerm, v.names = colnames(DImpPerm[3:(3+length(relvar)-1)]),
+                            timevar = "ID", idvar = "ifam", direction="wide") 
+    
+    DImpPermWide_y <- DImpPermWide[,c(which(colnames(DImpPermWide)=="ifam"),
+                                      which(colnames(DImpPermWide)==paste0(yname,".1")),
+                                      which(colnames(DImpPermWide)==paste0(yname,".4")))]
+    
+    #to keep the proportion of missing twins , I scramble separtely families with both twins,
+    #families with just twin A, and  families with just twin B
+    DImpPermWide_y_both <- na.omit(DImpPermWide_y)
+    DImpPermWide_y_TA <- DImpPermWide_y[is.na(DImpPermWide_y[,3]),]
+    DImpPermWide_y_TB <- DImpPermWide_y[is.na(DImpPermWide_y[,2]),] 
+    
+    #now scramble the ifam variable 
+    DImpPermWide_y_both$ifam<- sample(DImpPermWide_y_both$ifam)
+    DImpPermWide_y_TA$ifam<- sample(DImpPermWide_y_TA$ifam)
+    DImpPermWide_y_TB$ifam<- sample(DImpPermWide_y_TB$ifam)
+    
+    DImpPermWide_y <- rbind (DImpPermWide_y_both,DImpPermWide_y_TA,DImpPermWide_y_TB)
+    
+    #change name of the empathy variable
+    colnames(DImpPermWide_y)[2] <- "EMPQ_perm.1"
+    colnames(DImpPermWide_y)[3] <- "EMPQ_perm.4"
+    
+    #merge the variables to the file. Now each family recieves the scores of another family
+    DImpPermWide <- merge (DImpPermWide,DImpPermWide_y,by="ifam", all.x=T, all.y=T)
+    DImpPerm <- reshape(DImpPermWide,
+                        varying = colnames(DImpPermWide)[-c(which(colnames(DImpPermWide)=="ifam"),
+                                                            which(colnames(DImpPermWide)=="gfold1113"))],
+                        timevar = "ID", idvar = "ifam",direction="long") 
+    DImpPerm <- na.omit(DImpPerm)
+    
+    assign ("DImpPerm", DImpPerm,envir = .GlobalEnv)
+  }
+  
+# function for preparing the age 13 scrambled data for the analysis of age 11 and 13 together
+# changes from the regular function: gfold is named gfold1113; the order of the columns was switched
+# because in age 13 the first family has only twin B data (which makes Twin B come before twin A). 
 
+  ScrambleEmpathyVarBothAges13 <- function (DImp,relvar,yname){  
+    #randomize the empathy variable- switch between families and not between individuals to keep
+    #the dependency between twins
+    library(reshape)
+    DImpPerm <- DImp[,c(1:2,relvar, which (colnames(DImp)=="gfold1113"))]
+    DImpPermWide <- reshape(DImpPerm, v.names = colnames(DImpPerm[3:(3+length(relvar)-1)]),
+                            timevar = "ID", idvar = "ifam", direction="wide") 
+    
+    DImpPermWide_y <- DImpPermWide[,c(which(colnames(DImpPermWide)=="ifam"),
+                                      which(colnames(DImpPermWide)==paste0(yname,".1")),
+                                      which(colnames(DImpPermWide)==paste0(yname,".4")))]
+    
+    #to keep the proportion of missing twins , I scramble separtely families with both twins,
+    #families with just twin A and families with just twin B
+    DImpPermWide_y_both <- na.omit(DImpPermWide_y)
+    DImpPermWide_y_TA <- DImpPermWide_y[is.na(DImpPermWide_y[,3]),]
+    DImpPermWide_y_TB <- DImpPermWide_y[is.na(DImpPermWide_y[,2]),] 
+    
+    #now scramble the ifam variable 
+    DImpPermWide_y_both$ifam<- sample(DImpPermWide_y_both$ifam)
+    DImpPermWide_y_TA$ifam<- sample(DImpPermWide_y_TA$ifam)
+    DImpPermWide_y_TB$ifam<- sample(DImpPermWide_y_TB$ifam)
+    
+    DImpPermWide_y <- rbind (DImpPermWide_y_both,DImpPermWide_y_TA,DImpPermWide_y_TB)
+    
+    #change name of the empathy variable
+    colnames(DImpPermWide_y)[2] <- "EMPQ_perm.1"
+    colnames(DImpPermWide_y)[3] <- "EMPQ_perm.4"
+    
+    #change the order of the columns so twin B will come first
+    DImpPermWide_y <- DImpPermWide_y[,c(1,3,2)]
+    
+    #merge the variables to the file. Now each family receives the scores of another family
+    DImpPermWide <- merge (DImpPermWide,DImpPermWide_y,by="ifam", all.x=T, all.y=T)
+    DImpPerm <- reshape(DImpPermWide,
+                        varying = colnames(DImpPermWide)[-c(which(colnames(DImpPermWide)=="ifam"),
+                                                            which(colnames(DImpPermWide)=="gfold1113"))],
+                        timevar = "ID", idvar = "ifam",direction="long") 
+    DImpPerm <- na.omit(DImpPerm)
+    
+    assign ("DImpPerm", DImpPerm,envir = .GlobalEnv)
+  }
+  
+  
+#The permutation function that will be iterated n times:
+    CrossValRidgePermut <- function (DImp,relvar,yname,RidgePermut,ScrambleEmpathyVar){
+    
+    #call a new scrambled dataset (DImpPerm)
+    set.seed(NULL) #make sure previous seeds are canceled so it will be random
+    ScrambleEmpathyVar(DImp,relvar,yname)
+    
+    #defining the new relevant variables set (real personality items, scrambled empathy variable)
+    col <-colnames(DImpPerm)
+    relvar_perm <- c(which (col=="EMPQ_perm"),
+                     which (col=="BFI1"), which (col=="BFI2_Rev"), which (col=="BFI3"),which (col=="BFI4"),
+                     which (col=="BFI5"),which (col=="BFI6_Rev"),which (col=="BFI7"),which (col=="BFI8_Rev"),
+                     which (col=="BFI9_Rev"),which (col=="BFI10"),which (col=="BFI11"),which (col=="BFI12_Rev"),
+                     which (col=="BFI13"),which (col=="BFI14"),which (col=="BFI15"),which (col=="BFI16"),
+                     which (col=="BFI17"),which (col=="BFI18_Rev"),which (col=="BFI19"),which (col=="BFI20"),
+                     which (col=="BFI21_Rev"),which (col=="BFI22"),which (col=="BFI23_Rev"),which (col=="BFI24_Rev"),
+                     which (col=="BFI25"),which (col=="BFI26"),which (col=="BFI27_Rev"),which (col=="BFI28"),
+                     which (col=="BFI29"),which (col=="BFI30"),which (col=="BFI31_Rev"),which (col=="BFI32"),
+                     which (col=="BFI33"),which (col=="BFI34_Rev"),which (col=="BFI35_Rev"),which (col=="BFI36"),
+                     which (col=="BFI37_Rev"),which (col=="BFI38"),which (col=="BFI39"),which (col=="BFI40"),
+                     which (col=="BFI41_Rev"),which (col=="BFI42"),which (col=="BFI43_Rev"),which (col=="BFI44"))
+    
+    
+    #doing Ridge regression on the folds 
+    #fold 1
+      RidgePermut(DImpPerm=DImpPerm,gfold=1,relvar=relvar_perm) 
+      fit_P_1 <- fit
+      opt_lambda_P_1 <- opt_lambda
+      y_pred_P_1 <- y_pred
+      mse_P_1 <- mse
+      opt_coef_max_1 <- opt_coef_max  
+    
+    #fold 2
+      RidgePermut(DImpPerm=DImpPerm,gfold=2,relvar=relvar_perm) 
+      fit_P_2 <- fit
+      opt_lambda_P_2 <- opt_lambda
+      y_pred_P_2 <- y_pred
+      mse_P_2 <- mse
+      opt_coef_max_2 <- opt_coef_max
+      
+    #fold 3
+      RidgePermut(DImpPerm=DImpPerm,gfold=3,relvar=relvar_perm) 
+      fit_P_3 <- fit
+      opt_lambda_P_3 <- opt_lambda
+      y_pred_P_3 <- y_pred
+      mse_P_3 <- mse
+      opt_coef_max_3 <- opt_coef_max
+    
+    #fold 4
+      RidgePermut(DImpPerm=DImpPerm,gfold=4,relvar=relvar_perm) 
+      fit_P_4 <- fit
+      opt_lambda_P_4 <- opt_lambda
+      y_pred_P_4 <- y_pred
+      mse_P_4 <- mse
+      opt_coef_max_4 <- opt_coef_max
+    
+    #fold 5
+      RidgePermut(DImpPerm=DImpPerm,gfold=5,relvar=relvar_perm) 
+      fit_P_5 <- fit
+      opt_lambda_P_5 <- opt_lambda
+      y_pred_P_5 <- y_pred
+      mse_P_5 <- mse
+      opt_coef_max_5 <- opt_coef_max
+      
+    #fold 6
+      RidgePermut(DImpPerm=DImpPerm,gfold=6,relvar=relvar_perm) 
+      fit_P_6 <- fit
+      opt_lambda_P_6 <- opt_lambda
+      y_pred_P_6 <- y_pred
+      mse_P_6 <- mse
+      opt_coef_max_6 <- opt_coef_max
+    
+    
+    #finding the mean correlation between outcome and predicted value across the folds
+      cor_P <-1:6
+      for (i in 1:6) {
+        cor_P[i] <- cor.test(DImpPerm$EMPQ_perm[DImpPerm$gfold ==i],
+                             eval(parse(text=paste0("y_pred_P_",i))))[4]}
+      
+      cor_P <- as.numeric(cor_P)
+      avecor_Permut <- mean(cor_P)
+      
+    #computing the mean mse across the folds
+      mse_P <-1:6
+      for (i in 1:6) { mse_P[i] <- eval(parse(text=paste0("mse_P_",i)))}
+      avemse_Permut <- mean(mse_P)
+      
+    #computing the mean maximum coefficient of all the items
+      avemaxcoef_Permut <- mean(c(opt_coef_max_1,opt_coef_max_2,opt_coef_max_3,
+                                opt_coef_max_4,opt_coef_max_5,opt_coef_max_6))
+    
+    #assign the average correlation, average mse, and average maximal coefficient to the global environment
+      AveCorMSEPermut <- c(avecor_Permut,avemse_Permut,avemaxcoef_Permut)
+      assign ("AveCorMSEPermut",AveCorMSEPermut,envir = .GlobalEnv)
+    }
+  
+    
+#The permutation function that will be iterated n times- adapted to the analysis of age 11&13 together
+    CrossValRidgePermut1113 <- function (DImp11,DImp13, relvar,yname11,yname13,
+                                         RidgePermut1113, ScrambleEmpathyVar,ScrambleEmpathyVar13){
+      
+      #call a new scrambled dataset (DImpPerm11)
+      set.seed(NULL) #make sure previous seeds are canceled so it will be random
+      ScrambleEmpathyVarBothAges(DImp11,relvar,yname11)
+      DImpPerm11 <- DImpPerm
+      
+      #call a new scrambled dataset for age 13(DImpPerm13)
+      set.seed(NULL) #make sure previous seeds are canceled so it will be random
+      ScrambleEmpathyVarBothAges13(DImp13,relvar,yname13)
+      DImpPerm13 <- DImpPerm
+      
+      #defining the new relevant variables (relvar_perm)
+      col <-colnames(DImpPerm11)
+      relvar_perm <- c(which (col=="EMPQ_perm"),
+                       which (col=="BFI1"), which (col=="BFI2_Rev"), which (col=="BFI3"),which (col=="BFI4"),
+                       which (col=="BFI5"),which (col=="BFI6_Rev"),which (col=="BFI7"),which (col=="BFI8_Rev"),
+                       which (col=="BFI9_Rev"),which (col=="BFI10"),which (col=="BFI11"),which (col=="BFI12_Rev"),
+                       which (col=="BFI13"),which (col=="BFI14"),which (col=="BFI15"),which (col=="BFI16"),
+                       which (col=="BFI17"),which (col=="BFI18_Rev"),which (col=="BFI19"),which (col=="BFI20"),
+                       which (col=="BFI21_Rev"),which (col=="BFI22"),which (col=="BFI23_Rev"),which (col=="BFI24_Rev"),
+                       which (col=="BFI25"),which (col=="BFI26"),which (col=="BFI27_Rev"),which (col=="BFI28"),
+                       which (col=="BFI29"),which (col=="BFI30"),which (col=="BFI31_Rev"),which (col=="BFI32"),
+                       which (col=="BFI33"),which (col=="BFI34_Rev"),which (col=="BFI35_Rev"),which (col=="BFI36"),
+                       which (col=="BFI37_Rev"),which (col=="BFI38"),which (col=="BFI39"),which (col=="BFI40"),
+                       which (col=="BFI41_Rev"),which (col=="BFI42"),which (col=="BFI43_Rev"),which (col=="BFI44"))
+      
+      
+      #doing Ridge regression on the folds 
+      #fold 1
+        RidgePermut1113(DImpPerm11=DImpPerm11,DImpPerm13=DImpPerm13, 
+                        gfold=1,relvar=relvar_perm,lambdas=lambdas) 
+        fit_P_1 <- fit
+        opt_lambda_P_1 <- opt_lambda
+        y_pred_P_1 <- y_pred
+        mse_P_1 <- mse
+        
+      #fold 2
+        RidgePermut1113(DImpPerm11=DImpPerm11,DImpPerm13=DImpPerm13, 
+                        gfold=2,relvar=relvar_perm,lambdas=lambdas)  
+        fit_P_2 <- fit
+        opt_lambda_P_2 <- opt_lambda
+        y_pred_P_2 <- y_pred
+        mse_P_2 <- mse
+        
+      #fold 3
+        RidgePermut1113(DImpPerm11=DImpPerm11,DImpPerm13=DImpPerm13, 
+                        gfold=3,relvar=relvar_perm,lambdas=lambdas) 
+        fit_P_3 <- fit
+        opt_lambda_P_3 <- opt_lambda
+        y_pred_P_3 <- y_pred
+        mse_P_3 <- mse
+      
+      #fold 4
+        RidgePermut1113(DImpPerm11=DImpPerm11,DImpPerm13=DImpPerm13, 
+                        gfold=4,relvar=relvar_perm,lambdas=lambdas) 
+        fit_P_4 <- fit
+        opt_lambda_P_4 <- opt_lambda
+        y_pred_P_4 <- y_pred
+        mse_P_4 <- mse
+        
+      #fold 5
+        RidgePermut1113(DImpPerm11=DImpPerm11,DImpPerm13=DImpPerm13, 
+                        gfold=5,relvar=relvar_perm,lambdas=lambdas) 
+        fit_P_5 <- fit
+        opt_lambda_P_5 <- opt_lambda
+        y_pred_P_5 <- y_pred
+        mse_P_5 <- mse
+        
+      #fold 6
+        RidgePermut1113(DImpPerm11=DImpPerm11,DImpPerm13=DImpPerm13, 
+                        gfold=6,relvar=relvar_perm,lambdas=lambdas) 
+        fit_P_6 <- fit
+        opt_lambda_P_6 <- opt_lambda
+        y_pred_P_6 <- y_pred
+        mse_P_6 <- mse
+        
+      
+      #finding the mean correlation between outcome and predicted value across the folds
+        cor_P <-1:6
+        for (i in 1:6) {
+          cor_P[i] <- cor.test(DImpPerm13$EMPQ_perm[DImpPerm13$gfold1113 ==i],
+                               eval(parse(text=paste0("y_pred_P_",i))))[4]}
+        
+        cor_P <- as.numeric(cor_P)
+        avecor_Permut <- mean(cor_P)
+      
+      #computing the mean mse across the folds
+        mse_P <-1:6
+        for (i in 1:6) { mse_P[i] <- eval(parse(text=paste0("mse_P_",i)))}
+        avemse_Permut <- mean(mse_P)
+      
+      #take out the average correlation and avverage mse from the function
+        AveCorMSEPermut <- c(avecor_Permut,avemse_Permut)
+        assign ("AveCorMSEPermut",AveCorMSEPermut,envir = .GlobalEnv)
+    }
+    
+    
+    
+
+    
+  
