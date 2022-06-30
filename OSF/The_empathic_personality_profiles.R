@@ -169,6 +169,7 @@ DImp1.1 <- DImp
                        alpha = 0, lambda = opt_lambda)
          
          #now check the prediction on the test set
+         #create the predicted scores according to the model
          y_pred <- predict(fit, s=opt_lambda, 
                            newx = as.matrix(DImp[DImp$gfold == gfold,relvar[2:45]]))
          
@@ -885,7 +886,7 @@ DImp1.1 <- DImp
 
 
 #############################################################################################
-##################### Ridge regression - Training age 11 and testing Age 13 #################
+##################### Ridge regression - Train age 11 and test Age 13 #######################
 #############################################################################################  
 
 #creating folds in the combined 11_13 dataset
@@ -1132,7 +1133,7 @@ DImp1.1 <- DImp
   
 
 ############################################################################################
-####### Building the new predictors on the entire dataset for further analyses #############
+####### Build the new predictors on the entire dataset for further analyses ################
 ####### (i.e., no test set) ################################################################
 ############################################################################################
 
@@ -1407,9 +1408,9 @@ DImp1.1 <- DImp
   write.csv(Dfinal_11_13,row.names=F,"~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Dfinal_11_13.csv")
 
 
-######################################################################################################
-###### checking the model prediction on an independent, non-twin sample ##############################
-######################################################################################################
+#############################################################################################
+###### check the model prediction on an independent, non-twin sample ########################
+#############################################################################################
 
 #import data (called panel sample)
   DPan <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/panel_results_PerEmp.csv")
@@ -1512,104 +1513,3 @@ DImp1.1 <- DImp
   mse_panel_cog13 <- mean((DPan[,relvar_cognitive_panel[1]]-y_pred_cog13_panel)^2)
 
 
-#####################################################################################################
-##################### Find out how many in each age before dropping invalid observations ############
-#####################################################################################################
-   
-setwd("C:/Users/Lior Abramson/Dropbox/empathy and puberty/SVR")  
-   age11 <- read.csv ("Age11_EmpPer_4SVR.csv")
-   age11 <- age11[,1:2]
-   library(reshape)
-   age11 <- rename(age11, c(ï..ifam="ifam"))    # change weird variable names
-   age11$was11 <-1
-
-   
-   age13 <- read.csv ("Age13_EmpPer_4SVR.csv")
-   age13 <- age13[,1:2]
-   library(reshape)
-   age13 <- rename(age13, c(ï..ifam="ifam"))    # change weird variable names
-   age13$was13 <-1
-
-both_1113 <- merge (age11,age13, by=c("ifam","ID"), all.x=T, all.y = T)
-
-sum(both_1113$was11==1 & both_1113$was13==1, na.rm=T)
-
-
-
-#################################################################################################
-######### Attrition analysis ####################################################################
-#################################################################################################
-   
-DSVRres_11_13$whatStage <- 0
-DSVRres_11_13$whatStage[is.na(DSVRres_11_13$EMPQ_emotional_11)== F &is.na(DSVRres_11_13$EMPQ_emotional_13)== F] <-1   
-
-ttest_whatStage_emo11 <- t.test(EMPQ_emotional_11~whatStage, data=DSVRres_11_13)
-ttest_whatStage_cog11 <- t.test(EMPQ_cognitive_11~whatStage, data=DSVRres_11_13)
-ttest_whatStage_predemo11 <- t.test(predicted_emotional_11~whatStage, data=DSVRres_11_13)
-ttest_whatStage_predcog11 <- t.test(predicted_cognitive_11~whatStage, data=DSVRres_11_13)
-
-ttest_whatStage_emo13 <- t.test(EMPQ_emotional_13~whatStage, data=DSVRres_11_13)
-ttest_whatStage_cog13 <- t.test(EMPQ_cognitive_13~whatStage, data=DSVRres_11_13)
-ttest_whatStage_predemo13 <- t.test(predicted_emotional_13~whatStage, data=DSVRres_11_13)
-ttest_whatStage_predcog13 <- t.test(predicted_cognitive_13~whatStage, data=DSVRres_11_13)
-
-library(broom)
-library(purrr)
-
-ttest_attritionTable <- map_df(list(ttest_whatStage_predemo11,ttest_whatStage_emo11,
-                                    ttest_whatStage_predemo13,ttest_whatStage_emo13,
-                                    ttest_whatStage_predcog11,ttest_whatStage_cog11,
-                                    ttest_whatStage_predcog13,ttest_whatStage_cog13), tidy)
-
-ttest_attritionTable_edit <- ttest_attritionTable[c("estimate1", "estimate2","statistic","parameter","p.value")]
-colnames(ttest_attritionTable_edit) <- c("Mean one time-point","Mean both time-point", "t value","df","p-value")
-ttest_attritionTable_edit[,1:4] <- round(ttest_attritionTable_edit[,1:4],2)
-ttest_attritionTable_edit[,5]   <- round(ttest_attritionTable_edit[,5],3)
-
-#add effect size
-ttest_attritionTable_edit$cohenD <- NA
-library(lsr)
-ttest_attritionTable_edit$cohenD[1] <- 0-round(cohensD(predicted_emotional_11~whatStage, data=DSVRres_11_13),2)
-ttest_attritionTable_edit$cohenD[2] <- 0-round(cohensD(EMPQ_emotional_11~whatStage, data=DSVRres_11_13),2)
-ttest_attritionTable_edit$cohenD[3] <- 0-round(cohensD(predicted_emotional_13~whatStage, data=DSVRres_11_13),2)
-ttest_attritionTable_edit$cohenD[4] <- 0-round(cohensD(EMPQ_emotional_13~whatStage, data=DSVRres_11_13),2)
-
-ttest_attritionTable_edit$cohenD[5] <- 0-round(cohensD(predicted_cognitive_11~whatStage, data=DSVRres_11_13),2)
-ttest_attritionTable_edit$cohenD[6] <- 0-round(cohensD(EMPQ_cognitive_11~whatStage, data=DSVRres_11_13),2)
-ttest_attritionTable_edit$cohenD[7] <- 0-round(cohensD(predicted_cognitive_13~whatStage, data=DSVRres_11_13),2)
-ttest_attritionTable_edit$cohenD[8] <- 0-round(cohensD(EMPQ_cognitive_13~whatStage, data=DSVRres_11_13),2)
-
-#add sd
-ttest_attritionTable_edit$sd1Stage <- NA
-ttest_attritionTable_edit$sd2Stage <- NA
-
-ttest_attritionTable_edit$sd1Stage[1] <- round((aggregate(DSVRres_11_13$predicted_emotional_11~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-ttest_attritionTable_edit$sd1Stage[2] <- round((aggregate(DSVRres_11_13$EMPQ_emotional_11~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-ttest_attritionTable_edit$sd1Stage[3] <- round((aggregate(DSVRres_11_13$predicted_emotional_13~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-ttest_attritionTable_edit$sd1Stage[4] <- round((aggregate(DSVRres_11_13$EMPQ_emotional_13~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-
-ttest_attritionTable_edit$sd1Stage[5] <- round((aggregate(DSVRres_11_13$predicted_cognitive_11~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-ttest_attritionTable_edit$sd1Stage[6] <- round((aggregate(DSVRres_11_13$EMPQ_cognitive_11~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-ttest_attritionTable_edit$sd1Stage[7] <- round((aggregate(DSVRres_11_13$predicted_cognitive_13~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-ttest_attritionTable_edit$sd1Stage[8] <- round((aggregate(DSVRres_11_13$EMPQ_cognitive_13~DSVRres_11_13$whatStage, FUN = sd)[1,2]),2)
-
-ttest_attritionTable_edit$sd2Stage[1] <- round((aggregate(DSVRres_11_13$predicted_emotional_11~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-ttest_attritionTable_edit$sd2Stage[2] <- round((aggregate(DSVRres_11_13$EMPQ_emotional_11~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-ttest_attritionTable_edit$sd2Stage[3] <- round((aggregate(DSVRres_11_13$predicted_emotional_13~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-ttest_attritionTable_edit$sd2Stage[4] <- round((aggregate(DSVRres_11_13$EMPQ_emotional_13~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-
-ttest_attritionTable_edit$sd2Stage[5] <- round((aggregate(DSVRres_11_13$predicted_cognitive_11~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-ttest_attritionTable_edit$sd2Stage[6] <- round((aggregate(DSVRres_11_13$EMPQ_cognitive_11~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-ttest_attritionTable_edit$sd2Stage[7] <- round((aggregate(DSVRres_11_13$predicted_cognitive_13~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-ttest_attritionTable_edit$sd2Stage[8] <- round((aggregate(DSVRres_11_13$EMPQ_cognitive_13~DSVRres_11_13$whatStage, FUN = sd)[2,2]),2)
-
-ttest_attritionTable_edit$`Mean one time-point` <- paste(as.character(ttest_attritionTable_edit$`Mean one time-point`),"(",
-                                         as.character (ttest_attritionTable_edit$sd1Stage),")")
-ttest_attritionTable_edit$`Mean both time-point` <- paste(as.character(ttest_attritionTable_edit$`Mean both time-point`),"(",
-                                          as.character (ttest_attritionTable_edit$sd2Stage),")")
-ttest_attritionTable_edit$`t value` <- paste(as.character(ttest_attritionTable_edit$`t value`),"(",
-                                       as.character (ttest_attritionTable_edit$df),")")
-
-df_attrition <- apply(ttest_attritionTable_edit[,c(1,2,3,6)],2,as.character)
-
-write.csv(df_attrition, file= "ttest_attritionTable.csv", row.names = F)
