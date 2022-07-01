@@ -1,5 +1,5 @@
-# This script performs the ridge regression, predicting empathy from Big-Five nuanced items
-# and creates the empathic personality profiles
+# This script performs the ridge regression that predicts empathy from Big-Five nuanced items
+# and creates the empathic personality profiles. 
 
 #Preparations
   rm(list = ls()) # clean the global environment
@@ -1785,15 +1785,15 @@ DImp1.1 <- DImp
   
   
 #the permutation function that will be iterated n times:
-    CrossValRidgePermut <- function (DImp,relvar,yname,RidgePermut,ScrambleEmpathyVar){
+    CrossValRidgePermut <- function (DImp,relvar,yname,RidgePermut,ScrambleEmpathyVar,seed_index) {
     
     #call a new scrambled dataset (DImpPerm)
-    set.seed(NULL) #make sure previous seeds are canceled so it will be random
-    ScrambleEmpathyVar(DImp,relvar,yname)
+      set.seed(seed_index)                  #each permutation gets a specific random seed in an ascending order
+      ScrambleEmpathyVar(DImp,relvar,yname)
     
     #defining the new relevant variables set (real personality items, scrambled empathy variable)
-    col <-colnames(DImpPerm)
-    relvar_perm <- c(which (col=="EMPQ_perm"),
+      col <-colnames(DImpPerm)
+      relvar_perm <- c(which (col=="EMPQ_perm"),
                      which (col=="BFI1"), which (col=="BFI2_Rev"), which (col=="BFI3"),which (col=="BFI4"),
                      which (col=="BFI5"),which (col=="BFI6_Rev"),which (col=="BFI7"),which (col=="BFI8_Rev"),
                      which (col=="BFI9_Rev"),which (col=="BFI10"),which (col=="BFI11"),which (col=="BFI12_Rev"),
@@ -1878,21 +1878,27 @@ DImp1.1 <- DImp
     #assign the vector of the average correlation, average mse, and average maximal coefficient 
     #from all the permutations to the global environment
       AveCorMSEPermut <- c(avecor_Permut,avemse_Permut,avemaxcoef_Permut)
+      
+      seed_index <- seed_index+1    #change the random seed that will enter the next permutation
+      
+      assign ("seed_index",seed_index,envir = .GlobalEnv)
       assign ("AveCorMSEPermut",AveCorMSEPermut,envir = .GlobalEnv)
+      
     }
   
     
 #the permutation function that will be iterated n times- adapted to the analysis of age 11&13 together
     CrossValRidgePermut1113 <- function (DImp11,DImp13, relvar,yname11,yname13,
-                                         RidgePermut1113, ScrambleEmpathyVar,ScrambleEmpathyVar13){
+                                         RidgePermut1113, ScrambleEmpathyVar,ScrambleEmpathyVar13,
+                                         seed_index){
       
       #call a new scrambled dataset (DImpPerm11)
-      set.seed(NULL) #make sure previous seeds are canceled so it will be random
+      set.seed(seed_index)             #each permutation gets a specific random seed in an ascending order
       ScrambleEmpathyVarBothAges(DImp11,relvar,yname11)
       DImpPerm11 <- DImpPerm
       
       #call a new scrambled dataset for age 13(DImpPerm13)
-      set.seed(NULL) #make sure previous seeds are canceled so it will be random
+      set.seed(seed_index)             #each permutation gets a specific random seed in an ascending order
       ScrambleEmpathyVarBothAges13(DImp13,relvar,yname13)
       DImpPerm13 <- DImpPerm
       
@@ -1978,6 +1984,10 @@ DImp1.1 <- DImp
       
       #take out the average correlation and avverage mse from the function
         AveCorMSEPermut <- c(avecor_Permut,avemse_Permut)
+        
+        seed_index <- seed_index+1        #change the random seed that will enter the next permutation
+        
+        assign ("seed_index",seed_index,envir = .GlobalEnv)
         assign ("AveCorMSEPermut",AveCorMSEPermut,envir = .GlobalEnv)
     }
     
@@ -1989,17 +1999,13 @@ DImp1.1 <- DImp
 #run the permuted ridge regression 10000 times (this should take a while...)
 
 #Emotional empathy-11
+    seed_index <- 1
     PermutVector_emo11 <- replicate(n=10000,
                                     expr=CrossValRidgePermut(
                                     DImp=DImp1.1,relvar=relvar_emotional,
                                     yname="EMPQ_emotional_11",
-                                    RidgePermut,ScrambleEmpathyVar))
-    
-    PermutVector_emo11_erase_after_check <- replicate(n=10000,
-                                    expr=CrossValRidgePermut(
-                                      DImp=DImp1.1,relvar=relvar_emotional,
-                                      yname="EMPQ_emotional_11",
-                                      RidgePermut,ScrambleEmpathyVar))
+                                    RidgePermut,ScrambleEmpathyVar,
+                                    seed_index=seed_index))
     
     #just for understanding, see the distribution of the permuted scrambled distribution
     hist (PermutVector_emo11[1,])          #see the distribution of the correlations
@@ -2026,12 +2032,6 @@ DImp1.1 <- DImp
     for (i in 1:44){
       proportionCoef_emo11[i] <- sum (realCoef_emo11[i] > PermutVector_emo11[3,])}
     
-    proportionCoef_emo11_erase_after_check <- matrix(nrow=1,ncol=44)
-    for (i in 1:44){
-      proportionCoef_emo11_erase_after_check[i] <- sum (realCoef_emo11[i] > PermutVector_emo11_erase_after_check[3,])}
-    
-    
-    
     #what coefficients are higher than the maximal value in 99% (p<.01) and 95% (p<.05) of the cases? 
     proportionCoef_emo11_sig05 <- proportionCoef_emo11 > 9500   
     proportionCoef_emo11_sig01 <- proportionCoef_emo11 > 9900
@@ -2045,11 +2045,13 @@ DImp1.1 <- DImp
     
     
 #Cognitive empathy-11
-    PermutVector_cog11 <- replicate(n=10000,
+    seed_index <- 1
+    PermutVector_cog111 <- replicate(n=10000,
                                     expr=CrossValRidgePermut(
-                                      DImp=DImp1.1,relvar=relvar_cognitive,
-                                      yname="EMPQ_cognitive_11",
-                                      RidgePermut,ScrambleEmpathyVar))
+                                    DImp=DImp1.1,relvar=relvar_cognitive,
+                                    yname="EMPQ_cognitive_11",
+                                    RidgePermut,ScrambleEmpathyVar,
+                                    seed_index=seed_index))
     
     hist (PermutVector_cog11[1,]) #see the distribution of the correlations
     hist (PermutVector_cog11[2,]) #see the distribution of the mse
@@ -2085,18 +2087,23 @@ DImp1.1 <- DImp
                           label = opt_coef_cog11_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
     
     
-    
-    
 #Emotional empathy-13
+    seed_index <- 1
     PermutVector_emo13 <- replicate(n=10000,
                                     expr=CrossValRidgePermut(
                                       DImp=D13Imp1.1,relvar=relvar_emotional_13,
                                       yname="EMPQ_emotional_13",
-                                      RidgePermut,ScrambleEmpathyVar13))
+                                      RidgePermut,ScrambleEmpathyVar13,
+                                      seed_index=seed_index))
     
     
     hist (PermutVector_emo13[1,]) #see the distribution of the correlations
     hist (PermutVector_emo13[2,]) #see the distribution of the mse
+    hist (PermutVector_emo13[3,]) #see the distribution of the maximal coefficients
+    
+    #check- what is the proportion of cases in which the real correlation is higher than the
+    #correlations in that distribution, and what is the proportion of cases in which the real MSE 
+    #is lower than the MSEs in that distribution 
     
     realCor_emo13 <- avecor_emo13
     proportionCor_emo13 <- sum (realCor_emo13 > PermutVector_emo13[1,] )
@@ -2104,17 +2111,41 @@ DImp1.1 <- DImp
     realMSE_emo13 <- avemse_emo13
     proportionMSE_emo13 <- sum (realMSE_emo13 < PermutVector_emo13[2,] )
     
+    #define the real coefficients (in absolute values)
+    realCoef_emo13 <- abs(opt_coef_emo13_matrix$aveCoef)
+    
+    proportionCoef_emo13 <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_emo13[i] <- sum (realCoef_emo13[i] > PermutVector_emo13[3,])}
+    
+    #what coefficients are higher than the maximal value in 95% of the cases? 
+    proportionCoef_emo13_sig05 <- proportionCoef_emo13 > 9500
+    proportionCoef_emo13_sig01 <- proportionCoef_emo13 > 9900
+    
+    #add the significance to the plots and adjust the graph limits
+    opt_coef_emo13_matrix$star05 <- ifelse(t(proportionCoef_emo13_sig01)==T,"**",
+                                           ifelse (t(proportionCoef_emo13_sig05)==T,"*",""))
+    plotemo13 + geom_text(data = opt_coef_emo13_matrix, 
+                          label = opt_coef_emo13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
+    
     
 #Cognitive empathy-13
+    seed_index <- 1
     PermutVector_cog13 <- replicate(n=10000,
                                     expr=CrossValRidgePermut(
                                       DImp=D13Imp1.1,relvar=relvar_cognitive_13,
                                       yname="EMPQ_cognitive_13",
-                                      RidgePermut,ScrambleEmpathyVar13))
+                                      RidgePermut,ScrambleEmpathyVar13,
+                                      seed_index=seed_index))
     
     
     hist (PermutVector_cog13[1,]) #see the distribution of the correlations
     hist (PermutVector_cog13[2,]) #see the distribution of the mse
+    hist (PermutVector_cog13[3,]) #see the distribution of the maximal coefficients
+    
+    #check- what is the proportion of cases in which the real correlation is higher than the
+    #correlations in that distribution, and what is the proportion of cases in which the real MSE 
+    #is lower than the MSEs in that distribution 
     
     realCor_cog13 <- avecor_cog13
     proportionCor_cog13 <- sum (realCor_cog13 > PermutVector_cog13[1,] )
@@ -2122,21 +2153,39 @@ DImp1.1 <- DImp
     realMSE_cog13 <- avemse_cog13
     proportionMSE_cog13 <- sum (realMSE_cog13 < PermutVector_cog13[2,] )
     
+    proportionCoef_cog13 <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_cog13[i] <- sum (realCoef_cog13[i] > PermutVector_cog13[3,])}
+    
+    #what coefficients are higher than the maximal value in 95% of the cases? 
+    proportionCoef_cog13_sig05 <- proportionCoef_cog13 > 9500
+    proportionCoef_cog13_sig01 <- proportionCoef_cog13 > 9900
+    
+    #add the significance to the plots and adjust the graph limits
+    opt_coef_cog13_matrix$star05 <- ifelse(t(proportionCoef_cog13_sig01)==T,"**",
+                                           ifelse (t(proportionCoef_cog13_sig05)==T,"*",""))
+    plotcog13 + geom_text(data = opt_coef_cog13_matrix, 
+                          label = opt_coef_cog13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
     
 #Emotional empathy-age 13 based on age 11 data 
 #(checking significance only of the overall prediction, not individual items)
     
+    seed_index <-1
     PermutVector_emo <- replicate(n=10000,
                                   expr=CrossValRidgePermut1113(
                                     DImp11=DImp1.1,DImp13=D13Imp1.1,relvar=relvar_emotional,
                                     yname11="EMPQ_emotional_11",yname13="EMPQ_emotional_13",
                                     RidgePermut1113,
-                                    ScrambleEmpathyVarBothAges, ScrambleEmpathyVarBothAges13))
+                                    ScrambleEmpathyVarBothAges, ScrambleEmpathyVarBothAges13,
+                                    seed_index = seed_index))
     
     
     
     hist (PermutVector_emo[1,]) #see the distribution of the correlations
     hist (PermutVector_emo[2,]) #see the distribution of the mse
+    
     
     realCor_emo <- avecor_emo
     proportionCor_emo <- sum (realCor_emo > PermutVector_emo[1,] )
@@ -2148,13 +2197,14 @@ DImp1.1 <- DImp
 #Cognitive empathy-age 13 based on age 11 data
 #(checking significance only of the overall prediction, not individual items)
     
+    seed_index <- 1
     PermutVector_cog <- replicate(n=10000,
                                   expr=CrossValRidgePermut1113(
                                     DImp11=DImp1.1,DImp13=D13Imp1.1,relvar=relvar_cognitive,
                                     yname11="EMPQ_cognitive_11",yname13="EMPQ_cognitive_13",
                                     lambdas=lambdas,RidgePermut1113,
-                                    ScrambleEmpathyVarBothAges, ScrambleEmpathyVarBothAges13))
-    
+                                    ScrambleEmpathyVarBothAges, ScrambleEmpathyVarBothAges13,
+                                    seed_index=seed_index))
     
     
     hist (PermutVector_cog[1,]) #see the distribution of the correlations
@@ -2165,120 +2215,6 @@ DImp1.1 <- DImp
     
     realMSE_cog <- avemse_cog
     proportionMSE_cog <- sum (realMSE_cog < PermutVector_cog[2,] )
-    
-   
-    
-#ERASE ALL THE REST AFTER CLEANING 
-
-#############################################################################################
-###### Running significance testing with permutations test ##################################
-###### for individual items ('nuances') coefficients prediction #############################
-#############################################################################################
-  
-    
-
-    #Cognitive empathy-11
-    PermutVector_cog11_withCoef <- replicate(n=10000,
-                                             expr=CrossValRidgePermut(
-                                               DImp=DImp1.1,relvar=relvar_cognitive,
-                                               yname="EMPQ_cognitive_11",lambdas=lambdas,
-                                               RidgePermut,ScrambleEmpathyVar))
-    
-    hist (PermutVector_cog11_withCoef[3,]) #see the distribution of the maximal coefficients
-    
-    #define the real coefficients (in absolute values)
-    realCoef_cog11 <- abs(opt_coef_cog11_matrix$aveCoef)
-    
-    proportionCoef_cog11 <- matrix(nrow=1,ncol=44)
-    for (i in 1:44){
-      proportionCoef_cog11[i] <- sum (realCoef_cog11[i] > PermutVector_cog11_withCoef[3,])}
-    
-    #what coefficients are higher than the maximal value in 95% of the cases? 
-    proportionCoef_cog11_sig <- proportionCoef_cog11 > 9500
-    proportionCoef_cog11_sig01 <- proportionCoef_cog11 > 9900
-    
-    #add the significance to the plots
-    opt_coef_cog11_matrix$star <- ifelse(t(proportionCoef_cog11_sig01)==T,"**","")
-    plotcog11 + geom_text(data = opt_coef_cog11_matrix, 
-                          label = opt_coef_cog11_matrix$star, nudge_y = 0)+ ylim(-.03, .13)
-    
-    
-    #FOR SUPPLEMENTRY- add the significance at p <.05 to the plots and adjust the graph limits
-    opt_coef_cog11_matrix$star05 <- ifelse(t(proportionCoef_cog11_sig01)==T,"**",
-                                           ifelse (t(proportionCoef_cog11_sig)==T,"*",""))
-    plotcog11 + geom_text(data = opt_coef_cog11_matrix, 
-                          label = opt_coef_cog11_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
-    
-    
-    #Emotional empathy- 13
-    PermutVector_emo13_withCoef <- replicate(n=10000,
-                                             expr=CrossValRidgePermut(
-                                               DImp=D13Imp1.1,relvar=relvar_emotional_13,
-                                               yname="EMPQ_emotional_13",lambdas=lambdas,
-                                               RidgePermut,ScrambleEmpathyVar13))
-    
-    
-    hist (PermutVector_emo13_withCoef[3,]) #see the distribution of the maximal coefficients
-    
-    #define the real coefficients (in absolute values)
-    realCoef_emo13 <- abs(opt_coef_emo13_matrix$aveCoef)
-    
-    proportionCoef_emo13 <- matrix(nrow=1,ncol=44)
-    for (i in 1:44){
-      proportionCoef_emo13[i] <- sum (realCoef_emo13[i] > PermutVector_emo13_withCoef[3,])}
-    
-    #what coefficients are higher than the maximal value in 95% of the cases? 
-    proportionCoef_emo13_sig <- proportionCoef_emo13 > 9500
-    proportionCoef_emo13_sig01 <- proportionCoef_emo13 > 9900
-    
-    #add the significance to the plots
-    opt_coef_emo13_matrix$star <- ifelse(t(proportionCoef_emo13_sig01)==T,"**","")
-    plotemo13 + geom_text(data = opt_coef_emo13_matrix, 
-                          label = opt_coef_emo13_matrix$star, nudge_y = 0)+ ylim(-.03, .13)
-    
-    
-    #FOR SUPPLEMENTRY- add the significance at p <.05 to the plots and adjust the graph limits
-    opt_coef_emo13_matrix$star05 <- ifelse(t(proportionCoef_emo13_sig01)==T,"**",
-                                           ifelse (t(proportionCoef_emo13_sig)==T,"*",""))
-    plotemo13 + geom_text(data = opt_coef_emo13_matrix, 
-                          label = opt_coef_emo13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
-    
-    
-    
-    #Cognitive empathy- 13
-    PermutVector_cog13_withCoef <- replicate(n=10000,
-                                             expr=CrossValRidgePermut(
-                                               DImp=D13Imp1.1,relvar=relvar_cognitive_13,
-                                               yname="EMPQ_cognitive_13",lambdas=lambdas,
-                                               RidgePermut,ScrambleEmpathyVar13))
-    
-    
-    hist (PermutVector_cog13_withCoef[3,]) #see the distribution of the maximal coefficients
-    
-    #define the real coefficients (in absolute values)
-    realCoef_cog13 <- abs(opt_coef_cog13_matrix$aveCoef)
-    
-    proportionCoef_cog13 <- matrix(nrow=1,ncol=44)
-    for (i in 1:44){
-      proportionCoef_cog13[i] <- sum (realCoef_cog13[i] > PermutVector_cog13_withCoef[3,])}
-    
-    #what coefficients are higher than the maximal value in 95% of the cases? 
-    proportionCoef_cog13_sig <- proportionCoef_cog13 > 9500
-    proportionCoef_cog13_sig01 <- proportionCoef_cog13 > 9900
-    
-    
-    #add the significance to the plots
-    opt_coef_cog13_matrix$star <- ifelse(t(proportionCoef_cog13_sig01)==T,"**","")
-    plotcog13 + geom_text(data = opt_coef_cog13_matrix, 
-                          label = opt_coef_cog13_matrix$star, nudge_y = 0)+ ylim(-.03, .13)
-    
-    #FOR SUPPLEMENTRY- add the significance at p <.05 to the plots and adjust the graph limits
-    opt_coef_cog13_matrix$star05 <- ifelse(t(proportionCoef_cog13_sig01)==T,"**",
-                                           ifelse (t(proportionCoef_cog13_sig)==T,"*",""))
-    plotcog13 + geom_text(data = opt_coef_cog13_matrix, 
-                          label = opt_coef_cog13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
-    
-    
     
     
   
