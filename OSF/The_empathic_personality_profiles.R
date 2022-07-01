@@ -84,7 +84,7 @@
     assign ("DImp",DImp,envir = .GlobalEnv)
   }
  
-CreateReverseItems_allData(DImp1)    #if you want to check another imputed dataset, enter it instead of DImp1
+CreateReverseItems_allData(DImp1)    #if you want to check another imputed dataset, enter it here instead of DImp1
 DImp1.1 <- DImp                  
 
 #defining the relevant variables for the Ridge regression
@@ -350,6 +350,9 @@ DImp1.1 <- DImp
 #############################################################################################
 ################## Specific items' coefficients visualization - Age 11 ######################
 #############################################################################################  
+
+# stars representing significance (Figure 1) will be added later according to 
+# the permutation significance tests
 
 #emotional empathy
     
@@ -1514,11 +1517,90 @@ DImp1.1 <- DImp
   
   
 #############################################################################################
-###### Significance testing with permutations test ##########################################
+###### Functions for significance testing with permutations test ############################
 #############################################################################################
 
-#function for preparing the scrambled data for the permutation process
-#The folds (i.e., which family is in each fold) do not change, nor do the variables.
+
+#the Ridge function that will be inside the permutation function
+#this function is like the original ridge function at the beginning of the script, with two modifications: 
+#1) DImp is called DImpPerm
+#2) instead of extracting all the items' coefficients,
+#   it extracts the highest coefficient when the data is scrambled (so it could be compared to the real coefficients)
+  
+  RidgePermut <- function (DImpPerm,gfold,relvar) {
+    #find the best lambda- 
+    #use  glmnet default range search by lambda=NULL
+    #alpha=0 means we use Ridge regression (and not Lasso regression)
+    #nfolds=10 means that the nested cross-validation procedure for finding the optimal lambda is performed on 10 folds
+    set.seed(10000)
+    cv_fit <- cv.glmnet(x=as.matrix(DImpPerm[DImpPerm$gfold != gfold,relvar[2:45]]),
+                        y=DImpPerm[DImpPerm$gfold != gfold,relvar[1]],
+                        alpha=0, lambda=NULL,nfolds=10)
+    
+    opt_lambda <- cv_fit$lambda.min
+    opt_lambda_ind <- which(cv_fit$lambda==opt_lambda)
+    
+    #what are the coefficients when the lambda is optimal
+    opt_coef <- as.matrix(cv_fit$glmnet.fit$beta[,opt_lambda_ind]) 
+    
+    #extract the highest coefficient (in absolute values)
+    opt_coef_max <- max (abs(opt_coef))
+    
+    #after finding the best lambda, train the entire train set with that lambda
+    fit <- glmnet(x=as.matrix(DImpPerm[DImpPerm$gfold != gfold,relvar[2:45]]), 
+                  y=DImpPerm[DImpPerm$gfold != gfold,relvar[1]], 
+                  alpha = 0, lambda = opt_lambda)
+    
+    #now check the prediction on the test set
+    #create the predicted scores according to the model
+    y_pred <- predict(fit, s=opt_lambda, 
+                      newx = as.matrix(DImpPerm[DImpPerm$gfold == gfold,relvar[2:45]]))
+    
+    mse <- mean((DImpPerm[DImpPerm$gfold == gfold,relvar[1]]-y_pred)^2)
+    
+    assign ("fit",fit,envir = .GlobalEnv)
+    assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)
+    assign ("y_pred",y_pred,envir = .GlobalEnv)
+    assign ("mse", mse,envir = .GlobalEnv)
+    assign ("opt_coef_max", opt_coef_max,envir = .GlobalEnv)
+  }
+  
+  
+#the Ridge function that will be inside the permutation function for the age 11&13 analysis
+#This function was used only for the overall prediction significance testing but not for the 
+#individual items' significance testing (which was done for each age separately)
+#because of that, it does not extract the maximal coefficient from the permuted (scrambled) analyses
+  
+  RidgePermut1113 <- function (DImpPerm11,DImpPerm13, gfold,relvar,lambdas) {
+    #find the best lambda- 
+    #use either glmnet default range search by lambda=NULL or set search by lambda=lambdas  
+    set.seed(10000)
+    cv_fit <- cv.glmnet(x=as.matrix(DImpPerm11[DImpPerm11$gfold1113 != gfold,relvar[2:45]]),
+                        y=DImpPerm11[DImpPerm11$gfold1113 != gfold,relvar[1]],
+                        alpha=0, lambda=NULL,nfolds=10)
+    opt_lambda <- cv_fit$lambda.min
+    opt_lambda_ind <- which(cv_fit$lambda==opt_lambda)
+    
+    #after finding the best lambda, train the entire train set with that lambda
+    fit <- glmnet(x=as.matrix(DImpPerm11[DImpPerm11$gfold1113 != gfold,relvar[2:45]]), 
+                  y=DImpPerm11[DImpPerm11$gfold1113 != gfold,relvar[1]], 
+                  alpha = 0, lambda = opt_lambda)
+    
+    #now check the prediction on the test set
+    y_pred <- predict(fit, s=opt_lambda, 
+                      newx = as.matrix(DImpPerm13[DImpPerm13$gfold1113 == gfold,relvar[2:45]]))
+    
+    mse <- mean((DImpPerm13[DImpPerm13$gfold1113 == gfold,relvar[1]]-y_pred)^2)
+    
+    assign ("fit",fit,envir = .GlobalEnv)
+    assign ("opt_lambda",opt_lambda,envir = .GlobalEnv)
+    assign ("y_pred",y_pred,envir = .GlobalEnv)
+    assign ("mse",mse,envir = .GlobalEnv)
+  }
+  
+  
+#the function for preparing the scrambled data for the permutation process
+#the folds (i.e., which family is in each fold) do not change, nor do the variables.
 #the only thing that changes, inside the function, is the data (DImp). 
 #Each time the empathy variable is scrambled, so there is no real relation between 
 #personality and empathy (because the empathy measure does not really belong to the child)
@@ -1526,7 +1608,7 @@ DImp1.1 <- DImp
   ScrambleEmpathyVar <- function (DImp,relvar,yname){  
     #randomize the empathy variable- switch between families but not between individuals to keep
     #the dependency between twins
-    DImpPerm <- DImp[,c(which(colnames(DImp)=="ifam",which(colnames(DImp)=="ID")),relvar, which (colnames(DImp)=="gfold"))]
+    DImpPerm <- DImp[,c(which(colnames(DImp)=="ifam"),which(colnames(DImp)=="ID"),relvar, which (colnames(DImp)=="gfold"))]
     #turn to wide format- each family has one row
     DImpPermWide <- reshape(DImpPerm, v.names = colnames(DImpPerm[3:(3+length(relvar)-1)]),
                             timevar = "ID", idvar = "ifam", direction="wide") 
@@ -1565,9 +1647,9 @@ DImp1.1 <- DImp
   }
   
   
-#function for preparing the scrambled data for age 13
-#The only thing that changed is that the order of the columns was switched.
-#This is because in age 13 the first family has only twin B data, which makes Twin B come before twin A. 
+#the function for preparing the scrambled data for age 13
+#the only thing that changed is that the order of the columns was switched.
+#this is because in age 13 the first family has only twin B data, which makes Twin B come before twin A. 
   
   ScrambleEmpathyVar13 <- function (DImp,relvar,yname){  
     #randomize the empathy variable- switch between families but not between individuals to keep
@@ -1613,13 +1695,12 @@ DImp1.1 <- DImp
   }
   
   
-#function for preparing the age 11 scrambled data for the analysis of age 11 and 13 together 
-#The only thing that changed from the regular function is that gfold is named gfold1113
+#the function for preparing the age 11 scrambled data for the analysis of age 11 and 13 together 
+#the only thing that changed from the regular function is that gfold is named gfold1113
   
   ScrambleEmpathyVarBothAges <- function (DImp,relvar,yname){  
     #randomize the empathy variable- switch between families and not between individuals to keep
     #the dependency between twins
-    library(reshape)
     DImpPerm <- DImp[,c(1:2,relvar, which (colnames(DImp)=="gfold1113"))]
     DImpPermWide <- reshape(DImpPerm, v.names = colnames(DImpPerm[3:(3+length(relvar)-1)]),
                             timevar = "ID", idvar = "ifam", direction="wide") 
@@ -1628,7 +1709,7 @@ DImp1.1 <- DImp
                                       which(colnames(DImpPermWide)==paste0(yname,".1")),
                                       which(colnames(DImpPermWide)==paste0(yname,".4")))]
     
-    #to keep the proportion of missing twins , I scramble separtely families with both twins,
+    #to keep the proportion of missing twins , I scramble separately families with both twins,
     #families with just twin A, and  families with just twin B
     DImpPermWide_y_both <- na.omit(DImpPermWide_y)
     DImpPermWide_y_TA <- DImpPermWide_y[is.na(DImpPermWide_y[,3]),]
@@ -1656,14 +1737,13 @@ DImp1.1 <- DImp
     assign ("DImpPerm", DImpPerm,envir = .GlobalEnv)
   }
   
-# function for preparing the age 13 scrambled data for the analysis of age 11 and 13 together
+# the function for preparing the age 13 scrambled data for the analysis of age 11 and 13 together
 # changes from the regular function: gfold is named gfold1113; the order of the columns was switched
 # because in age 13 the first family has only twin B data (which makes Twin B come before twin A). 
 
   ScrambleEmpathyVarBothAges13 <- function (DImp,relvar,yname){  
     #randomize the empathy variable- switch between families and not between individuals to keep
     #the dependency between twins
-    library(reshape)
     DImpPerm <- DImp[,c(1:2,relvar, which (colnames(DImp)=="gfold1113"))]
     DImpPermWide <- reshape(DImpPerm, v.names = colnames(DImpPerm[3:(3+length(relvar)-1)]),
                             timevar = "ID", idvar = "ifam", direction="wide") 
@@ -1704,7 +1784,7 @@ DImp1.1 <- DImp
   }
   
   
-#The permutation function that will be iterated n times:
+#the permutation function that will be iterated n times:
     CrossValRidgePermut <- function (DImp,relvar,yname,RidgePermut,ScrambleEmpathyVar){
     
     #call a new scrambled dataset (DImpPerm)
@@ -1791,17 +1871,18 @@ DImp1.1 <- DImp
       for (i in 1:6) { mse_P[i] <- eval(parse(text=paste0("mse_P_",i)))}
       avemse_Permut <- mean(mse_P)
       
-    #computing the mean maximum coefficient of all the items
+    #compute the mean maximal coefficient from all the folds
       avemaxcoef_Permut <- mean(c(opt_coef_max_1,opt_coef_max_2,opt_coef_max_3,
                                 opt_coef_max_4,opt_coef_max_5,opt_coef_max_6))
     
-    #assign the average correlation, average mse, and average maximal coefficient to the global environment
+    #assign the vector of the average correlation, average mse, and average maximal coefficient 
+    #from all the permutations to the global environment
       AveCorMSEPermut <- c(avecor_Permut,avemse_Permut,avemaxcoef_Permut)
       assign ("AveCorMSEPermut",AveCorMSEPermut,envir = .GlobalEnv)
     }
   
     
-#The permutation function that will be iterated n times- adapted to the analysis of age 11&13 together
+#the permutation function that will be iterated n times- adapted to the analysis of age 11&13 together
     CrossValRidgePermut1113 <- function (DImp11,DImp13, relvar,yname11,yname13,
                                          RidgePermut1113, ScrambleEmpathyVar,ScrambleEmpathyVar13){
       
@@ -1901,7 +1982,303 @@ DImp1.1 <- DImp
     }
     
     
+#############################################################################################
+###### Running significance testing with permutations test ##################################
+#############################################################################################
+    
+#run the permuted ridge regression 10000 times (this should take a while...)
+
+#Emotional empathy-11
+    PermutVector_emo11 <- replicate(n=10000,
+                                    expr=CrossValRidgePermut(
+                                    DImp=DImp1.1,relvar=relvar_emotional,
+                                    yname="EMPQ_emotional_11",
+                                    RidgePermut,ScrambleEmpathyVar))
+    
+    PermutVector_emo11_erase_after_check <- replicate(n=10000,
+                                    expr=CrossValRidgePermut(
+                                      DImp=DImp1.1,relvar=relvar_emotional,
+                                      yname="EMPQ_emotional_11",
+                                      RidgePermut,ScrambleEmpathyVar))
+    
+    #just for understanding, see the distribution of the permuted scrambled distribution
+    hist (PermutVector_emo11[1,])          #see the distribution of the correlations
+    hist (PermutVector_emo11[2,])          #see the distribution of the mse
+    hist (PermutVector_emo11[3,])          #see the distribution of the maximal item coefficient
+    
+    #check- what is the proportion of cases in which the real correlation is higher than the
+    #correlations in that distribution, and what is the proportion of cases in which the real MSE 
+    #is lower than the MSEs in that distribution 
+    
+    realCor_emo11 <- avecor_emo11  
+    proportionCor_emo11 <- sum (realCor_emo11 > PermutVector_emo11[1,] )
+    
+    realMSE_emo11 <- avemse_emo11
+    proportionMSE_emo11 <- sum (realMSE_emo11 < PermutVector_emo11[2,] )
+    #all the correlations in the scrambled analyses are lower than the real correlation.
+    #similarly, the all the MSEs are higher than the real MSE
+    
+    #define the real coefficient of each item (in absolute values)
+    realCoef_emo11 <- abs(opt_coef_emo11_matrix$aveCoef)
+    
+    #what is the proportion of cases where the real coefficient is higher than the maximal permuted coefficient
+    proportionCoef_emo11 <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_emo11[i] <- sum (realCoef_emo11[i] > PermutVector_emo11[3,])}
+    
+    proportionCoef_emo11_erase_after_check <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_emo11_erase_after_check[i] <- sum (realCoef_emo11[i] > PermutVector_emo11_erase_after_check[3,])}
+    
+    
+    
+    #what coefficients are higher than the maximal value in 99% (p<.01) and 95% (p<.05) of the cases? 
+    proportionCoef_emo11_sig05 <- proportionCoef_emo11 > 9500   
+    proportionCoef_emo11_sig01 <- proportionCoef_emo11 > 9900
+    
+    #add the significance level to the plot and adjust the graph limits
+    opt_coef_emo11_matrix$star05 <- ifelse(t(proportionCoef_emo11_sig01)==T,"**",
+                                           ifelse (t(proportionCoef_emo11_sig05)==T,"*",""))
+    plotemo11 + geom_text(data = opt_coef_emo11_matrix, 
+                          label = opt_coef_emo11_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
+    
+#Cognitive empathy-11
+    PermutVector_cog11 <- replicate(n=10000,
+                                    expr=CrossValRidgePermut(
+                                      DImp=DImp1.1,relvar=relvar_cognitive,
+                                      yname="EMPQ_cognitive_11",
+                                      RidgePermut,ScrambleEmpathyVar))
+    
+    hist (PermutVector_cog11[1,]) #see the distribution of the correlations
+    hist (PermutVector_cog11[2,]) #see the distribution of the mse
+    hist (PermutVector_cog11[3,]) #see the distribution of the maximal item coefficient
+    
+    #check- what is the proportion of cases in which the real correlation is higher than the
+    #correlations in that distribution, and what is the proportion of cases in which the real MSE 
+    #is lower than the MSEs in that distribution 
+    
+    realCor_cog11 <- avecor_cog11
+    proportionCor_cog11 <- sum (realCor_cog11 > PermutVector_cog11[1,] )
+    
+    realMSE_cog11 <- avemse_cog11
+    proportionMSE_cog11 <- sum (realMSE_cog11 < PermutVector_cog11[2,] )
+    #all the correlations in the scrambled analyses are lower than the real correlation.
+    #similarly, the all the MSEs are higher than the real MSE
+    
+    #define the real coefficients of each item (in absolute values)
+    realCoef_cog11 <- abs(opt_coef_cog11_matrix$aveCoef)
+    
+    proportionCoef_cog11 <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_cog11[i] <- sum (realCoef_cog11[i] > PermutVector_cog11[3,])}
+    
+    #what coefficients are higher than the maximal value in 95% of the cases? 
+    proportionCoef_cog11_sig05 <- proportionCoef_cog11 > 9500
+    proportionCoef_cog11_sig01 <- proportionCoef_cog11 > 9900
+    
+    #add the significance level to the plots and adjust the graph limits
+    opt_coef_cog11_matrix$star05 <- ifelse(t(proportionCoef_cog11_sig01)==T,"**",
+                                           ifelse (t(proportionCoef_cog11_sig05)==T,"*",""))
+    plotcog11 + geom_text(data = opt_coef_cog11_matrix, 
+                          label = opt_coef_cog11_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
+    
+    
+#Emotional empathy-13
+    PermutVector_emo13 <- replicate(n=10000,
+                                    expr=CrossValRidgePermut(
+                                      DImp=D13Imp1.1,relvar=relvar_emotional_13,
+                                      yname="EMPQ_emotional_13",
+                                      RidgePermut,ScrambleEmpathyVar13))
+    
+    
+    hist (PermutVector_emo13[1,]) #see the distribution of the correlations
+    hist (PermutVector_emo13[2,]) #see the distribution of the mse
+    
+    realCor_emo13 <- avecor_emo13
+    proportionCor_emo13 <- sum (realCor_emo13 > PermutVector_emo13[1,] )
+    
+    realMSE_emo13 <- avemse_emo13
+    proportionMSE_emo13 <- sum (realMSE_emo13 < PermutVector_emo13[2,] )
+    
+    
+#Cognitive empathy-13
+    PermutVector_cog13 <- replicate(n=10000,
+                                    expr=CrossValRidgePermut(
+                                      DImp=D13Imp1.1,relvar=relvar_cognitive_13,
+                                      yname="EMPQ_cognitive_13",
+                                      RidgePermut,ScrambleEmpathyVar13))
+    
+    
+    hist (PermutVector_cog13[1,]) #see the distribution of the correlations
+    hist (PermutVector_cog13[2,]) #see the distribution of the mse
+    
+    realCor_cog13 <- avecor_cog13
+    proportionCor_cog13 <- sum (realCor_cog13 > PermutVector_cog13[1,] )
+    
+    realMSE_cog13 <- avemse_cog13
+    proportionMSE_cog13 <- sum (realMSE_cog13 < PermutVector_cog13[2,] )
+    
+    
+#Emotional empathy-age 13 based on age 11 data 
+#(checking significance only of the overall prediction, not individual items)
+    
+    PermutVector_emo <- replicate(n=10000,
+                                  expr=CrossValRidgePermut1113(
+                                    DImp11=DImp1.1,DImp13=D13Imp1.1,relvar=relvar_emotional,
+                                    yname11="EMPQ_emotional_11",yname13="EMPQ_emotional_13",
+                                    RidgePermut1113,
+                                    ScrambleEmpathyVarBothAges, ScrambleEmpathyVarBothAges13))
+    
+    
+    
+    hist (PermutVector_emo[1,]) #see the distribution of the correlations
+    hist (PermutVector_emo[2,]) #see the distribution of the mse
+    
+    realCor_emo <- avecor_emo
+    proportionCor_emo <- sum (realCor_emo > PermutVector_emo[1,] )
+    
+    realMSE_emo <- avemse_emo
+    proportionMSE_emo <- sum (realMSE_emo < PermutVector_emo[2,] )
+    
+    
+#Cognitive empathy-age 13 based on age 11 data
+#(checking significance only of the overall prediction, not individual items)
+    
+    PermutVector_cog <- replicate(n=10000,
+                                  expr=CrossValRidgePermut1113(
+                                    DImp11=DImp1.1,DImp13=D13Imp1.1,relvar=relvar_cognitive,
+                                    yname11="EMPQ_cognitive_11",yname13="EMPQ_cognitive_13",
+                                    lambdas=lambdas,RidgePermut1113,
+                                    ScrambleEmpathyVarBothAges, ScrambleEmpathyVarBothAges13))
+    
+    
+    
+    hist (PermutVector_cog[1,]) #see the distribution of the correlations
+    hist (PermutVector_cog[2,]) #see the distribution of the mse
+    
+    realCor_cog <- avecor_cog
+    proportionCor_cog <- sum (realCor_cog > PermutVector_cog[1,] )
+    
+    realMSE_cog <- avemse_cog
+    proportionMSE_cog <- sum (realMSE_cog < PermutVector_cog[2,] )
+    
+   
+    
+#ERASE ALL THE REST AFTER CLEANING 
+
+#############################################################################################
+###### Running significance testing with permutations test ##################################
+###### for individual items ('nuances') coefficients prediction #############################
+#############################################################################################
+  
     
 
+    #Cognitive empathy-11
+    PermutVector_cog11_withCoef <- replicate(n=10000,
+                                             expr=CrossValRidgePermut(
+                                               DImp=DImp1.1,relvar=relvar_cognitive,
+                                               yname="EMPQ_cognitive_11",lambdas=lambdas,
+                                               RidgePermut,ScrambleEmpathyVar))
+    
+    hist (PermutVector_cog11_withCoef[3,]) #see the distribution of the maximal coefficients
+    
+    #define the real coefficients (in absolute values)
+    realCoef_cog11 <- abs(opt_coef_cog11_matrix$aveCoef)
+    
+    proportionCoef_cog11 <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_cog11[i] <- sum (realCoef_cog11[i] > PermutVector_cog11_withCoef[3,])}
+    
+    #what coefficients are higher than the maximal value in 95% of the cases? 
+    proportionCoef_cog11_sig <- proportionCoef_cog11 > 9500
+    proportionCoef_cog11_sig01 <- proportionCoef_cog11 > 9900
+    
+    #add the significance to the plots
+    opt_coef_cog11_matrix$star <- ifelse(t(proportionCoef_cog11_sig01)==T,"**","")
+    plotcog11 + geom_text(data = opt_coef_cog11_matrix, 
+                          label = opt_coef_cog11_matrix$star, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
+    #FOR SUPPLEMENTRY- add the significance at p <.05 to the plots and adjust the graph limits
+    opt_coef_cog11_matrix$star05 <- ifelse(t(proportionCoef_cog11_sig01)==T,"**",
+                                           ifelse (t(proportionCoef_cog11_sig)==T,"*",""))
+    plotcog11 + geom_text(data = opt_coef_cog11_matrix, 
+                          label = opt_coef_cog11_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
+    #Emotional empathy- 13
+    PermutVector_emo13_withCoef <- replicate(n=10000,
+                                             expr=CrossValRidgePermut(
+                                               DImp=D13Imp1.1,relvar=relvar_emotional_13,
+                                               yname="EMPQ_emotional_13",lambdas=lambdas,
+                                               RidgePermut,ScrambleEmpathyVar13))
+    
+    
+    hist (PermutVector_emo13_withCoef[3,]) #see the distribution of the maximal coefficients
+    
+    #define the real coefficients (in absolute values)
+    realCoef_emo13 <- abs(opt_coef_emo13_matrix$aveCoef)
+    
+    proportionCoef_emo13 <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_emo13[i] <- sum (realCoef_emo13[i] > PermutVector_emo13_withCoef[3,])}
+    
+    #what coefficients are higher than the maximal value in 95% of the cases? 
+    proportionCoef_emo13_sig <- proportionCoef_emo13 > 9500
+    proportionCoef_emo13_sig01 <- proportionCoef_emo13 > 9900
+    
+    #add the significance to the plots
+    opt_coef_emo13_matrix$star <- ifelse(t(proportionCoef_emo13_sig01)==T,"**","")
+    plotemo13 + geom_text(data = opt_coef_emo13_matrix, 
+                          label = opt_coef_emo13_matrix$star, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
+    #FOR SUPPLEMENTRY- add the significance at p <.05 to the plots and adjust the graph limits
+    opt_coef_emo13_matrix$star05 <- ifelse(t(proportionCoef_emo13_sig01)==T,"**",
+                                           ifelse (t(proportionCoef_emo13_sig)==T,"*",""))
+    plotemo13 + geom_text(data = opt_coef_emo13_matrix, 
+                          label = opt_coef_emo13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
+    
+    #Cognitive empathy- 13
+    PermutVector_cog13_withCoef <- replicate(n=10000,
+                                             expr=CrossValRidgePermut(
+                                               DImp=D13Imp1.1,relvar=relvar_cognitive_13,
+                                               yname="EMPQ_cognitive_13",lambdas=lambdas,
+                                               RidgePermut,ScrambleEmpathyVar13))
+    
+    
+    hist (PermutVector_cog13_withCoef[3,]) #see the distribution of the maximal coefficients
+    
+    #define the real coefficients (in absolute values)
+    realCoef_cog13 <- abs(opt_coef_cog13_matrix$aveCoef)
+    
+    proportionCoef_cog13 <- matrix(nrow=1,ncol=44)
+    for (i in 1:44){
+      proportionCoef_cog13[i] <- sum (realCoef_cog13[i] > PermutVector_cog13_withCoef[3,])}
+    
+    #what coefficients are higher than the maximal value in 95% of the cases? 
+    proportionCoef_cog13_sig <- proportionCoef_cog13 > 9500
+    proportionCoef_cog13_sig01 <- proportionCoef_cog13 > 9900
+    
+    
+    #add the significance to the plots
+    opt_coef_cog13_matrix$star <- ifelse(t(proportionCoef_cog13_sig01)==T,"**","")
+    plotcog13 + geom_text(data = opt_coef_cog13_matrix, 
+                          label = opt_coef_cog13_matrix$star, nudge_y = 0)+ ylim(-.03, .13)
+    
+    #FOR SUPPLEMENTRY- add the significance at p <.05 to the plots and adjust the graph limits
+    opt_coef_cog13_matrix$star05 <- ifelse(t(proportionCoef_cog13_sig01)==T,"**",
+                                           ifelse (t(proportionCoef_cog13_sig)==T,"*",""))
+    plotcog13 + geom_text(data = opt_coef_cog13_matrix, 
+                          label = opt_coef_cog13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
+    
+    
+    
     
   
