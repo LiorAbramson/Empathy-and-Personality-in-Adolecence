@@ -2092,7 +2092,8 @@ checking results' significance
     realMSE_emo11 <- avemse_emo11
     proportionMSE_emo11 <- sum (realMSE_emo11 < PermutVector_emo11[2,] )
     #all the correlations in the scrambled analyses are lower than the real correlation.
-    #similarly, the all the MSEs are higher than the real MSE
+    #similarly, the all the MSEs are higher than the real MSE.
+    #This indicates significance of results at p<.0001
     
     #define the real coefficient of each item (in absolute values)
     realCoef_emo11 <- abs(opt_coef_emo11_matrix$aveCoef)
@@ -2109,7 +2110,7 @@ checking results' significance
     #add the significance level to the plot and adjust the graph limits
     opt_coef_emo11_matrix$star05 <- ifelse(t(proportionCoef_emo11_sig01)==T,"**",
                                            ifelse (t(proportionCoef_emo11_sig05)==T,"*",""))
-    plotemo11 + geom_text(data = opt_coef_emo11_matrix, 
+    plotemo11 <- plotemo11 + geom_text(data = opt_coef_emo11_matrix, 
                           label = opt_coef_emo11_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
     
   
@@ -2120,7 +2121,8 @@ checking results' significance
     
     #check- what is the proportion of cases in which the real correlation is higher than the
     #correlations in that distribution, and what is the proportion of cases in which the real MSE 
-    #is lower than the MSEs in that distribution 
+    #is lower than the MSEs in that distribution
+    #This indicates significance of results at p<.0001
     
     realCor_cog11 <- avecor_cog11
     proportionCor_cog11 <- sum (realCor_cog11 > PermutVector_cog11[1,] )
@@ -2144,7 +2146,7 @@ checking results' significance
     #add the significance level to the plots and adjust the graph limits
     opt_coef_cog11_matrix$star05 <- ifelse(t(proportionCoef_cog11_sig01)==T,"**",
                                            ifelse (t(proportionCoef_cog11_sig05)==T,"*",""))
-    plotcog11 + geom_text(data = opt_coef_cog11_matrix, 
+    plotcog11 <- plotcog11 + geom_text(data = opt_coef_cog11_matrix, 
                           label = opt_coef_cog11_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
     
     
@@ -2177,7 +2179,7 @@ checking results' significance
     #add the significance to the plots and adjust the graph limits
     opt_coef_emo13_matrix$star05 <- ifelse(t(proportionCoef_emo13_sig01)==T,"**",
                                            ifelse (t(proportionCoef_emo13_sig05)==T,"*",""))
-    plotemo13 + geom_text(data = opt_coef_emo13_matrix, 
+    plotemo13 <- plotemo13 + geom_text(data = opt_coef_emo13_matrix, 
                           label = opt_coef_emo13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
     
     
@@ -2210,7 +2212,7 @@ checking results' significance
     #add the significance to the plots and adjust the graph limits
     opt_coef_cog13_matrix$star05 <- ifelse(t(proportionCoef_cog13_sig01)==T,"**",
                                            ifelse (t(proportionCoef_cog13_sig05)==T,"*",""))
-    plotcog13 + geom_text(data = opt_coef_cog13_matrix, 
+    plotcog13 <- plotcog13 + geom_text(data = opt_coef_cog13_matrix, 
                           label = opt_coef_cog13_matrix$star05, nudge_y = 0)+ ylim(-.03, .13)
     
     

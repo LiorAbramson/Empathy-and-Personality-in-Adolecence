@@ -5,7 +5,692 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
+This script performs all the preliminary analyses and examines twins' ICC in the study variables
+before conducting the biometric cross-lagged analysis in the Mx software 
+
+Preparations:
 ```{r}
 
+#Preparations
+  rm(list = ls()) # clean the global environment
+  cat ("\014")    #clean the R console
+
+#Packages
+  packages <- c('broom','purrr','lsr','psych', 'apaTables', 'reshape','irr')
+  lapply(packages, require, character.only = TRUE)
+
+#Import the file (Dfinal_11_13 was created using 'the_empathic_personality_profiles.R' script)
+  D <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Dfinal_11_13.csv")
+
+```
+
+examining attrition effects: are there differences in study variables 
+between adolecents who participated in one or two time points?
+```{r}
+#build the variable indicating whether the participant was in one or two time points
+  Dfinal_11_13$whatStage <- 0
+  Dfinal_11_13$whatStage[is.na(Dfinal_11_13$EMPQ_emotional_11)== F &is.na(Dfinal_11_13$EMPQ_emotional_13)== F] <-1   
+
+#perform separate t-test for each study outcome
+  ttest_whatStage_emo11 <- t.test(EMPQ_emotional_11~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_cog11 <- t.test(EMPQ_cognitive_11~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_predemo11 <- t.test(predicted_emotional_11~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_predcog11 <- t.test(predicted_cognitive_11~whatStage, data=Dfinal_11_13)
+  
+  ttest_whatStage_emo13 <- t.test(EMPQ_emotional_13~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_cog13 <- t.test(EMPQ_cognitive_13~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_predemo13 <- t.test(predicted_emotional_13~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_predcog13 <- t.test(predicted_cognitive_13~whatStage, data=Dfinal_11_13)
+
+#enter all tests in one table
+  ttest_attritionTable <- map_df(list(ttest_whatStage_predemo11,ttest_whatStage_emo11,
+                                      ttest_whatStage_predemo13,ttest_whatStage_emo13,
+                                      ttest_whatStage_predcog11,ttest_whatStage_cog11,
+                                      ttest_whatStage_predcog13,ttest_whatStage_cog13), tidy)
+
+  ttest_attritionTable_edit <- ttest_attritionTable[c("estimate1", "estimate2","statistic","parameter","p.value")]
+  colnames(ttest_attritionTable_edit) <- c("Mean one time-point","Mean both time-point", "t value","df","p-value")
+  ttest_attritionTable_edit[,1:4] <- round(ttest_attritionTable_edit[,1:4],2)
+  ttest_attritionTable_edit[,5]   <- round(ttest_attritionTable_edit[,5],3)
+
+#add effect size
+  ttest_attritionTable_edit$cohenD <- NA
+  
+  ttest_attritionTable_edit$cohenD[1] <- 0-round(cohensD(predicted_emotional_11~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[2] <- 0-round(cohensD(EMPQ_emotional_11~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[3] <- 0-round(cohensD(predicted_emotional_13~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[4] <- 0-round(cohensD(EMPQ_emotional_13~whatStage, data=Dfinal_11_13),2)
+  
+  ttest_attritionTable_edit$cohenD[5] <- 0-round(cohensD(predicted_cognitive_11~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[6] <- 0-round(cohensD(EMPQ_cognitive_11~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[7] <- 0-round(cohensD(predicted_cognitive_13~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[8] <- 0-round(cohensD(EMPQ_cognitive_13~whatStage, data=Dfinal_11_13),2)
+
+#add sd
+  ttest_attritionTable_edit$sd1Stage <- NA
+  ttest_attritionTable_edit$sd2Stage <- NA
+  
+  ttest_attritionTable_edit$sd1Stage[1] <- round((aggregate(Dfinal_11_13$predicted_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[2] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[3] <- round((aggregate(Dfinal_11_13$predicted_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[4] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+
+  ttest_attritionTable_edit$sd1Stage[5] <- round((aggregate(Dfinal_11_13$predicted_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[6] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[7] <- round((aggregate(Dfinal_11_13$predicted_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[8] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  
+  ttest_attritionTable_edit$sd2Stage[1] <- round((aggregate(Dfinal_11_13$predicted_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[2] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[3] <- round((aggregate(Dfinal_11_13$predicted_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[4] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  
+  ttest_attritionTable_edit$sd2Stage[5] <- round((aggregate(Dfinal_11_13$predicted_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[6] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[7] <- round((aggregate(Dfinal_11_13$predicted_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[8] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+
+#adjust labels
+  ttest_attritionTable_edit$`Mean one time-point` <- paste(as.character(ttest_attritionTable_edit$`Mean one time-point`),"(",
+                                                           as.character (ttest_attritionTable_edit$sd1Stage),")")
+  ttest_attritionTable_edit$`Mean both time-point` <- paste(as.character(ttest_attritionTable_edit$`Mean both time-point`),"(",
+                                                            as.character (ttest_attritionTable_edit$sd2Stage),")")
+  ttest_attritionTable_edit$`t value` <- paste(as.character(ttest_attritionTable_edit$`t value`),"(",
+                                               as.character (ttest_attritionTable_edit$df),")")
+  
+  df_attrition <- apply(ttest_attritionTable_edit[,c(1,2,3,6)],2,as.character)
+
+#export table to csv
+  write.csv(df_attrition, file= "ttest_attritionTable.csv", row.names = F)
+
+```
+
+examining relations between sex and the study variables
+equal variances between the groups ARE NOT assumed
+```{r}
+
+#perform separate t-test for each study outcome
+  ttest_sexPredemo11 <- t.test(predicted_emotional_11~sex, data=D)
+  ttest_sexEmpemo11 <-t.test(EMPQ_emotional_11~sex, data=D)
+  ttest_sexPredcog11 <- t.test(predicted_cognitive_11~sex, data=D)
+  ttest_sexEmpcog11 <- t.test(EMPQ_cognitive_11~sex, data=D)
+  
+  ttest_sexPredemo13 <- t.test(predicted_emotional_13~sex, data=D)
+  ttest_sexEmpemo13 <-t.test(EMPQ_emotional_13~sex, data=D)
+  ttest_sexPredcog13 <- t.test(predicted_cognitive_13~sex, data=D)
+  ttest_sexEmpcog13 <- t.test(EMPQ_cognitive_13~sex, data=D)
+
+#enter all tests in one table
+  ttest_sexTable <- map_df(list(ttest_sexPredemo11,ttest_sexEmpemo11,
+                                ttest_sexPredemo13,ttest_sexEmpemo13,
+                                ttest_sexPredcog11, ttest_sexEmpcog11,
+                                ttest_sexPredcog13, ttest_sexEmpcog13), tidy)
+  
+  ttest_sexTable_edit <- ttest_sexTable[c("estimate1", "estimate2","statistic","parameter","p.value")]
+  colnames(ttest_sexTable_edit) <- c("Mean boys","Mean girls", "t value","df","p-value")
+  ttest_sexTable_edit[,1:4] <- round(ttest_sexTable_edit[,1:4],2)
+  ttest_sexTable_edit[,5] <- round(ttest_sexTable_edit[,5],3)
+
+#add effect size
+  ttest_sexTable_edit$cohenD <- NA
+  
+  ttest_sexTable_edit$cohenD[1] <- 0-round(cohensD(predicted_emotional_11~sex, data=D),2)
+  ttest_sexTable_edit$cohenD[2] <- 0-round(cohensD(EMPQ_emotional_11~sex, data=D),2)
+  ttest_sexTable_edit$cohenD[3] <- 0-round(cohensD(predicted_emotional_13~sex, data=D),2)
+  ttest_sexTable_edit$cohenD[4] <- 0-round(cohensD(EMPQ_emotional_13~sex, data=D),2)
+  
+  ttest_sexTable_edit$cohenD[5] <- 0-round(cohensD(predicted_cognitive_11~sex, data=D),2)
+  ttest_sexTable_edit$cohenD[6] <- 0-round(cohensD(EMPQ_cognitive_11~sex, data=D),2)
+  ttest_sexTable_edit$cohenD[7] <- 0-round(cohensD(predicted_cognitive_13~sex, data=D),2)
+  ttest_sexTable_edit$cohenD[8] <- 0-round(cohensD(EMPQ_cognitive_13~sex, data=D),2)
+
+#add sd
+  ttest_sexTable_edit$sdBoys <- NA
+  ttest_sexTable_edit$sdGirls <- NA
+  
+  ttest_sexTable_edit$sdBoys[1] <- round((aggregate(D$predicted_emotional_11~D$sex, FUN = sd)[1,2]),2)
+  ttest_sexTable_edit$sdBoys[2] <- round((aggregate(D$EMPQ_emotional_11~D$sex, FUN = sd)[1,2]),2)
+  ttest_sexTable_edit$sdBoys[3] <- round((aggregate(D$predicted_emotional_13~D$sex, FUN = sd)[1,2]),2)
+  ttest_sexTable_edit$sdBoys[4] <- round((aggregate(D$EMPQ_emotional_13~D$sex, FUN = sd)[1,2]),2)
+  
+  ttest_sexTable_edit$sdBoys[5] <- round((aggregate(D$predicted_cognitive_11~D$sex, FUN = sd)[1,2]),2)
+  ttest_sexTable_edit$sdBoys[6] <- round((aggregate(D$EMPQ_cognitive_11~D$sex, FUN = sd)[1,2]),2)
+  ttest_sexTable_edit$sdBoys[7] <- round((aggregate(D$predicted_cognitive_13~D$sex, FUN = sd)[1,2]),2)
+  ttest_sexTable_edit$sdBoys[8] <- round((aggregate(D$EMPQ_cognitive_13~D$sex, FUN = sd)[1,2]),2)
+  
+  ttest_sexTable_edit$sdGirls[1] <- round((aggregate(D$predicted_emotional_11~D$sex, FUN = sd)[2,2]),2)
+  ttest_sexTable_edit$sdGirls[2] <- round((aggregate(D$EMPQ_emotional_11~D$sex, FUN = sd)[2,2]),2)
+  ttest_sexTable_edit$sdGirls[3] <- round((aggregate(D$predicted_emotional_13~D$sex, FUN = sd)[2,2]),2)
+  ttest_sexTable_edit$sdGirls[4] <- round((aggregate(D$EMPQ_emotional_13~D$sex, FUN = sd)[2,2]),2)
+  
+  ttest_sexTable_edit$sdGirls[5] <- round((aggregate(D$predicted_cognitive_11~D$sex, FUN = sd)[2,2]),2)
+  ttest_sexTable_edit$sdGirls[6] <- round((aggregate(D$EMPQ_cognitive_11~D$sex, FUN = sd)[2,2]),2)
+  ttest_sexTable_edit$sdGirls[7] <- round((aggregate(D$predicted_cognitive_13~D$sex, FUN = sd)[2,2]),2)
+  ttest_sexTable_edit$sdGirls[8] <- round((aggregate(D$EMPQ_cognitive_13~D$sex, FUN = sd)[2,2]),2)
+  
+#edit labels
+  ttest_sexTable_edit$`Mean boys` <- paste(as.character(ttest_sexTable_edit$`Mean boys`),"(",
+                                           as.character (ttest_sexTable_edit$sdBoys),")")
+  ttest_sexTable_edit$`Mean girls` <- paste(as.character(ttest_sexTable_edit$`Mean girls`),"(",
+                                           as.character (ttest_sexTable_edit$sdGirls),")")
+  ttest_sexTable_edit$`t value` <- paste(as.character(ttest_sexTable_edit$`t value`),"(",
+                                         as.character (ttest_sexTable_edit$df),")")
+#add stars indicating significance
+  for (i in 1:8) { ifelse(ttest_sexTable_edit$`p-value`[i]<.0001,
+        ttest_sexTable_edit$`t value`[i]<- paste0 (ttest_sexTable_edit$`t value`[i],"***"),
+          ifelse(ttest_sexTable_edit$`p-value`[i]<.01,
+                 ttest_sexTable_edit$`t value`[i]<- paste0 (ttest_sexTable_edit$`t value`[i],"**"), 
+                    ttest_sexTable_edit$`t value`[i]<- ttest_sexTable_edit$`t value`[i]))}
+  
+  df_sex <- apply(ttest_sexTable_edit[,c(1,2,3,6)],2,as.character)
+
+#export table to csv
+  write.csv(df_sex, file= "ttest_sex.csv", row.names = F)
+
+```
+
+examining relations between questionnaire format (online/'manual'pencil and paper') and the study variables
+equal variances between the groups ARE NOT assumed
+```{r}
+
+# at age 13 tim-point, some children received a short battery that did not include the emotion recognition test.
+# as a first step, conduct ttest only for the difference between the short and long online versions:
+  t.test(predicted_emotional_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
+  t.test(EMPQ_emotional_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
+  t.test(predicted_cognitive_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
+  t.test(EMPQ_cognitive_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
+
+#because there is no significant differnce, we unite the two online groups
+  D$OnlineManual13_2G <- D$OnlineManual13
+  D$OnlineManual13_2G[D$OnlineManual13==0] <-"online"
+  D$OnlineManual13_2G[D$OnlineManual13==1] <-"online"
+  D$OnlineManual13_2G[D$OnlineManual13==2] <-"paper"
+
+#perform separate t-test for each study outcome
+  ttest_sourcePredemo11 <- t.test(predicted_emotional_11~OnlineManual, data=D)
+  ttest_sourceEmpemo11 <-t.test(EMPQ_emotional_11~ OnlineManual, data=D)
+  ttest_sourcePredcog11 <- t.test(predicted_cognitive_11~ OnlineManual, data=D)
+  ttest_sourceEmpcog11 <- t.test(EMPQ_cognitive_11~ OnlineManual, data=D)
+  
+  ttest_sourcePredemo13 <- t.test(predicted_emotional_13~ OnlineManual13_2G, data=D)
+  ttest_sourceEmpemo13 <-t.test(EMPQ_emotional_13~ OnlineManual13_2G, data=D)
+  ttest_sourcePredcog13 <- t.test(predicted_cognitive_13~ OnlineManual13_2G, data=D)
+  ttest_sourceEmpcog13 <- t.test(EMPQ_cognitive_13~ OnlineManual13_2G, data=D)
+  
+#enter all tests in one table
+  ttest_sourceTable <- map_df(list(ttest_sourcePredemo11,ttest_sourceEmpemo11,
+                                   ttest_sourcePredemo13,ttest_sourceEmpemo13,
+                                   ttest_sourcePredcog11, ttest_sourceEmpcog11,
+                                   ttest_sourcePredcog13, ttest_sourceEmpcog13), tidy)
+  
+  ttest_sourceTable_edit <- ttest_sourceTable[c("estimate1", "estimate2","statistic","parameter","p.value")]
+  colnames(ttest_sourceTable_edit) <- c("MeanOnline","MeanPaper", "t_value","df","p_value")
+  ttest_sourceTable_edit[,1:4] <- round(ttest_sourceTable_edit[,1:4],2)
+  ttest_sourceTable_edit[,5] <- round(ttest_sourceTable_edit[,5],3)
+
+
+#add effect size
+  ttest_sourceTable_edit$cohenD <- NA
+  
+  ttest_sourceTable_edit$cohenD[1] <- round(cohensD(predicted_emotional_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[2] <- round(cohensD(EMPQ_emotional_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[3] <- round(cohensD(predicted_emotional_13~OnlineManual13_2G, data=D),2)
+  ttest_sourceTable_edit$cohenD[4] <- round(cohensD(EMPQ_emotional_13~OnlineManual13_2G, data=D),2)
+  
+  ttest_sourceTable_edit$cohenD[5] <- round(cohensD(predicted_cognitive_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[6] <- round(cohensD(EMPQ_cognitive_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[7] <- round(cohensD(predicted_cognitive_13~OnlineManual13_2G, data=D),2)
+  ttest_sourceTable_edit$cohenD[8] <- round(cohensD(EMPQ_cognitive_13~OnlineManual13_2G, data=D),2)
+  
+
+#add sd
+  ttest_sourceTable_edit$sdOnline <- NA
+  ttest_sourceTable_edit$sdPaper <- NA
+  
+  ttest_sourceTable_edit$sdOnline[1] <- round((aggregate(D$predicted_emotional_11~D$OnlineManual, FUN = sd)[1,2]),2)
+  ttest_sourceTable_edit$sdOnline[2] <- round((aggregate(D$EMPQ_emotional_11~D$OnlineManual, FUN = sd)[1,2]),2)
+  ttest_sourceTable_edit$sdOnline[3] <- round((aggregate(D$predicted_emotional_13~D$OnlineManual13_2G, FUN = sd)[1,2]),2)
+  ttest_sourceTable_edit$sdOnline[4] <- round((aggregate(D$EMPQ_emotional_13~D$OnlineManual13_2G, FUN = sd)[1,2]),2)
+  
+  ttest_sourceTable_edit$sdOnline[5] <- round((aggregate(D$predicted_cognitive_11~D$OnlineManual, FUN = sd)[1,2]),2)
+  ttest_sourceTable_edit$sdOnline[6] <- round((aggregate(D$EMPQ_cognitive_11~D$OnlineManual, FUN = sd)[1,2]),2)
+  ttest_sourceTable_edit$sdOnline[7] <- round((aggregate(D$predicted_cognitive_13~D$OnlineManual13_2G, FUN = sd)[1,2]),2)
+  ttest_sourceTable_edit$sdOnline[8] <- round((aggregate(D$EMPQ_cognitive_13~D$OnlineManual13_2G, FUN = sd)[1,2]),2)
+  
+  ttest_sourceTable_edit$sdPaper[1] <- round((aggregate(D$predicted_emotional_11~D$OnlineManual, FUN = sd)[2,2]),2)
+  ttest_sourceTable_edit$sdPaper[2] <- round((aggregate(D$EMPQ_emotional_11~D$OnlineManual, FUN = sd)[2,2]),2)
+  ttest_sourceTable_edit$sdPaper[3] <- round((aggregate(D$predicted_emotional_13~D$OnlineManual13_2G, FUN = sd)[2,2]),2)
+  ttest_sourceTable_edit$sdPaper[4] <- round((aggregate(D$EMPQ_emotional_13~D$OnlineManual13_2G, FUN = sd)[2,2]),2)
+  
+  ttest_sourceTable_edit$sdPaper[5] <- round((aggregate(D$predicted_cognitive_11~D$OnlineManual, FUN = sd)[2,2]),2)
+  ttest_sourceTable_edit$sdPaper[6] <- round((aggregate(D$EMPQ_cognitive_11~D$OnlineManual, FUN = sd)[2,2]),2)
+  ttest_sourceTable_edit$sdPaper[7] <- round((aggregate(D$predicted_cognitive_13~D$OnlineManual13_2G, FUN = sd)[2,2]),2)
+  ttest_sourceTable_edit$sdPaper[8] <- round((aggregate(D$EMPQ_cognitive_13~D$OnlineManual13_2G, FUN = sd)[2,2]),2)
+
+#edit labels
+  ttest_sourceTable_edit$MeanOnline <- paste(as.character(ttest_sourceTable_edit$MeanOnline),"(",
+                                           as.character (ttest_sourceTable_edit$sdOnline),")")
+  ttest_sourceTable_edit$MeanPaper <- paste(as.character(ttest_sourceTable_edit$MeanPaper),"(",
+                                            as.character (ttest_sourceTable_edit$sdPaper),")")
+  ttest_sourceTable_edit$t_value <- paste(as.character(ttest_sourceTable_edit$t_value),"(",
+                                         as.character (ttest_sourceTable_edit$df),")")
+
+#add stars that indicate significance
+  for (i in 1:8) { ifelse(ttest_sourceTable_edit$p_value[i]<.001,
+                          ttest_sourceTable_edit$t_value[i]<- paste0 (ttest_sourceTable_edit$t_value[i],"***"),
+                          ifelse(ttest_sourceTable_edit$p_value[i]<.01,
+                                 ttest_sourceTable_edit$t_value[i]<- paste0 (ttest_sourceTable_edit$t_value[i],"**"),
+                                 ifelse(ttest_sourceTable_edit$p_value[i]<.05,
+                                        ttest_sourceTable_edit$t_value[i]<- paste0 (ttest_sourceTable_edit$t_value[i],"*"),
+                                 ttest_sourceTable_edit$t_value[i]<- ttest_sourceTable_edit$t_value[i])))}
+  
+  df_source <- apply(ttest_sourceTable_edit[,c(1,2,3,6)],2,as.character)
+
+#export table to csv
+  write.csv(df_source, file= "ttest_source.csv", row.names = F)
+
+
+```
+
+examining correlations between study variables and age within each time-point
+```{r}
+
+#import partcipants age in each wave
+  setwd("C:/Users/ShaiW/Documents/Lior computer/empathy and puberty/data/Final data files")  
+  participants_ages11 <- read.csv ("Age11_participants_age.csv")
+  participants_ages13 <- read.csv ("Age13_participants_age.csv")
+  
+  D<- merge(x=D, y=participants_ages11, by=c("ifam","ID"), all.x=T, all.y=F )     
+  D<- merge(x=D, y=participants_ages13, by=c("ifam","ID"), all.x=T, all.y=F ) 
+
+#examine the correlations
+  col=colnames(D)
+  relvar_agecor11 <- c(which (col=="Age11"),
+                       which (col=="predicted_emotional_11"),which(col=="predicted_cognitive_11"),
+                       which (col=="EMPQ_emotional_11"),which(col=="EMPQ_cognitive_11"))
+                       
+  apa.cor.table(D[,relvar_agecor11])
+
+  relvar_agecor13 <- c(which (col=="Age13"),
+                     which (col=="predicted_emotional_13"),which(col=="predicted_cognitive_13"),
+                     which (col=="EMPQ_emotional_13"),which(col=="EMPQ_cognitive_13"))
+
+  apa.cor.table(D[,relvar_agecor13])
+
+```
+
+examining differnces between DZ same-sex (DZS) and DZ opposite sex (DZO) twins
+in order to decide whether these groups can be united
+```{r}
+#Converting dataset to wide format
+  DWide <- reshape(D, timevar = "ID", idvar = "ifam", direction = "wide", 
+                        v.names = colnames(D[-c(1,2,which(colnames(D)=="zygosity"))]))
+   
+  newnames <- gsub(x=colnames(DWide),pattern="[.]", replacement="_")
+  newnames <- gsub(x=newnames,pattern="_4", replacement="_2")
+  newnames <- gsub(x=newnames,pattern="_11", replacement="11")
+  newnames <- gsub(x=newnames,pattern="_13", replacement="13")
+  colnames(DWide) <- newnames
+
+#check difference between DZS and DZO -DO I NEED THIS? IF NOT ERASE
+#notice that I put the DZS in the MZ command and the DZO in the DZ command
+#rawDescript_DZS_DZO<- umxSummarizeTwinData(DWide, 
+#                                           selVars=c("EMPQ_emotional11","EMPQ_cognitive11","predicted_emotional11","predicted_cognitive11",
+#                                                     "EMPQ_emotional13","EMPQ_cognitive13","predicted_emotional13","predicted_cognitive13"),
+#                                           zyg="zygosity", 
+#                                           sep="_",MZ=2, DZ=3)
+
+
+#change colnames
+  colnames(rawDescript_DZS_DZO)<- c("Var","Mean","SD", "rDZS","rDZO")
+
+
+#create different datasets for the 3 zygosity groups 
+  Dmz  = subset(DWide, zygosity == 1)
+  Ddzs = subset(DWide, zygosity == 2)
+  Ddzo = subset(DWide, zygosity == 3)
+
+#computing ICC for dzs and dzo
+  col <- colnames(DWide)
+  
+  #age 11
+  icc_EMPemo_MZ11  <- icc(Dmz[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="twoway", unit="single")
+  icc_EMPemo_DZS11 <- icc(Ddzs[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="twoway", unit="single")
+  icc_EMPemo_DZO11 <- icc(Ddzo[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="twoway", unit="single")
+  
+  icc_EMPcog_MZ11  <- icc(Dmz[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="twoway", unit="single")
+  icc_EMPcog_DZS11 <-icc(Ddzs[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="twoway", unit="single")
+  icc_EMPcog_DZO11 <-icc(Ddzo[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="twoway", unit="single")
+  
+  icc_PREDemo_MZ11 <-icc(Dmz[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="twoway", unit="single")
+  icc_PREDemo_DZS11 <-icc(Ddzs[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="twoway", unit="single")
+  icc_PREDemo_DZO11 <-icc(Ddzo[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="twoway", unit="single")
+  
+  icc_PREDcog_MZ11  <- icc(Dmz[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
+  icc_PREDcog_DZS11 <- icc(Ddzs[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
+  icc_PREDcog_DZO11 <- icc(Ddzo[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
+
+  #fisher Z comparison between DZS and DZo ICC
+  fishZ_empEmo11  <- r.test(n=icc_EMPemo_DZS11$subjects, n2=icc_EMPemo_DZO11$subjects,r12=icc_EMPemo_DZS11$value,  r34=icc_EMPemo_DZO11$value)  
+  fishZ_empCog11  <- r.test(n=icc_EMPcog_DZS11$subjects, n2=icc_EMPcog_DZO11$subjects,r12=icc_EMPcog_DZS11$value,  r34=icc_EMPcog_DZO11$value)     
+  fishZ_predEmo11 <- r.test(n=icc_PREDemo_DZS11$subjects, n2=icc_PREDemo_DZO11$subjects,r12=icc_PREDemo_DZS11$value,  r34=icc_PREDemo_DZO11$value) 
+  fishZ_predCog11 <- r.test(n=icc_PREDcog_DZS11$subjects, n2=icc_PREDcog_DZO11$subjects,r12=icc_PREDcog_DZS11$value,  r34=icc_PREDcog_DZO11$value) 
+
+  #age 13
+  icc_EMPemo_MZ13  <- icc(Dmz[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="twoway", unit="single")
+  icc_EMPemo_DZS13 <- icc(Ddzs[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="twoway", unit="single")
+  icc_EMPemo_DZO13 <- icc(Ddzo[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="twoway", unit="single")
+  
+  icc_EMPcog_MZ13  <- icc(Dmz[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="twoway", unit="single")
+  icc_EMPcog_DZS13 <-icc(Ddzs[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="twoway", unit="single")
+  icc_EMPcog_DZO13 <-icc(Ddzo[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="twoway", unit="single")
+  
+  icc_PREDemo_MZ13 <-icc(Dmz[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="twoway", unit="single")
+  icc_PREDemo_DZS13 <-icc(Ddzs[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="twoway", unit="single")
+  icc_PREDemo_DZO13 <-icc(Ddzo[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="twoway", unit="single")
+  
+  icc_PREDcog_MZ13  <- icc(Dmz[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="twoway", unit="single")
+  icc_PREDcog_DZS13 <- icc(Ddzs[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="twoway", unit="single")
+  icc_PREDcog_DZO13 <- icc(Ddzo[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="twoway", unit="single")
+
+  #fisher Z comparison between DZS and DZo ICC
+  fishZ_empEmo13  <- r.test(n=icc_EMPemo_DZS13$subjects, n2=icc_EMPemo_DZO13$subjects,r12=icc_EMPemo_DZS13$value,  r34=icc_EMPemo_DZO13$value) 
+  fishZ_empCog13  <- r.test(n=icc_EMPcog_DZS13$subjects, n2=icc_EMPcog_DZO13$subjects,r12=icc_EMPcog_DZS13$value,  r34=icc_EMPcog_DZO13$value) 
+  fishZ_predEmo13 <- r.test(n=icc_PREDemo_DZS13$subjects, n2=icc_PREDemo_DZO13$subjects,r12=icc_PREDemo_DZS13$value,  r34=icc_PREDemo_DZO13$value) 
+  fishZ_predCog13 <- r.test(n=icc_PREDcog_DZS13$subjects, n2=icc_PREDcog_DZO13$subjects,r12=icc_PREDcog_DZS13$value,  r34=icc_PREDcog_DZO13$value) 
+  
+  #planting Fisher Z results in a table
+  fishZ_table <- matrix(nrow=8,ncol=4)
+  fishZ_table[,1] <- c("Emotional empathic personality disposition 11","Emotional empathy 11",
+                       "Emotional empathic personality disposition 13","Emotional empathy 13",
+                       "Cognitive empathic personality disposition 11","Cognitive empathy 11",
+                       "Cognitive empathic personality disposition 13","Cognitive empathy 13")
+  
+  fishZ_table[1,2] <- paste(as.character(round(icc_PREDemo_DZS11$value,2)),"[",
+                            as.character(round(icc_PREDemo_DZS11$lbound,2)),"-",
+                            as.character(round(icc_PREDemo_DZS11$ubound,2)),"]") 
+
+  fishZ_table[2,2] <- paste(as.character(round(icc_EMPemo_DZS11$value,2)),"[",
+                            as.character(round(icc_EMPemo_DZS11$lbound,2)),"-",
+                            as.character(round(icc_EMPemo_DZS11$ubound,2)),"]")
+  
+  fishZ_table[3,2] <- paste(as.character(round(icc_PREDemo_DZS13$value,2)),"[",
+                            as.character(round(icc_PREDemo_DZS13$lbound,2)),"-",
+                            as.character(round(icc_PREDemo_DZS13$ubound,2)),"]") 
+  
+  fishZ_table[4,2] <- paste(as.character(round(icc_EMPemo_DZS13$value,2)),"[",
+                            as.character(round(icc_EMPemo_DZS13$lbound,2)),"-",
+                            as.character(round(icc_EMPemo_DZS13$ubound,2)),"]")
+  
+  
+  fishZ_table[5,2] <- paste(as.character(round(icc_PREDcog_DZS11$value,2)),"[",
+                            as.character(round(icc_PREDcog_DZS11$lbound,2)),"-",
+                            as.character(round(icc_PREDcog_DZS11$ubound,2)),"]")
+  
+  fishZ_table[6,2] <- paste(as.character(round(icc_EMPcog_DZS11$value,2)),"[",
+                            as.character(round(icc_EMPcog_DZS11$lbound,2)),"-",
+                            as.character(round(icc_EMPcog_DZS11$ubound,2)),"]")
+  
+  fishZ_table[7,2] <- paste(as.character(round(icc_PREDcog_DZS13$value,2)),"[",
+                            as.character(round(icc_PREDcog_DZS13$lbound,2)),"-",
+                            as.character(round(icc_PREDcog_DZS13$ubound,2)),"]")
+  
+  fishZ_table[8,2] <- paste(as.character(round(icc_EMPcog_DZS13$value,2)),"[",
+                            as.character(round(icc_EMPcog_DZS13$lbound,2)),"-",
+                            as.character(round(icc_EMPcog_DZS13$ubound,2)),"]")
+  
+  fishZ_table[1,3] <- paste(as.character(round(icc_PREDemo_DZO11$value,2)),"[",
+                            as.character(round(icc_PREDemo_DZO11$lbound,2)),"-",
+                            as.character(round(icc_PREDemo_DZO11$ubound,2)),"]") 
+  
+  fishZ_table[2,3] <- paste(as.character(round(icc_EMPemo_DZO11$value,2)),"[",
+                            as.character(round(icc_EMPemo_DZO11$lbound,2)),"-",
+                            as.character(round(icc_EMPemo_DZO11$ubound,2)),"]")
+  
+  fishZ_table[3,3] <- paste(as.character(round(icc_PREDemo_DZO13$value,2)),"[",
+                            as.character(round(icc_PREDemo_DZO13$lbound,2)),"-",
+                            as.character(round(icc_PREDemo_DZO13$ubound,2)),"]") 
+  
+  fishZ_table[4,3] <- paste(as.character(round(icc_EMPemo_DZO13$value,2)),"[",
+                            as.character(round(icc_EMPemo_DZO13$lbound,2)),"-",
+                            as.character(round(icc_EMPemo_DZO13$ubound,2)),"]")
+  
+  
+  fishZ_table[5,3] <- paste(as.character(round(icc_PREDcog_DZO11$value,2)),"[",
+                            as.character(round(icc_PREDcog_DZO11$lbound,2)),"-",
+                            as.character(round(icc_PREDcog_DZO11$ubound,2)),"]")
+  
+  fishZ_table[6,3] <- paste(as.character(round(icc_EMPcog_DZO11$value,2)),"[",
+                            as.character(round(icc_EMPcog_DZO11$lbound,2)),"-",
+                            as.character(round(icc_EMPcog_DZO11$ubound,2)),"]")
+  
+  fishZ_table[7,3] <- paste(as.character(round(icc_PREDcog_DZO13$value,2)),"[",
+                            as.character(round(icc_PREDcog_DZO13$lbound,2)),"-",
+                            as.character(round(icc_PREDcog_DZO13$ubound,2)),"]")
+  
+  fishZ_table[8,3] <- paste(as.character(round(icc_EMPcog_DZO13$value,2)),"[",
+                            as.character(round(icc_EMPcog_DZO13$lbound,2)),"-",
+                            as.character(round(icc_EMPcog_DZO13$ubound,2)),"]")
+  
+  
+  fishZ_table[1,4] <- round(fishZ_predEmo11$z,2)
+  fishZ_table[2,4] <- round(fishZ_empEmo11$z,2)
+  fishZ_table[3,4] <- round(fishZ_predEmo13$z,2) 
+  fishZ_table[4,4] <- round(fishZ_empEmo13$z,2)
+  fishZ_table[5,4] <- round(fishZ_predCog11$z,2)
+  fishZ_table[6,4] <- round(fishZ_empCog11$z,2)
+  fishZ_table[7,4] <- round(fishZ_predCog13$z,2) 
+  fishZ_table[8,4] <- round(fishZ_empCog13$z,2)
+
+  colnames(fishZ_table) <- c("variable","DZ-same sex", "DZ-opposite sex","Z value")
+  write.csv(fishZ_table, file= "fisherZ_DZ.csv", row.names = F)
+
+```
+
+
+standardization according to sex-saving residuals cleaned from sex
+```{r}
+#creating the matrix to store the data
+  col <- colnames(D)
+  relvar <- c(which (col=="EMPQ_emotional_11"),which(col=="EMPQ_cognitive_11"),
+              which(col=="predicted_emotional_11"), which(col=="predicted_cognitive_11"),
+              which (col=="EMPQ_emotional_13"),which(col=="EMPQ_cognitive_13"),
+              which(col=="predicted_emotional_13"), which(col=="predicted_cognitive_13"))
+
+  residvec <- paste0(colnames(D[,relvar]),"r")
+  resid.matrix <- as.data.frame(matrix(data= NA, nrow =nrow(D),ncol =length(relvar)))
+  colnames(resid.matrix) <-residvec
+
+#creating the residual scores
+  for (i in 1:length(relvar)) {
+        reg <- lm(D[,relvar[i]]~sex, data=D, na.action=na.exclude)
+        resid.matrix[,i] <-resid(reg)
+        }
+  D <-cbind(D,resid.matrix)
+
+```
+
+uniting the DZS and DZO groups
+```{r}
+  DWide$zygosity_2G <- DWide$zygosity
+  DWide$zygosity_2G[DWide$zygosity==1] <-"MZ"
+  DWide$zygosity_2G[DWide$zygosity==2] <-"DZ"
+  DWide$zygosity_2G[DWide$zygosity==3] <-"DZ"
+```
+
+compute ICC of the new variables
+```{r}
+  col <- colnames(DWide)
+
+  icc_PREDemo_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_emotional11r_1"),which(col=="predicted_emotional11r_2"))],model="twoway", unit="single")
+  icc_PREDemo_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_emotional11r_1"),which(col=="predicted_emotional11r_2"))],model="twoway", unit="single")
+  
+  
+  icc_EMPemo_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_emotional11r_1"),which(col=="EMPQ_emotional11r_2"))],model="twoway", unit="single")
+  icc_EMPemo_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_emotional11r_1"),which(col=="EMPQ_emotional11r_2"))],model="twoway", unit="single")
+  
+  icc_PREDemo_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_emotional13r_1"),which(col=="predicted_emotional13r_2"))],model="twoway", unit="single")
+  icc_PREDemo_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_emotional13r_1"),which(col=="predicted_emotional13r_2"))],model="twoway", unit="single")
+  
+  
+  icc_EMPemo_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_emotional13r_1"),which(col=="EMPQ_emotional13r_2"))],model="twoway", unit="single")
+  icc_EMPemo_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_emotional13r_1"),which(col=="EMPQ_emotional13r_2"))],model="twoway", unit="single")
+  
+  
+  icc_PREDcog_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_cognitive11r_1"),which(col=="predicted_cognitive11r_2"))],model="twoway", unit="single")
+  icc_PREDcog_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_cognitive11r_1"),which(col=="predicted_cognitive11r_2"))],model="twoway", unit="single")
+  
+  
+  icc_EMPcog_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive11r_2"))],model="twoway", unit="single")
+  icc_EMPcog_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive11r_2"))],model="twoway", unit="single")
+  
+  icc_PREDcog_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_cognitive13r_1"),which(col=="predicted_cognitive13r_2"))],model="twoway", unit="single")
+  icc_PREDcog_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_cognitive13r_1"),which(col=="predicted_cognitive13r_2"))],model="twoway", unit="single")
+  
+  icc_EMPcog_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_cognitive13r_1"),which(col=="EMPQ_cognitive13r_2"))],model="twoway", unit="single")
+  icc_EMPcog_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_cognitive13r_1"),which(col=="EMPQ_cognitive13r_2"))],model="twoway", unit="single")
+
+
+```
+
+prepare a file only with the final variables for Mx biometric cross-lagged analysis
+```{r}
+  col <- colnames(DWide)
+  relvar_4mx <- c(which (col=="ifam"),which(col=="zygosity_2G"),which(col=="sex_2"),which(col=="sex_1"),
+                  which(col=="predicted_emotional11r_2"),which(col=="predicted_emotional13r_2"),
+                  which(col=="EMPQ_emotional11r_2"),which(col=="EMPQ_emotional13r_2"),
+                  which(col=="predicted_cognitive11r_2"),which(col=="predicted_cognitive13r_2"),
+                  which(col=="EMPQ_cognitive11r_2"),which(col=="EMPQ_cognitive13r_2"),
+                  which(col=="predicted_emotional11r_1"),which(col=="predicted_emotional13r_1"),
+                  which(col=="EMPQ_emotional11r_1"),which(col=="EMPQ_emotional13r_1"),
+                  which(col=="predicted_cognitive11r_1"),which(col=="predicted_cognitive13r_1"),
+                  which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive13r_1"))
+  
+  DWide_4Mx <- DWide[,relvar_4mx]
+  write.csv(DWide_4Mx, file= "DWide_4Mx.csv", row.names = F)         
+```
+
+
+Check the associations between the study variables and none-self-report empathy measures
+```{r}
+
+#import the data
+  #Parent-reported empathy age 11
+  setwd("C:/Users/ShaiW/Documents/Lior computer/empathy and puberty/data/Final data files")  
+  DParentEmp <- read.csv ("Age11_ParentEmp_edited_united.csv")
+  library(reshape)
+  DParentEmp <- rename(DParentEmp, c(ï..ifam="ifam"))    # change weird variable names
+
+  #erasing invalid observations
+  DParentEmp <- DParentEmp[DParentEmp$whichParentOut!=3,]
+  col <- colnames(DParentEmp)
+  fathervars <- c(which(col=="Date.2"),which(col=="StartDate.2"),which(col=="FinishDate.2"),
+                  which(col=="EmpCon.2"),which(col=="EQSQ_empathy.2"))
+  DParentEmp[DParentEmp$whichParentOut==2,fathervars] <- NA
+
+  #merge datsets
+  relvar_parents <- c(which (col=="ifam"),which(col=="ID"),
+                      which (col=="EmpCon.2"),which(col=="EmpCon.3"),
+                      which (col=="EQSQ_empathy.2"),which(col=="EQSQ_empathy.3"))
+  DParentEmpShort <- DParentEmp[,relvar_parents]
+  D<- merge(x=D, y=DParentEmpShort, by=c("ifam","ID"), all.x=T, all.y=T )              
+
+  #Parent-reported empathy age 13
+  setwd("C:/Users/ShaiW/Documents/Lior computer/empathy and puberty/data/Final data files")  
+  D13ParentEmp <- read.csv ("Age13_ParentEmp_edited_united.csv")
+  library(reshape)
+  D13ParentEmp <- rename(D13ParentEmp, c(ï..ifam="ifam"))    # change weird variable names
+  D13ParentEmp <- D13ParentEmp[D13ParentEmp$whichParentOut==0,]
+  
+  col <- colnames(D13ParentEmp)
+  relvar_parents13 <- c(which (col=="ifam"),which(col=="ID"),
+                        which (col=="EmpCon.2"),which(col=="EmpCon.3"),
+                        which (col=="EQSQ_empathy.2"),which(col=="EQSQ_empathy.3"))
+  D13ParentEmpShort <- D13ParentEmp[,relvar_parents13]
+
+  D13ParentEmpShort <- rename(D13ParentEmpShort, 
+                            c(EmpCon.2="EmpCon_13.2", EmpCon.3="EmpCon_13.3",
+                              EQSQ_empathy.2="EQSQ_empathy_13.2",EQSQ_empathy.3="EQSQ_empathy_13.3"))
+  D<- merge(x=D, y=D13ParentEmpShort, by=c("ifam","ID"), all.x=T, all.y=T )              
+
+  
+  #subtle facial expressions emotion recognition
+  DEmoR <- read.csv ("subtle_facial_expressions_age13_edited_160622.csv")
+  col <- colnames(DEmoR)
+  relvar_EmoR <- c(which (col=="ifam"),which(col=="ID"), 
+                   which(col=="ER_c"),which(col=="ER_c_neg"),which(col=="ER_c_pos"))
+  DEmoRshort <- DEmoR[,relvar_EmoR]
+  DEmoRshort <- DEmoRshort[complete.cases(DEmoRshort[which(colnames(DEmoRshort)=="ER_c")]),]
+
+  D <- merge(x=D, y=DEmoRshort, by=c("ifam","ID"), all.x=T, all.y=T ) 
+
+
+#check difference in study variables according to parental missingness
+  D$missmomques11 <- NA
+  D$missmomques11[!is.na(D$EQSQ_empathy.3)] <-0
+  D$missmomques11[is.na(D$EQSQ_empathy.3)] <-1
+  
+  D$missdadques11 <- NA
+  D$missdadques11[!is.na(D$EQSQ_empathy.2)] <-0
+  D$missdadques11[is.na(D$EQSQ_empathy.2)] <-1
+  
+  D$missmomques13 <- NA
+  D$missmomques13[!is.na(D$EQSQ_empathy_13.3)] <-0
+  D$missmomques13[is.na(D$EQSQ_empathy_13.3)] <-1
+  
+  D$missdadques13 <- NA
+  D$missdadques13[!is.na(D$EQSQ_empathy_13.2)] <-0
+  D$missdadques13[is.na(D$EQSQ_empathy_13.2)] <-1
+  
+  #ttests
+  t.test(predicted_emotional_11~missmomques11, data=D)
+  t.test(predicted_cognitive_11~missmomques11, data=D)
+  t.test(EMPQ_emotional_11~missmomques11, data=D)
+  t.test(EMPQ_cognitive_11~missmomques11, data=D)
+  
+  t.test(predicted_emotional_11~missdadques11, data=D)
+  t.test(predicted_cognitive_11~missdadques11, data=D)
+  t.test(EMPQ_emotional_11~missdadques11, data=D)
+  t.test(EMPQ_cognitive_11~missdadques11, data=D)
+  
+  t.test(predicted_emotional_13~missmomques13, data=D)
+  t.test(predicted_cognitive_13~missmomques13, data=D)
+  t.test(EMPQ_emotional_13~missmomques13, data=D)
+  t.test(EMPQ_cognitive_13~missmomques13, data=D)
+  
+  t.test(predicted_emotional_13~missdadques13, data=D)
+  t.test(predicted_cognitive_13~missdadques13, data=D)
+  t.test(EMPQ_emotional_13~missdadques13, data=D)
+  t.test(EMPQ_cognitive_13~missdadques13, data=D)
+
+#check difference between children who had no parent data and children who had at least one parent data
+  D$missparentdata11 <- 0
+  D$missparentdata11[D$missmomques11==1 & D$missdadques11] <-1
+  D$missparentdata13 <- 0
+  D$missparentdata13[D$missmomques13==1 & D$missdadques13] <-1
+  
+  t.test(predicted_emotional_11~missparentdata11, data=D)
+  t.test(predicted_cognitive_11~missparentdata11, data=D)
+  t.test(EMPQ_emotional_11~missparentdata11, data=D)
+  t.test(EMPQ_cognitive_11~missparentdata11, data=D)
+  
+  t.test(predicted_emotional_13~missparentdata13, data=D)
+  t.test(predicted_cognitive_13~missparentdata13, data=D)
+  t.test(EMPQ_emotional_13~missparentdata13, data=D)
+  t.test(EMPQ_cognitive_13~missparentdata13, data=D)
+  
+#examine the correlations between study variables and non-self report measures
+  col <- colnames(D)
+  relvar <- c(which (col=="predicted_emotional_11"),which(col=="predicted_cognitive_11"),
+            which (col=="predicted_emotional_13"),which(col=="predicted_cognitive_13"),
+            which (col=="EMPQ_emotional_11"),which(col=="EMPQ_cognitive_11"),
+            which (col=="EMPQ_emotional_13"),which(col=="EMPQ_cognitive_13"),
+            which (col=="EQSQ_empathy.2"),which(col=="EQSQ_empathy.3"),
+            which (col=="EQSQ_empathy_13.2"),which(col=="EQSQ_empathy_13.3"),
+            which (col=="ER_c"), which (col=="ER_c_neg"),which (col=="ER_c_pos"))
+
+  setwd("/Users/liorabramson/Dropbox/empathy and puberty/writing")  
+  apa.cor.table(D[,relvar], filename = "EmpcorTable.doc")
+  
 ```
 
