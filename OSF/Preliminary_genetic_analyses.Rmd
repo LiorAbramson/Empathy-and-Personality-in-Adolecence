@@ -6,7 +6,11 @@ output: html_document
 ---
 
 This script performs all the preliminary analyses and examines twins' ICC in the study variables
-before conducting the biometric cross-lagged analysis in the Mx software 
+before conducting the biometric cross-lagged analysis in the Mx software. 
+It also calculates the correlations between the study's main variables (empathy and empathic personality profiles)
+and non-self-report measures of empathy
+
+*'pred'/'predicted' indicates the predicted scores of empathy, i.e., the empathic personality profile scores
 
 Preparations:
 ```{r}
@@ -19,28 +23,29 @@ Preparations:
   packages <- c('broom','purrr','lsr','psych', 'apaTables', 'reshape','irr')
   lapply(packages, require, character.only = TRUE)
 
-#Import the file (Dfinal_11_13 was created using 'the_empathic_personality_profiles.R' script)
+#Import the file (D was created using 'the_empathic_personality_profiles.R' script)
   D <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Dfinal_11_13.csv")
 
 ```
 
-examining attrition effects: are there differences in study variables 
-between adolecents who participated in one or two time points?
+examining attrition effects: are there differences in the study variables 
+between adolescents who participated in one or two time points?
 ```{r}
 #build the variable indicating whether the participant was in one or two time points
-  Dfinal_11_13$whatStage <- 0
-  Dfinal_11_13$whatStage[is.na(Dfinal_11_13$EMPQ_emotional_11)== F &is.na(Dfinal_11_13$EMPQ_emotional_13)== F] <-1   
+#0= one time-point, 1=two time-points
+  D$whatStage <- 0
+  D$whatStage[is.na(D$EMPQ_emotional_11)== F &is.na(D$EMPQ_emotional_13)== F] <-1    
 
 #perform separate t-test for each study outcome
-  ttest_whatStage_emo11 <- t.test(EMPQ_emotional_11~whatStage, data=Dfinal_11_13)
-  ttest_whatStage_cog11 <- t.test(EMPQ_cognitive_11~whatStage, data=Dfinal_11_13)
-  ttest_whatStage_predemo11 <- t.test(predicted_emotional_11~whatStage, data=Dfinal_11_13)
-  ttest_whatStage_predcog11 <- t.test(predicted_cognitive_11~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_emo11 <- t.test(EMPQ_emotional_11~whatStage, data=D)
+  ttest_whatStage_cog11 <- t.test(EMPQ_cognitive_11~whatStage, data=D)
+  ttest_whatStage_predemo11 <- t.test(predicted_emotional_11~whatStage, data=D)
+  ttest_whatStage_predcog11 <- t.test(predicted_cognitive_11~whatStage, data=D)
   
-  ttest_whatStage_emo13 <- t.test(EMPQ_emotional_13~whatStage, data=Dfinal_11_13)
-  ttest_whatStage_cog13 <- t.test(EMPQ_cognitive_13~whatStage, data=Dfinal_11_13)
-  ttest_whatStage_predemo13 <- t.test(predicted_emotional_13~whatStage, data=Dfinal_11_13)
-  ttest_whatStage_predcog13 <- t.test(predicted_cognitive_13~whatStage, data=Dfinal_11_13)
+  ttest_whatStage_emo13 <- t.test(EMPQ_emotional_13~whatStage, data=D)
+  ttest_whatStage_cog13 <- t.test(EMPQ_cognitive_13~whatStage, data=D)
+  ttest_whatStage_predemo13 <- t.test(predicted_emotional_13~whatStage, data=D)
+  ttest_whatStage_predcog13 <- t.test(predicted_cognitive_13~whatStage, data=D)
 
 #enter all tests in one table
   ttest_attritionTable <- map_df(list(ttest_whatStage_predemo11,ttest_whatStage_emo11,
@@ -54,41 +59,43 @@ between adolecents who participated in one or two time points?
   ttest_attritionTable_edit[,5]   <- round(ttest_attritionTable_edit[,5],3)
 
 #add effect size
+#change the direction according to the t-test results when relevant 
+#because the cohensD function does not show the effect's direction 
   ttest_attritionTable_edit$cohenD <- NA
   
-  ttest_attritionTable_edit$cohenD[1] <- 0-round(cohensD(predicted_emotional_11~whatStage, data=Dfinal_11_13),2)
-  ttest_attritionTable_edit$cohenD[2] <- 0-round(cohensD(EMPQ_emotional_11~whatStage, data=Dfinal_11_13),2)
-  ttest_attritionTable_edit$cohenD[3] <- 0-round(cohensD(predicted_emotional_13~whatStage, data=Dfinal_11_13),2)
-  ttest_attritionTable_edit$cohenD[4] <- 0-round(cohensD(EMPQ_emotional_13~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[1] <- round(cohensD(predicted_emotional_11~whatStage, data=D),2)
+  ttest_attritionTable_edit$cohenD[2] <- round(cohensD(EMPQ_emotional_11~whatStage, data=D),2)
+  ttest_attritionTable_edit$cohenD[3] <- 0-round(cohensD(predicted_emotional_13~whatStage, data=D),2)
+  ttest_attritionTable_edit$cohenD[4] <- 0-round(cohensD(EMPQ_emotional_13~whatStage, data=D),2)
   
-  ttest_attritionTable_edit$cohenD[5] <- 0-round(cohensD(predicted_cognitive_11~whatStage, data=Dfinal_11_13),2)
-  ttest_attritionTable_edit$cohenD[6] <- 0-round(cohensD(EMPQ_cognitive_11~whatStage, data=Dfinal_11_13),2)
-  ttest_attritionTable_edit$cohenD[7] <- 0-round(cohensD(predicted_cognitive_13~whatStage, data=Dfinal_11_13),2)
-  ttest_attritionTable_edit$cohenD[8] <- 0-round(cohensD(EMPQ_cognitive_13~whatStage, data=Dfinal_11_13),2)
+  ttest_attritionTable_edit$cohenD[5] <- 0-round(cohensD(predicted_cognitive_11~whatStage, data=D),2)
+  ttest_attritionTable_edit$cohenD[6] <- 0-round(cohensD(EMPQ_cognitive_11~whatStage, data=D),2)
+  ttest_attritionTable_edit$cohenD[7] <- 0-round(cohensD(predicted_cognitive_13~whatStage, data=D),2)
+  ttest_attritionTable_edit$cohenD[8] <- 0-round(cohensD(EMPQ_cognitive_13~whatStage, data=D),2)
 
 #add sd
   ttest_attritionTable_edit$sd1Stage <- NA
   ttest_attritionTable_edit$sd2Stage <- NA
   
-  ttest_attritionTable_edit$sd1Stage[1] <- round((aggregate(Dfinal_11_13$predicted_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
-  ttest_attritionTable_edit$sd1Stage[2] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
-  ttest_attritionTable_edit$sd1Stage[3] <- round((aggregate(Dfinal_11_13$predicted_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
-  ttest_attritionTable_edit$sd1Stage[4] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[1] <- round((aggregate(D$predicted_emotional_11~D$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[2] <- round((aggregate(D$EMPQ_emotional_11~D$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[3] <- round((aggregate(D$predicted_emotional_13~D$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[4] <- round((aggregate(D$EMPQ_emotional_13~D$whatStage, FUN = sd)[1,2]),2)
 
-  ttest_attritionTable_edit$sd1Stage[5] <- round((aggregate(Dfinal_11_13$predicted_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
-  ttest_attritionTable_edit$sd1Stage[6] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
-  ttest_attritionTable_edit$sd1Stage[7] <- round((aggregate(Dfinal_11_13$predicted_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
-  ttest_attritionTable_edit$sd1Stage[8] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[5] <- round((aggregate(D$predicted_cognitive_11~D$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[6] <- round((aggregate(D$EMPQ_cognitive_11~D$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[7] <- round((aggregate(D$predicted_cognitive_13~D$whatStage, FUN = sd)[1,2]),2)
+  ttest_attritionTable_edit$sd1Stage[8] <- round((aggregate(D$EMPQ_cognitive_13~D$whatStage, FUN = sd)[1,2]),2)
   
-  ttest_attritionTable_edit$sd2Stage[1] <- round((aggregate(Dfinal_11_13$predicted_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
-  ttest_attritionTable_edit$sd2Stage[2] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
-  ttest_attritionTable_edit$sd2Stage[3] <- round((aggregate(Dfinal_11_13$predicted_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
-  ttest_attritionTable_edit$sd2Stage[4] <- round((aggregate(Dfinal_11_13$EMPQ_emotional_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[1] <- round((aggregate(D$predicted_emotional_11~D$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[2] <- round((aggregate(D$EMPQ_emotional_11~D$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[3] <- round((aggregate(D$predicted_emotional_13~D$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[4] <- round((aggregate(D$EMPQ_emotional_13~D$whatStage, FUN = sd)[2,2]),2)
   
-  ttest_attritionTable_edit$sd2Stage[5] <- round((aggregate(Dfinal_11_13$predicted_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
-  ttest_attritionTable_edit$sd2Stage[6] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_11~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
-  ttest_attritionTable_edit$sd2Stage[7] <- round((aggregate(Dfinal_11_13$predicted_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
-  ttest_attritionTable_edit$sd2Stage[8] <- round((aggregate(Dfinal_11_13$EMPQ_cognitive_13~Dfinal_11_13$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[5] <- round((aggregate(D$predicted_cognitive_11~D$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[6] <- round((aggregate(D$EMPQ_cognitive_11~D$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[7] <- round((aggregate(D$predicted_cognitive_13~D$whatStage, FUN = sd)[2,2]),2)
+  ttest_attritionTable_edit$sd2Stage[8] <- round((aggregate(D$EMPQ_cognitive_13~D$whatStage, FUN = sd)[2,2]),2)
 
 #adjust labels
   ttest_attritionTable_edit$`Mean one time-point` <- paste(as.character(ttest_attritionTable_edit$`Mean one time-point`),"(",
@@ -106,7 +113,6 @@ between adolecents who participated in one or two time points?
 ```
 
 examining relations between sex and the study variables
-equal variances between the groups ARE NOT assumed
 ```{r}
 
 #perform separate t-test for each study outcome
@@ -127,11 +133,13 @@ equal variances between the groups ARE NOT assumed
                                 ttest_sexPredcog13, ttest_sexEmpcog13), tidy)
   
   ttest_sexTable_edit <- ttest_sexTable[c("estimate1", "estimate2","statistic","parameter","p.value")]
-  colnames(ttest_sexTable_edit) <- c("Mean boys","Mean girls", "t value","df","p-value")
+  colnames(ttest_sexTable_edit) <- c("Mean males","Mean females", "t value","df","p-value")
   ttest_sexTable_edit[,1:4] <- round(ttest_sexTable_edit[,1:4],2)
   ttest_sexTable_edit[,5] <- round(ttest_sexTable_edit[,5],3)
 
 #add effect size
+#change the direction according to the t-test results when relevant 
+#because the cohensD function does not show the effect's direction 
   ttest_sexTable_edit$cohenD <- NA
   
   ttest_sexTable_edit$cohenD[1] <- 0-round(cohensD(predicted_emotional_11~sex, data=D),2)
@@ -169,9 +177,9 @@ equal variances between the groups ARE NOT assumed
   ttest_sexTable_edit$sdGirls[8] <- round((aggregate(D$EMPQ_cognitive_13~D$sex, FUN = sd)[2,2]),2)
   
 #edit labels
-  ttest_sexTable_edit$`Mean boys` <- paste(as.character(ttest_sexTable_edit$`Mean boys`),"(",
+  ttest_sexTable_edit$`Mean males` <- paste(as.character(ttest_sexTable_edit$`Mean males`),"(",
                                            as.character (ttest_sexTable_edit$sdBoys),")")
-  ttest_sexTable_edit$`Mean girls` <- paste(as.character(ttest_sexTable_edit$`Mean girls`),"(",
+  ttest_sexTable_edit$`Mean females` <- paste(as.character(ttest_sexTable_edit$`Mean females`),"(",
                                            as.character (ttest_sexTable_edit$sdGirls),")")
   ttest_sexTable_edit$`t value` <- paste(as.character(ttest_sexTable_edit$`t value`),"(",
                                          as.character (ttest_sexTable_edit$df),")")
@@ -189,18 +197,18 @@ equal variances between the groups ARE NOT assumed
 
 ```
 
-examining relations between questionnaire format (online/'manual'pencil and paper') and the study variables
-equal variances between the groups ARE NOT assumed
+examining relations between questionnaire format (online/pencil and paper) and the study variables
 ```{r}
 
-# at age 13 tim-point, some children received a short battery that did not include the emotion recognition test.
-# as a first step, conduct ttest only for the difference between the short and long online versions:
+# at age 13 time-point, some children received a shorter battery that did not include 
+# the emotion recognition test to increase participation rate.
+# as a first step, conduct t-test only for the difference between the short and long online versions:
   t.test(predicted_emotional_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
   t.test(EMPQ_emotional_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
   t.test(predicted_cognitive_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
   t.test(EMPQ_cognitive_13~OnlineManual13, data=D[D$OnlineManual13<=1,])
 
-#because there is no significant differnce, we unite the two online groups
+#because there is no significant difference, unite the two online groups
   D$OnlineManual13_2G <- D$OnlineManual13
   D$OnlineManual13_2G[D$OnlineManual13==0] <-"online"
   D$OnlineManual13_2G[D$OnlineManual13==1] <-"online"
@@ -230,15 +238,17 @@ equal variances between the groups ARE NOT assumed
 
 
 #add effect size
+#change the direction according to the t-test results when relevant 
+#because the cohensD function does not show the effect's direction 
   ttest_sourceTable_edit$cohenD <- NA
   
-  ttest_sourceTable_edit$cohenD[1] <- round(cohensD(predicted_emotional_11~OnlineManual, data=D),2)
-  ttest_sourceTable_edit$cohenD[2] <- round(cohensD(EMPQ_emotional_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[1] <- 0-round(cohensD(predicted_emotional_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[2] <- 0-round(cohensD(EMPQ_emotional_11~OnlineManual, data=D),2)
   ttest_sourceTable_edit$cohenD[3] <- round(cohensD(predicted_emotional_13~OnlineManual13_2G, data=D),2)
-  ttest_sourceTable_edit$cohenD[4] <- round(cohensD(EMPQ_emotional_13~OnlineManual13_2G, data=D),2)
+  ttest_sourceTable_edit$cohenD[4] <- 0-round(cohensD(EMPQ_emotional_13~OnlineManual13_2G, data=D),2)
   
-  ttest_sourceTable_edit$cohenD[5] <- round(cohensD(predicted_cognitive_11~OnlineManual, data=D),2)
-  ttest_sourceTable_edit$cohenD[6] <- round(cohensD(EMPQ_cognitive_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[5] <- 0-round(cohensD(predicted_cognitive_11~OnlineManual, data=D),2)
+  ttest_sourceTable_edit$cohenD[6] <- 0-round(cohensD(EMPQ_cognitive_11~OnlineManual, data=D),2)
   ttest_sourceTable_edit$cohenD[7] <- round(cohensD(predicted_cognitive_13~OnlineManual13_2G, data=D),2)
   ttest_sourceTable_edit$cohenD[8] <- round(cohensD(EMPQ_cognitive_13~OnlineManual13_2G, data=D),2)
   
@@ -295,10 +305,9 @@ equal variances between the groups ARE NOT assumed
 examining correlations between study variables and age within each time-point
 ```{r}
 
-#import partcipants age in each wave
-  setwd("C:/Users/ShaiW/Documents/Lior computer/empathy and puberty/data/Final data files")  
-  participants_ages11 <- read.csv ("Age11_participants_age.csv")
-  participants_ages13 <- read.csv ("Age13_participants_age.csv")
+#import participants age in each wave
+  participants_ages11 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_participants_age.csv")
+  participants_ages13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_participants_age.csv")
   
   D<- merge(x=D, y=participants_ages11, by=c("ifam","ID"), all.x=T, all.y=F )     
   D<- merge(x=D, y=participants_ages13, by=c("ifam","ID"), all.x=T, all.y=F ) 
@@ -318,9 +327,31 @@ examining correlations between study variables and age within each time-point
   apa.cor.table(D[,relvar_agecor13])
 
 ```
+standardization according to sex-saving residuals cleaned from sex
+```{r}
+#creating a matrix to store the data
+  col <- colnames(D)
+  relvar <- c(which (col=="EMPQ_emotional_11"),which(col=="EMPQ_cognitive_11"),
+              which(col=="predicted_emotional_11"), which(col=="predicted_cognitive_11"),
+              which (col=="EMPQ_emotional_13"),which(col=="EMPQ_cognitive_13"),
+              which(col=="predicted_emotional_13"), which(col=="predicted_cognitive_13"))
 
-examining differnces between DZ same-sex (DZS) and DZ opposite sex (DZO) twins
-in order to decide whether these groups can be united
+  residvec <- paste0(colnames(D[,relvar]),"r")
+  resid.matrix <- as.data.frame(matrix(data= NA, nrow =nrow(D),ncol =length(relvar)))
+  colnames(resid.matrix) <-residvec
+
+#creating the residual scores
+  for (i in 1:length(relvar)) {
+        reg <- lm(D[,relvar[i]]~sex, data=D, na.action=na.exclude)
+        resid.matrix[,i] <-resid(reg)
+        }
+  D <-cbind(D,resid.matrix)
+
+```
+
+
+examining differences between DZ same-sex (DZs) and DZ opposite sex (DZo) twins
+in order to decide whether indeed these groups can be united
 ```{r}
 #Converting dataset to wide format
   DWide <- reshape(D, timevar = "ID", idvar = "ifam", direction = "wide", 
@@ -332,25 +363,12 @@ in order to decide whether these groups can be united
   newnames <- gsub(x=newnames,pattern="_13", replacement="13")
   colnames(DWide) <- newnames
 
-#check difference between DZS and DZO -DO I NEED THIS? IF NOT ERASE
-#notice that I put the DZS in the MZ command and the DZO in the DZ command
-#rawDescript_DZS_DZO<- umxSummarizeTwinData(DWide, 
-#                                           selVars=c("EMPQ_emotional11","EMPQ_cognitive11","predicted_emotional11","predicted_cognitive11",
-#                                                     "EMPQ_emotional13","EMPQ_cognitive13","predicted_emotional13","predicted_cognitive13"),
-#                                           zyg="zygosity", 
-#                                           sep="_",MZ=2, DZ=3)
-
-
-#change colnames
-  colnames(rawDescript_DZS_DZO)<- c("Var","Mean","SD", "rDZS","rDZO")
-
-
 #create different datasets for the 3 zygosity groups 
   Dmz  = subset(DWide, zygosity == 1)
   Ddzs = subset(DWide, zygosity == 2)
   Ddzo = subset(DWide, zygosity == 3)
 
-#computing ICC for dzs and dzo
+#computing ICC between twins separately for each zygosity group
   col <- colnames(DWide)
   
   #age 11
@@ -370,7 +388,7 @@ in order to decide whether these groups can be united
   icc_PREDcog_DZS11 <- icc(Ddzs[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
   icc_PREDcog_DZO11 <- icc(Ddzo[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
 
-  #fisher Z comparison between DZS and DZo ICC
+  #fisher Z comparison between DZs and DZo ICC
   fishZ_empEmo11  <- r.test(n=icc_EMPemo_DZS11$subjects, n2=icc_EMPemo_DZO11$subjects,r12=icc_EMPemo_DZS11$value,  r34=icc_EMPemo_DZO11$value)  
   fishZ_empCog11  <- r.test(n=icc_EMPcog_DZS11$subjects, n2=icc_EMPcog_DZO11$subjects,r12=icc_EMPcog_DZS11$value,  r34=icc_EMPcog_DZO11$value)     
   fishZ_predEmo11 <- r.test(n=icc_PREDemo_DZS11$subjects, n2=icc_PREDemo_DZO11$subjects,r12=icc_PREDemo_DZS11$value,  r34=icc_PREDemo_DZO11$value) 
@@ -400,6 +418,7 @@ in order to decide whether these groups can be united
   fishZ_predCog13 <- r.test(n=icc_PREDcog_DZS13$subjects, n2=icc_PREDcog_DZO13$subjects,r12=icc_PREDcog_DZS13$value,  r34=icc_PREDcog_DZO13$value) 
   
   #planting Fisher Z results in a table
+  #when relevant, the direction of the Z-value was manually changed in the word document, not here
   fishZ_table <- matrix(nrow=8,ncol=4)
   fishZ_table[,1] <- c("Emotional empathic personality disposition 11","Emotional empathy 11",
                        "Emotional empathic personality disposition 13","Emotional empathy 13",
@@ -488,27 +507,6 @@ in order to decide whether these groups can be united
 ```
 
 
-standardization according to sex-saving residuals cleaned from sex
-```{r}
-#creating the matrix to store the data
-  col <- colnames(D)
-  relvar <- c(which (col=="EMPQ_emotional_11"),which(col=="EMPQ_cognitive_11"),
-              which(col=="predicted_emotional_11"), which(col=="predicted_cognitive_11"),
-              which (col=="EMPQ_emotional_13"),which(col=="EMPQ_cognitive_13"),
-              which(col=="predicted_emotional_13"), which(col=="predicted_cognitive_13"))
-
-  residvec <- paste0(colnames(D[,relvar]),"r")
-  resid.matrix <- as.data.frame(matrix(data= NA, nrow =nrow(D),ncol =length(relvar)))
-  colnames(resid.matrix) <-residvec
-
-#creating the residual scores
-  for (i in 1:length(relvar)) {
-        reg <- lm(D[,relvar[i]]~sex, data=D, na.action=na.exclude)
-        resid.matrix[,i] <-resid(reg)
-        }
-  D <-cbind(D,resid.matrix)
-
-```
 
 uniting the DZS and DZO groups
 ```{r}
@@ -518,7 +516,8 @@ uniting the DZS and DZO groups
   DWide$zygosity_2G[DWide$zygosity==3] <-"DZ"
 ```
 
-compute ICC of the new variables
+
+compute ICC of the new variables separately for MZ and DZ twins (residualized from sex)
 ```{r}
   col <- colnames(DWide)
 
@@ -571,7 +570,7 @@ prepare a file only with the final variables for Mx biometric cross-lagged analy
 ```
 
 
-Check the associations between the study variables and none-self-report empathy measures
+Check the associations between the study variables and non-self-report empathy measures
 ```{r}
 
 #import the data
