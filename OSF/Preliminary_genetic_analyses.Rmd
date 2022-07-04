@@ -5,9 +5,9 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-This script performs all the preliminary analyses and examines twins' ICC in the study variables
-before conducting the biometric cross-lagged analysis in the Mx software. 
-It also calculates the correlations between the study's main variables (empathy and empathic personality profiles)
+This script performs all the preliminary analyses and examines twins' ICC in the study main variables (empathy and empathic personality profiles) before conducting 
+the biometric cross-lagged analysis in the Mx software. 
+It also calculates the correlations between the study's main variables 
 and non-self-report measures of empathy
 
 *'pred'/'predicted' indicates the predicted scores of empathy, i.e., the empathic personality profile scores
@@ -372,21 +372,21 @@ in order to decide whether indeed these groups can be united
   col <- colnames(DWide)
   
   #age 11
-  icc_EMPemo_MZ11  <- icc(Dmz[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="twoway", unit="single")
-  icc_EMPemo_DZS11 <- icc(Ddzs[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="twoway", unit="single")
-  icc_EMPemo_DZO11 <- icc(Ddzo[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="twoway", unit="single")
+  icc_EMPemo_MZ11  <- icc(Dmz[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="oneway", unit="single")
+  icc_EMPemo_DZS11 <- icc(Ddzs[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="oneway", unit="single")
+  icc_EMPemo_DZO11 <- icc(Ddzo[,c(which(col=="EMPQ_emotional11_1"),which(col=="EMPQ_emotional11_2"))],model="oneway", unit="single")
   
-  icc_EMPcog_MZ11  <- icc(Dmz[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="twoway", unit="single")
-  icc_EMPcog_DZS11 <-icc(Ddzs[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="twoway", unit="single")
-  icc_EMPcog_DZO11 <-icc(Ddzo[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="twoway", unit="single")
+  icc_EMPcog_MZ11  <- icc(Dmz[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="oneway", unit="single")
+  icc_EMPcog_DZS11 <-icc(Ddzs[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="oneway", unit="single")
+  icc_EMPcog_DZO11 <-icc(Ddzo[,c(which(col=="EMPQ_cognitive11_1"),which(col=="EMPQ_cognitive11_2"))],model="oneway", unit="single")
   
-  icc_PREDemo_MZ11 <-icc(Dmz[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="twoway", unit="single")
-  icc_PREDemo_DZS11 <-icc(Ddzs[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="twoway", unit="single")
-  icc_PREDemo_DZO11 <-icc(Ddzo[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="twoway", unit="single")
+  icc_PREDemo_MZ11 <-icc(Dmz[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="oneway", unit="single")
+  icc_PREDemo_DZS11 <-icc(Ddzs[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="oneway", unit="single")
+  icc_PREDemo_DZO11 <-icc(Ddzo[,c(which(col=="predicted_emotional11_1"),which(col=="predicted_emotional11_2"))],model="oneway", unit="single")
   
-  icc_PREDcog_MZ11  <- icc(Dmz[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
-  icc_PREDcog_DZS11 <- icc(Ddzs[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
-  icc_PREDcog_DZO11 <- icc(Ddzo[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="twoway", unit="single")
+  icc_PREDcog_MZ11  <- icc(Dmz[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="oneway", unit="single")
+  icc_PREDcog_DZS11 <- icc(Ddzs[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="oneway", unit="single")
+  icc_PREDcog_DZO11 <- icc(Ddzo[,c(which(col=="predicted_cognitive11_1"),which(col=="predicted_cognitive11_2"))],model="oneway", unit="single")
 
   #fisher Z comparison between DZs and DZo ICC
   fishZ_empEmo11  <- r.test(n=icc_EMPemo_DZS11$subjects, n2=icc_EMPemo_DZO11$subjects,r12=icc_EMPemo_DZS11$value,  r34=icc_EMPemo_DZO11$value)  
@@ -395,21 +395,21 @@ in order to decide whether indeed these groups can be united
   fishZ_predCog11 <- r.test(n=icc_PREDcog_DZS11$subjects, n2=icc_PREDcog_DZO11$subjects,r12=icc_PREDcog_DZS11$value,  r34=icc_PREDcog_DZO11$value) 
 
   #age 13
-  icc_EMPemo_MZ13  <- icc(Dmz[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="twoway", unit="single")
-  icc_EMPemo_DZS13 <- icc(Ddzs[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="twoway", unit="single")
-  icc_EMPemo_DZO13 <- icc(Ddzo[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="twoway", unit="single")
+  icc_EMPemo_MZ13  <- icc(Dmz[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="oneway", unit="single")
+  icc_EMPemo_DZS13 <- icc(Ddzs[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="oneway", unit="single")
+  icc_EMPemo_DZO13 <- icc(Ddzo[,c(which(col=="EMPQ_emotional13_1"),which(col=="EMPQ_emotional13_2"))],model="oneway", unit="single")
   
-  icc_EMPcog_MZ13  <- icc(Dmz[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="twoway", unit="single")
-  icc_EMPcog_DZS13 <-icc(Ddzs[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="twoway", unit="single")
-  icc_EMPcog_DZO13 <-icc(Ddzo[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="twoway", unit="single")
+  icc_EMPcog_MZ13  <- icc(Dmz[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="oneway", unit="single")
+  icc_EMPcog_DZS13 <-icc(Ddzs[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="oneway", unit="single")
+  icc_EMPcog_DZO13 <-icc(Ddzo[,c(which(col=="EMPQ_cognitive13_1"),which(col=="EMPQ_cognitive13_2"))],model="oneway", unit="single")
   
-  icc_PREDemo_MZ13 <-icc(Dmz[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="twoway", unit="single")
-  icc_PREDemo_DZS13 <-icc(Ddzs[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="twoway", unit="single")
-  icc_PREDemo_DZO13 <-icc(Ddzo[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="twoway", unit="single")
+  icc_PREDemo_MZ13 <-icc(Dmz[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="oneway", unit="single")
+  icc_PREDemo_DZS13 <-icc(Ddzs[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="oneway", unit="single")
+  icc_PREDemo_DZO13 <-icc(Ddzo[,c(which(col=="predicted_emotional13_1"),which(col=="predicted_emotional13_2"))],model="oneway", unit="single")
   
-  icc_PREDcog_MZ13  <- icc(Dmz[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="twoway", unit="single")
-  icc_PREDcog_DZS13 <- icc(Ddzs[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="twoway", unit="single")
-  icc_PREDcog_DZO13 <- icc(Ddzo[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="twoway", unit="single")
+  icc_PREDcog_MZ13  <- icc(Dmz[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="oneway", unit="single")
+  icc_PREDcog_DZS13 <- icc(Ddzs[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="oneway", unit="single")
+  icc_PREDcog_DZO13 <- icc(Ddzo[,c(which(col=="predicted_cognitive13_1"),which(col=="predicted_cognitive13_2"))],model="oneway", unit="single")
 
   #fisher Z comparison between DZS and DZo ICC
   fishZ_empEmo13  <- r.test(n=icc_EMPemo_DZS13$subjects, n2=icc_EMPemo_DZO13$subjects,r12=icc_EMPemo_DZS13$value,  r34=icc_EMPemo_DZO13$value) 
@@ -419,11 +419,12 @@ in order to decide whether indeed these groups can be united
   
   #planting Fisher Z results in a table
   #when relevant, the direction of the Z-value was manually changed in the word document, not here
+  #when relevant, stars indicating significance were manually entered in the word document
   fishZ_table <- matrix(nrow=8,ncol=4)
-  fishZ_table[,1] <- c("Emotional empathic personality disposition 11","Emotional empathy 11",
-                       "Emotional empathic personality disposition 13","Emotional empathy 13",
-                       "Cognitive empathic personality disposition 11","Cognitive empathy 11",
-                       "Cognitive empathic personality disposition 13","Cognitive empathy 13")
+  fishZ_table[,1] <- c("Emotional empathic personality profile 11","Emotional empathy 11",
+                       "Emotional empathic personality profile 13","Emotional empathy 13",
+                       "Cognitive empathic personality profile 11","Cognitive empathy 11",
+                       "Cognitive empathic personality profile 13","Cognitive empathy 13")
   
   fishZ_table[1,2] <- paste(as.character(round(icc_PREDemo_DZS11$value,2)),"[",
                             as.character(round(icc_PREDemo_DZS11$lbound,2)),"-",
@@ -521,38 +522,40 @@ compute ICC of the new variables separately for MZ and DZ twins (residualized fr
 ```{r}
   col <- colnames(DWide)
 
-  icc_PREDemo_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_emotional11r_1"),which(col=="predicted_emotional11r_2"))],model="twoway", unit="single")
-  icc_PREDemo_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_emotional11r_1"),which(col=="predicted_emotional11r_2"))],model="twoway", unit="single")
+  icc_PREDemo_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_emotional11r_1"),which(col=="predicted_emotional11r_2"))],model="oneway", unit="single")
+  icc_PREDemo_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_emotional11r_1"),which(col=="predicted_emotional11r_2"))],model="oneway", unit="single")
   
   
-  icc_EMPemo_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_emotional11r_1"),which(col=="EMPQ_emotional11r_2"))],model="twoway", unit="single")
-  icc_EMPemo_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_emotional11r_1"),which(col=="EMPQ_emotional11r_2"))],model="twoway", unit="single")
+  icc_EMPemo_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_emotional11r_1"),which(col=="EMPQ_emotional11r_2"))],model="oneway", unit="single")
+  icc_EMPemo_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_emotional11r_1"),which(col=="EMPQ_emotional11r_2"))],model="oneway", unit="single")
   
-  icc_PREDemo_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_emotional13r_1"),which(col=="predicted_emotional13r_2"))],model="twoway", unit="single")
-  icc_PREDemo_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_emotional13r_1"),which(col=="predicted_emotional13r_2"))],model="twoway", unit="single")
-  
-  
-  icc_EMPemo_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_emotional13r_1"),which(col=="EMPQ_emotional13r_2"))],model="twoway", unit="single")
-  icc_EMPemo_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_emotional13r_1"),which(col=="EMPQ_emotional13r_2"))],model="twoway", unit="single")
+  icc_PREDemo_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_emotional13r_1"),which(col=="predicted_emotional13r_2"))],model="oneway", unit="single")
+  icc_PREDemo_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_emotional13r_1"),which(col=="predicted_emotional13r_2"))],model="oneway", unit="single")
   
   
-  icc_PREDcog_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_cognitive11r_1"),which(col=="predicted_cognitive11r_2"))],model="twoway", unit="single")
-  icc_PREDcog_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_cognitive11r_1"),which(col=="predicted_cognitive11r_2"))],model="twoway", unit="single")
+  icc_EMPemo_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_emotional13r_1"),which(col=="EMPQ_emotional13r_2"))],model="oneway", unit="single")
+  icc_EMPemo_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_emotional13r_1"),which(col=="EMPQ_emotional13r_2"))],model="oneway", unit="single")
   
   
-  icc_EMPcog_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive11r_2"))],model="twoway", unit="single")
-  icc_EMPcog_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive11r_2"))],model="twoway", unit="single")
+  icc_PREDcog_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_cognitive11r_1"),which(col=="predicted_cognitive11r_2"))],model="oneway", unit="single")
+  icc_PREDcog_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_cognitive11r_1"),which(col=="predicted_cognitive11r_2"))],model="oneway", unit="single")
   
-  icc_PREDcog_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_cognitive13r_1"),which(col=="predicted_cognitive13r_2"))],model="twoway", unit="single")
-  icc_PREDcog_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_cognitive13r_1"),which(col=="predicted_cognitive13r_2"))],model="twoway", unit="single")
   
-  icc_EMPcog_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_cognitive13r_1"),which(col=="EMPQ_cognitive13r_2"))],model="twoway", unit="single")
-  icc_EMPcog_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_cognitive13r_1"),which(col=="EMPQ_cognitive13r_2"))],model="twoway", unit="single")
+  icc_EMPcog_MZ11r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive11r_2"))],model="oneway", unit="single")
+  icc_EMPcog_DZ11r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive11r_2"))],model="oneway", unit="single")
+  
+  icc_PREDcog_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="predicted_cognitive13r_1"),which(col=="predicted_cognitive13r_2"))],model="oneway", unit="single")
+  icc_PREDcog_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="predicted_cognitive13r_1"),which(col=="predicted_cognitive13r_2"))],model="oneway", unit="single")
+  
+  icc_EMPcog_MZ13r  <- icc(DWide[DWide$zygosity_2G=="MZ",c(which(col=="EMPQ_cognitive13r_1"),which(col=="EMPQ_cognitive13r_2"))],model="oneway", unit="single")
+  icc_EMPcog_DZ13r  <- icc(DWide[DWide$zygosity_2G=="DZ",c(which(col=="EMPQ_cognitive13r_1"),which(col=="EMPQ_cognitive13r_2"))],model="oneway", unit="single")
 
 
 ```
 
 prepare a file only with the final variables for Mx biometric cross-lagged analysis
+*notice that before entering the file to the Mx software, you need to erase the columns names 
+ and to turn NA values into 999 (this was done manually in the .csv file)
 ```{r}
   col <- colnames(DWide)
   relvar_4mx <- c(which (col=="ifam"),which(col=="zygosity_2G"),which(col=="sex_2"),which(col=="sex_1"),
@@ -575,51 +578,42 @@ Check the associations between the study variables and non-self-report empathy m
 
 #import the data
   #Parent-reported empathy age 11
-  setwd("C:/Users/ShaiW/Documents/Lior computer/empathy and puberty/data/Final data files")  
-  DParentEmp <- read.csv ("Age11_ParentEmp_edited_united.csv")
-  library(reshape)
-  DParentEmp <- rename(DParentEmp, c(ï..ifam="ifam"))    # change weird variable names
+  DParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_ParentEmp_anonymized.csv")
 
-  #erasing invalid observations
+  #erase invalid observations (e.g., mother rated instead of the father, parents completed the questionnaire together, etc.)
   DParentEmp <- DParentEmp[DParentEmp$whichParentOut!=3,]
+  #erase father's data if only the father's data was invalid
   col <- colnames(DParentEmp)
-  fathervars <- c(which(col=="Date.2"),which(col=="StartDate.2"),which(col=="FinishDate.2"),
-                  which(col=="EmpCon.2"),which(col=="EQSQ_empathy.2"))
+  fathervars <- which(col=="EQSQ_empathy.2")
   DParentEmp[DParentEmp$whichParentOut==2,fathervars] <- NA
 
-  #merge datsets
+  #merge datasets
   relvar_parents <- c(which (col=="ifam"),which(col=="ID"),
-                      which (col=="EmpCon.2"),which(col=="EmpCon.3"),
                       which (col=="EQSQ_empathy.2"),which(col=="EQSQ_empathy.3"))
   DParentEmpShort <- DParentEmp[,relvar_parents]
-  D<- merge(x=D, y=DParentEmpShort, by=c("ifam","ID"), all.x=T, all.y=T )              
+  D<- merge(x=D, y=DParentEmpShort, by=c("ifam","ID"), all.x=T, all.y=T )  
+  
 
   #Parent-reported empathy age 13
-  setwd("C:/Users/ShaiW/Documents/Lior computer/empathy and puberty/data/Final data files")  
-  D13ParentEmp <- read.csv ("Age13_ParentEmp_edited_united.csv")
-  library(reshape)
-  D13ParentEmp <- rename(D13ParentEmp, c(ï..ifam="ifam"))    # change weird variable names
+  D13ParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_ParentEmp_anonymized.csv")
+  #erase invalid observations (e.g., mother rated instead of the father, parents completed the questionnaire together, etc.)
   D13ParentEmp <- D13ParentEmp[D13ParentEmp$whichParentOut==0,]
   
   col <- colnames(D13ParentEmp)
   relvar_parents13 <- c(which (col=="ifam"),which(col=="ID"),
-                        which (col=="EmpCon.2"),which(col=="EmpCon.3"),
                         which (col=="EQSQ_empathy.2"),which(col=="EQSQ_empathy.3"))
   D13ParentEmpShort <- D13ParentEmp[,relvar_parents13]
 
+  #rename age 13 variables (enter indication of age 13 time-point)
   D13ParentEmpShort <- rename(D13ParentEmpShort, 
-                            c(EmpCon.2="EmpCon_13.2", EmpCon.3="EmpCon_13.3",
-                              EQSQ_empathy.2="EQSQ_empathy_13.2",EQSQ_empathy.3="EQSQ_empathy_13.3"))
+                            c(EQSQ_empathy.2="EQSQ_empathy_13.2",EQSQ_empathy.3="EQSQ_empathy_13.3"))
   D<- merge(x=D, y=D13ParentEmpShort, by=c("ifam","ID"), all.x=T, all.y=T )              
 
   
   #subtle facial expressions emotion recognition
-  DEmoR <- read.csv ("subtle_facial_expressions_age13_edited_160622.csv")
-  col <- colnames(DEmoR)
-  relvar_EmoR <- c(which (col=="ifam"),which(col=="ID"), 
-                   which(col=="ER_c"),which(col=="ER_c_neg"),which(col=="ER_c_pos"))
-  DEmoRshort <- DEmoR[,relvar_EmoR]
-  DEmoRshort <- DEmoRshort[complete.cases(DEmoRshort[which(colnames(DEmoRshort)=="ER_c")]),]
+  DEmoR <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_emotion_recognition_test_finalvars_anonymized.csv")
+  #remove children who did not have data from all emotion categories (see details in Appendix 1)
+  DEmoRshort <- DEmoR[complete.cases(DEmoR[which(colnames(DEmoR)=="ER_c")]),]
 
   D <- merge(x=D, y=DEmoRshort, by=c("ifam","ID"), all.x=T, all.y=T ) 
 
