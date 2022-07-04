@@ -618,7 +618,8 @@ Check the associations between the study variables and non-self-report empathy m
   D <- merge(x=D, y=DEmoRshort, by=c("ifam","ID"), all.x=T, all.y=T ) 
 
 
-#check difference in study variables according to parental missingness
+#check difference in study variables according to parental missingness 
+#(difference between children who had no parent data and children who had at least one parent data)
   D$missmomques11 <- NA
   D$missmomques11[!is.na(D$EQSQ_empathy.3)] <-0
   D$missmomques11[is.na(D$EQSQ_empathy.3)] <-1
@@ -635,33 +636,12 @@ Check the associations between the study variables and non-self-report empathy m
   D$missdadques13[!is.na(D$EQSQ_empathy_13.2)] <-0
   D$missdadques13[is.na(D$EQSQ_empathy_13.2)] <-1
   
-  #ttests
-  t.test(predicted_emotional_11~missmomques11, data=D)
-  t.test(predicted_cognitive_11~missmomques11, data=D)
-  t.test(EMPQ_emotional_11~missmomques11, data=D)
-  t.test(EMPQ_cognitive_11~missmomques11, data=D)
-  
-  t.test(predicted_emotional_11~missdadques11, data=D)
-  t.test(predicted_cognitive_11~missdadques11, data=D)
-  t.test(EMPQ_emotional_11~missdadques11, data=D)
-  t.test(EMPQ_cognitive_11~missdadques11, data=D)
-  
-  t.test(predicted_emotional_13~missmomques13, data=D)
-  t.test(predicted_cognitive_13~missmomques13, data=D)
-  t.test(EMPQ_emotional_13~missmomques13, data=D)
-  t.test(EMPQ_cognitive_13~missmomques13, data=D)
-  
-  t.test(predicted_emotional_13~missdadques13, data=D)
-  t.test(predicted_cognitive_13~missdadques13, data=D)
-  t.test(EMPQ_emotional_13~missdadques13, data=D)
-  t.test(EMPQ_cognitive_13~missdadques13, data=D)
-
-#check difference between children who had no parent data and children who had at least one parent data
   D$missparentdata11 <- 0
   D$missparentdata11[D$missmomques11==1 & D$missdadques11] <-1
   D$missparentdata13 <- 0
   D$missparentdata13[D$missmomques13==1 & D$missdadques13] <-1
   
+  #t-tests
   t.test(predicted_emotional_11~missparentdata11, data=D)
   t.test(predicted_cognitive_11~missparentdata11, data=D)
   t.test(EMPQ_emotional_11~missparentdata11, data=D)
@@ -682,7 +662,6 @@ Check the associations between the study variables and non-self-report empathy m
             which (col=="EQSQ_empathy_13.2"),which(col=="EQSQ_empathy_13.3"),
             which (col=="ER_c"), which (col=="ER_c_neg"),which (col=="ER_c_pos"))
 
-  setwd("/Users/liorabramson/Dropbox/empathy and puberty/writing")  
   apa.cor.table(D[,relvar], filename = "EmpcorTable.doc")
   
 ```
