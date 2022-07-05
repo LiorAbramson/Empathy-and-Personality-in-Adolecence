@@ -30,7 +30,6 @@ Preparations:
 
 examining attrition effects: are there differences in the study variables 
 between adolescents who participated in one or two time points?
-
 *the examination of missingness effects of parental reports is conducted below, in the end of the script
 ```{r}
 #build the variable indicating whether the participant was in one or two time points
@@ -329,6 +328,7 @@ examining correlations between study variables and age within each time-point
   apa.cor.table(D[,relvar_agecor13])
 
 ```
+
 standardization according to sex-saving residuals cleaned from sex
 ```{r}
 #creating a matrix to store the data
@@ -349,6 +349,23 @@ standardization according to sex-saving residuals cleaned from sex
         }
   D <-cbind(D,resid.matrix)
 
+```
+
+for cognitive empathy only: 
+creating residual scores cleaned also from source (pencil/online) and attrition (one/two time points)
+for a robustness check (Appendix 4)
+*notice that these variables were not entered into the final Mx data file. 
+*Change the script accordingly if you want to include them 
+```{r}
+  reg_EMPQ11_cog_sex_source_time      <- lm(EMPQ_cognitive_11~sex+OnlineManual+whatStage, data=D, na.action=na.exclude)
+  reg_EMPQ13_cog_sex_source_time      <- lm(EMPQ_cognitive_13~sex+OnlineManual13_2G+whatStage, data=D, na.action=na.exclude)
+  reg_predicted11_cog_sex_source_time <- lm(predicted_cognitive_11~sex+OnlineManual+whatStage, data=D, na.action=na.exclude)
+  reg_predicted13_cog_sex_source_time <- lm(predicted_cognitive_13~sex+OnlineManual13_2G+whatStage, data=D, na.action=na.exclude)
+  
+  D$EMPQ_cognitive_11r_sexsource_time <-resid(reg_EMPQ11_cog_sex_source_time)
+  D$EMPQ_cognitive_13r_sexsource_time <-resid(reg_EMPQ13_cog_sex_source_time)
+  D$predicted_cognitive_11r_sexsource_time <-resid(reg_predicted11_cog_sex_source_time)
+  D$predicted_cognitive_13r_sexsource_time <-resid(reg_predicted13_cog_sex_source_time)
 ```
 
 
@@ -510,7 +527,6 @@ in order to decide whether indeed these groups can be united
 ```
 
 
-
 uniting the DZS and DZO groups
 ```{r}
   DWide$zygosity_2G <- DWide$zygosity
@@ -571,7 +587,7 @@ prepare a file only with the final variables for Mx biometric cross-lagged analy
                   which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive13r_1"))
   
   DWide_4Mx <- DWide[,relvar_4mx]
-  write.csv(DWide_4Mx, file= "DWide_4Mx.csv", row.names = F)         
+  write.csv(DWide_4Mx, file= "~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/DWide_4Mx.csv", row.names = F)         
 ```
 
 
@@ -583,9 +599,10 @@ Check the associations between the study variables and non-self-report empathy m
   #.2 indicates father reports; .3 indicates mother reports
   DParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_ParentEmp_anonymized.csv")
 
-  #erase invalid observations (e.g., mother rated instead of the father, parents completed the questionnaire together, etc.)
+  #erase invalid observations due to parental rating mistakes (see Appendix 1)
   DParentEmp <- DParentEmp[DParentEmp$whichParentOut!=3,]
-  #erase father's data if only the father's data was invalid
+  
+  #erase only father's data if only the father's data was invalid
   col <- colnames(DParentEmp)
   fathervars <- which(col=="EQSQ_empathy.2")
   DParentEmp[DParentEmp$whichParentOut==2,fathervars] <- NA
@@ -600,7 +617,8 @@ Check the associations between the study variables and non-self-report empathy m
   #Parent-reported empathy age 13
   #.2 indicates father reports; .3 indicates mother reports
   D13ParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_ParentEmp_anonymized.csv")
-  #erase invalid observations (e.g., mother rated instead of the father, parents completed the questionnaire together, etc.)
+  
+  #erase invalid observations due to parental rating mistakes (see Appendix 1)
   D13ParentEmp <- D13ParentEmp[D13ParentEmp$whichParentOut==0,]
   
   col <- colnames(D13ParentEmp)
@@ -635,12 +653,14 @@ Check the associations between the study variables and non-self-report empathy m
   apa.cor.table(D[,relvar], filename = "EmpcorTable.doc")
   
 ```
+
+
 check difference in study variables according to parental missingness 
 (difference between children who had no parent data and children who had at least one parent data)
 ```{r}
 
 #check N of available parents questionnaire, i.e., in each time-point, how many children had 
-  #parental data as well as self-reported data from either age 11 or age 13 and parental data
+#parental data (out of those who had self-reported data from at least one time-point)
     length(D$EQSQ_empathy.2[(!is.na(D$predicted_cognitive_11r)|!is.na(D$predicted_cognitive_13r)) & !is.na(D$EQSQ_empathy.2)])
     length(D$EQSQ_empathy.3[(!is.na(D$predicted_cognitive_11r)|!is.na(D$predicted_cognitive_13r)) & !is.na(D$EQSQ_empathy.3)])
     length(D$EQSQ_empathy_13.2[(!is.na(D$predicted_cognitive_11r)|!is.na(D$predicted_cognitive_13r)) & !is.na(D$EQSQ_empathy_13.2)])

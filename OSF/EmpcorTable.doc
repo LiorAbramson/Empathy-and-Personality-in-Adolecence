@@ -36,6 +36,10 @@
 \clvertalc\cellx17748 
 \clbrdrt\brdrw15\brdrs
 \clvertalc\cellx18972 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx20196 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{Variable}\cell
 \pard\sa0\sb0\intbl\qc{{\i M}}\cell
 \pard\sa0\sb0\intbl\qc{{\i SD}}\cell
@@ -51,6 +55,8 @@
 \pard\sa0\sb0\intbl\qc{10}\cell
 \pard\sa0\sb0\intbl\qc{11}\cell
 \pard\sa0\sb0\intbl\qc{12}\cell
+\pard\sa0\sb0\intbl\qc{13}\cell
+\pard\sa0\sb0\intbl\qc{14}\cell
 \row
 }
 {
@@ -85,6 +91,10 @@
 \clvertalc\cellx17748 
 \clbrdrt\brdrw15\brdrs
 \clvertalc\cellx18972 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx20196 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
@@ -100,6 +110,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
 \row
 }
 {
@@ -119,6 +131,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{1. predicted_emotional_11}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.36}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.21}\cell
@@ -134,6 +148,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -153,6 +169,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -168,6 +186,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -187,6 +207,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{2. predicted_cognitive_11}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.97}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.19}\cell
@@ -202,6 +224,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -221,6 +245,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -236,6 +262,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -255,6 +283,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -270,6 +300,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -289,6 +321,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{3. predicted_emotional_13}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.43}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.27}\cell
@@ -304,6 +338,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -323,6 +359,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -338,6 +376,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -357,6 +397,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -372,6 +414,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -391,6 +435,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{4. predicted_cognitive_13}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{4.06}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.22}\cell
@@ -406,6 +452,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -425,6 +473,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -440,6 +490,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -459,6 +511,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -474,6 +528,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -493,6 +549,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{5. EMPQ_emotional_11}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.36}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.57}\cell
@@ -508,6 +566,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -527,6 +587,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -542,6 +604,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -561,6 +625,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -576,6 +642,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -595,6 +663,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{6. EMPQ_cognitive_11}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.97}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.50}\cell
@@ -610,6 +680,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -629,6 +701,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -644,6 +718,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -663,6 +739,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -678,6 +756,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -697,6 +777,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{7. EMPQ_emotional_13}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.43}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.58}\cell
@@ -712,6 +794,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -731,6 +815,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -746,6 +832,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -765,6 +853,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -780,6 +870,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -799,6 +891,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{8. EMPQ_cognitive_13}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{4.06}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.49}\cell
@@ -814,6 +908,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -833,6 +929,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -848,6 +946,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -867,6 +967,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -882,6 +984,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -901,6 +1005,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{9. EQSQ_empathy.2}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.25}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.46}\cell
@@ -916,6 +1022,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -935,6 +1043,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -950,6 +1060,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -969,6 +1081,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -984,6 +1098,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -1003,6 +1119,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{10. EQSQ_empathy.3}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.31}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.45}\cell
@@ -1018,6 +1136,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -1037,6 +1157,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -1052,6 +1174,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -1071,6 +1195,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -1086,6 +1212,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -1105,19 +1233,137 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
-\pard\sa0\sb0\intbl\ql{11. EQSQ_empathy_13.3}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.27}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.45}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.16**}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.09}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.28**}\cell
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{11. EQSQ_empathy_13.2}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.21}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.46}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.15**}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.13**}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.01}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.15**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.21**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.12*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.15**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.14*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.24**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.13*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.62**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.33**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clvertalc\cellx3060 
+\clvertalc\cellx4284 
+\clvertalc\cellx5508 
+\clvertalc\cellx6732 
+\clvertalc\cellx7956 
+\clvertalc\cellx9180 
+\clvertalc\cellx10404 
+\clvertalc\cellx11628 
+\clvertalc\cellx12852 
+\clvertalc\cellx14076 
+\clvertalc\cellx15300 
+\clvertalc\cellx16524 
+\clvertalc\cellx17748 
+\clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.04, .25]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.04, .25]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.11, .31]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.02, .22]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.05, .26]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.03, .25]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.14, .33]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.03, .23]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.55, .68]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.23, .42]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clvertalc\cellx3060 
+\clvertalc\cellx4284 
+\clvertalc\cellx5508 
+\clvertalc\cellx6732 
+\clvertalc\cellx7956 
+\clvertalc\cellx9180 
+\clvertalc\cellx10404 
+\clvertalc\cellx11628 
+\clvertalc\cellx12852 
+\clvertalc\cellx14076 
+\clvertalc\cellx15300 
+\clvertalc\cellx16524 
+\clvertalc\cellx17748 
+\clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clvertalc\cellx3060 
+\clvertalc\cellx4284 
+\clvertalc\cellx5508 
+\clvertalc\cellx6732 
+\clvertalc\cellx7956 
+\clvertalc\cellx9180 
+\clvertalc\cellx10404 
+\clvertalc\cellx11628 
+\clvertalc\cellx12852 
+\clvertalc\cellx14076 
+\clvertalc\cellx15300 
+\clvertalc\cellx16524 
+\clvertalc\cellx17748 
+\clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{12. EQSQ_empathy_13.3}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.28}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.45}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.15**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.08}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.29**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.14**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.12**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.00}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.25**}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.13**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.39**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.63**}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.40**}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.64**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
@@ -1139,19 +1385,23 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.07, .25]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.00, .18]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.20, .36]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.07, .23]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.07, .24]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.01, .16]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.21, .36]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.06, .22]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.04, .21]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.08, .10]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.08, .09]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.17, .32]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.05, .22]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.31, .49]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.05, .21]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.30, .47]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.58, .68]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.31, .49]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
@@ -1173,6 +1423,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -1188,6 +1440,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -1207,7 +1461,9 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
-\pard\sa0\sb0\intbl\ql{12. ER_c}\cell
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{13. ER_c}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.69}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.13}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.12**}\cell
@@ -1220,7 +1476,9 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.28**}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.04}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.16**}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.14**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.13*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.13**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
@@ -1241,6 +1499,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -1254,7 +1514,9 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.21, .35]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.06, .15]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.07, .24]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.04, .23]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.01, .25]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.04, .22]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
@@ -1275,6 +1537,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -1290,6 +1554,8 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -1309,7 +1575,9 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
-\pard\sa0\sb0\intbl\ql{13. ER_c_neg}\cell
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{14. ER_c_neg}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.62}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.16}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.16**}\cell
@@ -1322,8 +1590,10 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.29**}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.08}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.14**}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.11*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.12*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.12*}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{.86**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \row
 }
 {
@@ -1343,6 +1613,8 @@
 \clvertalc\cellx16524 
 \clvertalc\cellx17748 
 \clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
@@ -1356,8 +1628,124 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.21, .36]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.03, .19]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.05, .22]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.02, .21]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.01, .24]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.03, .21]}}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.83, .87]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clvertalc\cellx3060 
+\clvertalc\cellx4284 
+\clvertalc\cellx5508 
+\clvertalc\cellx6732 
+\clvertalc\cellx7956 
+\clvertalc\cellx9180 
+\clvertalc\cellx10404 
+\clvertalc\cellx11628 
+\clvertalc\cellx12852 
+\clvertalc\cellx14076 
+\clvertalc\cellx15300 
+\clvertalc\cellx16524 
+\clvertalc\cellx17748 
+\clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clvertalc\cellx3060 
+\clvertalc\cellx4284 
+\clvertalc\cellx5508 
+\clvertalc\cellx6732 
+\clvertalc\cellx7956 
+\clvertalc\cellx9180 
+\clvertalc\cellx10404 
+\clvertalc\cellx11628 
+\clvertalc\cellx12852 
+\clvertalc\cellx14076 
+\clvertalc\cellx15300 
+\clvertalc\cellx16524 
+\clvertalc\cellx17748 
+\clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{15. ER_c_pos}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.77}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{0.17}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.01}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.10*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.06}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.14**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.01}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.15**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.02}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.15**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{-.03}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.11*}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.07}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.08}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.74**}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{.29**}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clvertalc\cellx3060 
+\clvertalc\cellx4284 
+\clvertalc\cellx5508 
+\clvertalc\cellx6732 
+\clvertalc\cellx7956 
+\clvertalc\cellx9180 
+\clvertalc\cellx10404 
+\clvertalc\cellx11628 
+\clvertalc\cellx12852 
+\clvertalc\cellx14076 
+\clvertalc\cellx15300 
+\clvertalc\cellx16524 
+\clvertalc\cellx17748 
+\clvertalc\cellx18972 
+\clvertalc\cellx20196 
+\clvertalc\cellx21420 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.07, .10]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.01, .18]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.02, .14]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.06, .22]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.07, .10]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.07, .24]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.06, .10]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.07, .22]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.13, .08]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.03, .20]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.05, .19]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[-.01, .18]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.70, .78]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{{\fs20[.21, .36]}}\cell
 \row
 }
 {
@@ -1392,7 +1780,13 @@
 \clvertalc\cellx17748 
 \clbrdrb\brdrw15\brdrs
 \clvertalc\cellx18972 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx20196 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx21420 
 \pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
