@@ -24,6 +24,7 @@ Preparations:
   lapply(packages, require, character.only = TRUE)
 
 #Import the file (D was created using 'the_empathic_personality_profiles.R' script)
+#change the directory to the relevant path on your computer
   D <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Dfinal_11_13.csv")
 
 ```
@@ -306,7 +307,7 @@ examining relations between questionnaire format (online/pencil and paper) and t
 examining correlations between study variables and age within each time-point
 ```{r}
 
-#import participants age in each wave
+#import participants age in each wave (change the directory to the relevant path on your computer)
   participants_ages11 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_participants_age.csv")
   participants_ages13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_participants_age.csv")
   
@@ -594,7 +595,7 @@ prepare a file only with the final variables for Mx biometric cross-lagged analy
 Check the associations between the study variables and non-self-report empathy measures
 ```{r}
 
-#import the data
+#import the data (change all directories to the relevant path on your computer)
   #Parent-reported empathy age 11
   #.2 indicates father reports; .3 indicates mother reports
   DParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_ParentEmp_anonymized.csv")

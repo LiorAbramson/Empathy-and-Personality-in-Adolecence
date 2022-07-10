@@ -17,7 +17,7 @@ Preparations:
   packages <- c('psych', 'Hmisc', 'glmnet','ggplot2', 'reshape')
   lapply(packages, require, character.only = TRUE)
 
-#Preparing the file
+#Preparing the file (change the directory to the relevant path on your computer)
   D <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_EmpPer_anonymized.csv")
   D <- D[D$isOut==0,]                      #take out children that should not be included (see supplementary method)
   D <- subset(D, !is.na(D$EMPQ_emotional)) #take out children with no empathy measures
@@ -484,7 +484,7 @@ Specific items' coefficients visualization - Age 11:
 
 Data preprocessing - Age 13:
 ```{r}
-#preparing the file
+#preparing the file (change the directory to the relevant path on your computer)
   D13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_EmpPer_anonymized.csv")
   D13 <- D13[D13$isOut==0,]                      #take out children that should not be included (see supplementary method)
   D13 <- subset(D13, !is.na(D13$EMPQ_emotional)) #take out children with no empathy measures
