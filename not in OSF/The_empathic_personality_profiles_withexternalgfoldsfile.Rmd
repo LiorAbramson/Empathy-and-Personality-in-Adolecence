@@ -145,6 +145,13 @@ Data Preprocessing - Age 11
   
   DImp1.1<- merge(DImp1.1,ifams, by=c("ifam","ID"), all.x = T, all.y = F)        #merge the gfold var with the data
   
+#the random division to folds relies on participants ID numbers. Since IRB restrictions and confidentiality considerations
+#prevent us from uploading the original ID numbers, the fold division that was used in the study cannot be replicated with the above code.
+#if you want to exactly replicate the results of the study, you will have to merge the original fold division from an external file. To do so, use the following code INSTEAD of the row above (remove the # before).
+  
+#  Age11_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_gfold.csv")
+#  DImp1.1<- merge(DImp1.1,Age11_gfolds[,c("ifam","ID","gfold")], by=c("ifam","ID"), all.x = T, all.y = F) 
+
 ```
 
 
@@ -900,7 +907,6 @@ Specific items' coefficients visualization - Age 13:
 
 Performing Ridge regression - Train age 11 and test Age 13:
 ```{r}
-
 #creating folds in the combined 11_13 dataset
 #gfold1113 indicates the twin pair's fold in this analysis
   ifams_1113 <- merge(DImp1.1[,c(1:2,which(colnames(DImp1.1)=="gfold"))],
@@ -924,16 +930,6 @@ Performing Ridge regression - Train age 11 and test Age 13:
   DImp1.1<- merge(DImp1.1,ifams_1113, by=c("ifam","ID"), all.x = T, all.y = F)
   D13Imp1.1<- merge(D13Imp1.1,ifams_1113, by=c("ifam","ID"), all.x = T, all.y = F)
   
-  
-#IMPORTANT NOTE: The random division to folds relies on participants ID numbers. Since IRB restrictions and confidentiality considerations prevent us from uploading the original ID numbers, the fold division that was used specifically in this analysis cannot be replicated with the above code (the separate age 11 and age 13 analyses do replicate with the new ID numbers).
-#if you want to exactly replicate the results of this study, you will have to merge the original variable gfold1113 (indicating the fold division) from an external file. To do so, use the following merging code INSTEAD of the rows above (i.e., instead of the rows starting from "ifams_1113 <-merge...").
-  
-#code for exact replication  
-#  Age11_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_gfold.csv")
-#  Age13_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_gfold.csv")
-#  DImp1.1<- merge(DImp1.1,Age11_gfolds[,c("ifam","ID","gfold1113")], by=c("ifam","ID"), all.x = T, all.y = F)
-#  D13Imp1.1<- merge(D13Imp1.1,Age13_gfolds[,c("ifam","ID","gfold1113")], by=c("ifam","ID"), all.x = T, all.y = F)
-
 
 #adapting the Ridge function to the age 11-age 13 analysis
   Ridge1113 <- function (DImp11,DImp13, gfold,relvar) {
