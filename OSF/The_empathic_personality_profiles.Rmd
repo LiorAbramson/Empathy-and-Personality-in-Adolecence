@@ -147,7 +147,6 @@ Data Preprocessing - Age 11
   
 ```
 
-
 Ridge regression function:
 ```{r}
 #create a vector of possible lambda values. These values will be examined in 
@@ -191,7 +190,6 @@ Ridge regression function:
 }
 
 ```
-
 
 Performing Ridge regression - Age 11:
 ```{r}
@@ -479,7 +477,6 @@ Specific items' coefficients visualization - Age 11:
                     text=element_text(family="serif"))
   
 ```
-
 
 Data preprocessing - Age 13:
 ```{r}
@@ -897,7 +894,6 @@ Specific items' coefficients visualization - Age 13:
 
 ```
 
-
 Performing Ridge regression - Train age 11 and test Age 13:
 ```{r}
 
@@ -927,6 +923,7 @@ Performing Ridge regression - Train age 11 and test Age 13:
   
 #IMPORTANT NOTE: The random division to folds relies on participants ID numbers. Since IRB restrictions and confidentiality considerations prevent us from uploading the original ID numbers, the fold division that was used specifically in this analysis cannot be replicated with the above code (the separate age 11 and age 13 analyses do replicate with the new ID numbers).
 #if you want to exactly replicate the results of this study, you will have to merge the original variable gfold1113 (indicating the fold division) from an external file. To do so, use the following merging code INSTEAD of the rows above (i.e., instead of the rows starting from "ifams_1113 <-merge...").
+#we note that in terms of the correlations and MSEs mean and range, the results are similar regardless of the code you use.  
   
 #code for exact replication  
 #  Age11_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_gfold.csv")
@@ -1156,7 +1153,6 @@ what is the range of optimal lambda values across all age analyses
       opt_lambda_emo_1,opt_lambda_emo_2,opt_lambda_emo_3,opt_lambda_emo_4,opt_lambda_emo_5,opt_lambda_emo_6)
 ```
 
-
 Build the new predictors on the entire dataset for further analyses (i.e., no test set):
 ```{r}
 #age 11
@@ -1382,7 +1378,6 @@ Build the new predictors on the entire dataset for further analyses (i.e., no te
 
 ```
 
-
 Exporting the variables to csv for further analyses (Dfinal_11_13):
 ```{r}
 #changing names to include age 
@@ -1536,7 +1531,6 @@ check the model prediction on an independent, non-twin sample:
   
   
 ```
-
 
 Functions for significance testing with permutations test:
 ```{r}
@@ -2012,8 +2006,10 @@ Functions for significance testing with permutations test:
     
 ```
 
-
 Running significance testing with permutations test (this should take a while...)
+
+IMPORTANT NOTE: The permutation function builds the null hypothesis distribution by randomly scrambling the empathy variables between families. This procedure relies on participants ID numbers. Since IRB restrictions and confidentiality considerations prevent us from uploading the original ID numbers, the random scrambling that was used in the paper cannot be exactly replicated with the new numbers. Specifically, with the new numbers, all results remain the same, except for the significance level of two item coefficients in the age 11-cognitive empathy analysis.
+#If you want to replicate the paper significance testing results to the exact number, contact the first author- Lior Abramson, at labramson87@gmail.com. Depending on IRB approval, we will provide you with the key to the original participants' ID numbers.
 ```{r}
 #run the permuted ridge regression 10000 times
 

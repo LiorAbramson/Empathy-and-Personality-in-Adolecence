@@ -573,8 +573,12 @@ compute ICC of the new variables separately for MZ and DZ twins (residualized fr
 ```
 
 prepare a file only with the final variables for Mx biometric cross-lagged analysis
-*notice that before entering the file to the Mx software, you need to erase the columns names 
- and to turn NA values into 999 (this was done manually in the .csv file)
+*notice that after running this code and before entering the file to the Mx software, you need to do the following (outside of R):
+1) erase the columns names
+2) erase the ifam column (Mx doesn't process letters input)
+3) turn NA values into 999 
+4) name the file 'DWide_4Mx_noifams'
+5) convert the file into a .dat format
 ```{r}
   col <- colnames(DWide)
   relvar_4mx <- c(which (col=="ifam"),which(col=="zygosity_2G"),which(col=="sex_2"),which(col=="sex_1"),
