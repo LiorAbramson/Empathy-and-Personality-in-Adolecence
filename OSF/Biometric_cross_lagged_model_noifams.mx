@@ -1,11 +1,17 @@
+! This scripts estimates a Cross-lagged model based on a cholesky decompositio (Biometric cross-lagged model)
+! It was written by Kim Saudino and modified for the purposes of Abramson et al.'s study by the paper's authors. 
 
- 
- ! Cross-lagged model based on a cholesky decomposition
-!received from Kim Saudino, May 2015
-  #DEFINE NVAR 4
+
+#DEFINE NVAR 4
 #ngroups 4
 
- G1: MODEL PARAMETERS ! ESTIMATE FOR TWINS
+
+!pr represents predicted empathy score (i.e., the empathic personality profile); emp represents empathy scores
+!11=Age 11; 13=Age 13; A=Twin A; B=Twin B
+!emo=emotional empathy; cog=cognitive empathy
+
+
+G1: MODEL PARAMETERS ! ESTIMATE FOR TWINS
 data calc
 BEGIN MATRICES;
  X Lower nvar nvar FREE  ! GENETIC PARAMETERS
@@ -14,8 +20,8 @@ BEGIN MATRICES;
 I ident 8 8 
 Q iden 2 2
 P Full 8 8  ! cross lagged RAW UNITS
- H FULL  1 1              ! SCALAR .5
- R  FULL  1 1              ! Added by Lior. SCALAR .25.
+H FULL  1 1              ! SCALAR .5
+R  FULL  1 1             ! SCALAR .25 (in order to examine non-additive genetic effects)
 
 end matrices;
 
@@ -56,10 +62,10 @@ End Algebra;
                       0   0   0  0  19 20 0   0
                       0   0   0  0  21 22 0   0
 
-  ! path19 is b11, 20 is b21, 21 is b12 and 22 is b22      
+! path19 is b11, 20 is b21, 21 is b12 and 22 is b22      
                     
 Matrix H .5
-Matrix R .25 !Added by Lior
+Matrix R .25 
 
 st 6 x 1 1
 st .5 x 2 1
@@ -82,7 +88,7 @@ st 3 z 3 3
 st .05 z 4 3
 st .5 z 4 4
 
-!START .5 X 1 1
+! START .5 X 1 1
 ! START .5 X 2 1
 ! START .5 X 2 2
 ! START 0 Y 1 1
@@ -97,68 +103,62 @@ st .5 z 4 4
   
 G2: MZ TWIN PAIRS
 
-Data NInput_vars=20 !NObservations=1000
+Data NInput_vars=19 
 
  Missing=999
- Rectangular file=C:\Users\ShaiW\Wide_4Mx_numeric_residualized.dat ! read in raw datafile, must be in same directory
+ Rectangular file=C:\Users\ShaiW\DWide_4Mx_noifams.dat   ! change to the relevant path in your computer
 
- LABELS     
-ifam zygosity sex_B	sex_A	
-premo11B	premo13B	empemo11B	empemo13B	
-prcog11B	prcog13B	empcog11B	empcog13B 
-premo11A	premo13A	empemo11A	empemo13A	
-prcog11A	prcog13A	empcog11A	empcog13A 
+LABELS     
+ zygosity sex_B	sex_A 	
+ premo11B	premo13B	empemo11B	empemo13B	
+ prcog11B	prcog13B	empcog11B	empcog13B
+ premo11A	premo13A	empemo11A	empemo13A	
+ prcog11A	prcog13A	empcog11A	empcog13A
 
 
+Select if zygosity=1 ; 		! select MZ's
 
- Select if zygosity=1 ; 		! select MZ's
-!Select if PB7a>-10;
-!Select if PB8a>-10;
+Select  prcog11A empcog11A prcog13A empcog13A prcog11B empcog11B prcog13B empcog13B;
 
-Select premo11A empemo11A premo13A empemo13A premo11B empemo11B premo13B empemo13B;
 
- MATRICES= GROUP 1
+MATRICES= GROUP 1
 K Full 8 1 Free
 Means K/
- COVARIANCES
+COVARIANCES
                          ( (I-P)~ *(A+C+E	| A+C _
                       		A+C   	| A+C+E) *	  ((I-P)~)' )  /
  OPTION RSIDUAL
  END
  
   G3: DZ TWIN PAIRS
- Data NInput_vars=20 !NObservations=1000
+ Data NInput_vars=19 
 
- Missing=999 ! missing values = -1.000
- Rectangular file=C:\Users\ShaiW\Wide_4Mx_numeric_residualized.dat ! read in raw datafile, must be in same directory
+ Missing=999
+ Rectangular file=C:\Users\ShaiW\DWide_4Mx_noifams.dat       !change to the relevant path in your computer
 
- LABELS  
-ifam zygosity sex_B	sex_A	
-premo11B	premo13B	empemo11B	empemo13B	
-prcog11B	prcog13B	empcog11B	empcog13B 
-premo11A	premo13A	empemo11A	empemo13A	
-prcog11A	prcog13A	empcog11A	empcog13A 
+LABELS  
+ zygosity sex_B	sex_A	
+ premo11B	premo13B	empemo11B	empemo13B	
+ prcog11B	prcog13B	empcog11B	empcog13B
+ premo11A	premo13A	empemo11A	empemo13A	
+ prcog11A	prcog13A	empcog11A	empcog13A
 
- Select if   zygosity=2 ; 		! select DZ's
-!Select if PB7a>-10;
-!Select if PB8a>-10;
+
+Select if   zygosity=2 ; 		! select DZ's
  
-Select premo11A empemo11A premo13A empemo13A premo11B empemo11B premo13B empemo13B;
+Select  prcog11A empcog11A prcog13A empcog13A prcog11B empcog11B prcog13B empcog13B;
 
- MATRICES= GROUP 1
+MATRICES= GROUP 1
 K Full 8 1 Free
 Means K/
- COVARIANCES
+COVARIANCES
                     ((I-P)~ *(A+C+E	| H@A+R@C _
                       		H@A+R@C	| A+C+E) *   ((I-P)~)')  /
 
-!the R@ was added by Lior
-
-!Bound -1  1 P 3 1 P 4 1 P 4 2 P 3 2 
 
 
 OPTION RSIDUAL
- END group;
+END group;
 
  G4: CALCULATE GENETIC / ENVIRONMENTAL CORRELATIONS
  DATA CALC
@@ -167,7 +167,7 @@ OPTION RSIDUAL
  C COMP 4 4 =C1
  E COMP 4 4 =E1
  P FULL 4 4            ! RECIPROCAL CAUSATION PARAMETERS
-S FULL 2 2    ! SAME AS P, BUT 2*2 MATRICES FOR LATER CALCULATION
+S FULL 2 2             ! SAME AS P, BUT 2*2 MATRICES FOR LATER CALCULATION
  I IDEN 4 4
    
    M FULL   2 2 FIXED; !COEFFICIENTS TO PULL OUT SUBMTARIX FOR STANDARDIZATION OF B
@@ -222,8 +222,8 @@ T= \stnd(E);	! calculates re
 
 End Algebra;
 
-Interval @95 Q 1 1 Q 1 5 Q 1 9  !var1's h2, c2, e2  #ACE time 1 predicted
-Interval @95 Q 2 2 Q 2 6 Q 2 10  !var2's h2, c2, e2   #ACE time 1 empathy
+Interval @95 Q 1 1 Q 1 5 Q 1 9  !var1's h2, c2, e2     #ADE time 1 empathic personality profile
+Interval @95 Q 2 2 Q 2 6 Q 2 10  !var2's h2, c2, e2   #ADE time 1 empathy
 Interval @95 Q 3 3 Q 3 7 Q 3 11  !var3's h2, c2, e2 (TOTAL including  transmitted from first age as well as new at 2nd age)
 Interval @95 Q 4 4 Q 4 8 Q 4 12 !var4's h2, c2, e2 (TOTAL including transmitted from first age as well as new at 2nd age) 
 
@@ -235,42 +235,25 @@ INTERVALS  G 4 3 3 G 4 4 4  G 4 4 3! a2 residual V1, a2 residual V2 + correlatio
 INTERVALS J 4 3 3 J 4 4 4 J 4 4 3 ! c2 residuals + correlation between residuals
 INTERVALS L 4 3 3 L 4 4 4  L 4 4 3 !e2 residuals + correlation between residuals
 
-Interval @95 F 4 2 1 F 4 4 3 F 4 4 1 F 4 3 2!added by Ariel - phenotypic correlation
+Interval @95 F 4 2 1 F 4 4 3 F 4 4 1 F 4 3 2   !phenotypic correlation
 
 options multiple
-Option sat=2222.715,3864 !from basic 4 variable saturated model
+Option sat= 1091.915, 3864    !copy here the output of the saturated model fit from the script 'SaturatedModelFit_Biometric_cross_lagged'
 options multiple ISSub
 END
 
-!drop x 1 1 1 x 1 2 1 x 1 3 3  x 1 4 3 x 1 4 4
-!end
 
-!SAVE ace.MXS
-!drop y 1 1 1 y 1 2 2 y 1 2 1 y 1 3 3  y 1 4 3 y 1 4 4 ! all shared environment effects were nonsig.
-
-!drop  X 1 1 1 X 1 2 2 X 1 2 1 X 1 3 3  X 1 4 3 X 1 4 4 ! drop the additive effects that were nonsig.
-!drop 20 21 !dropping cross-lagged effects
-!drop  X 1 3 3   X 1 4 4 ! drop the additive effects at age 13 that were nonsig.
-!drop  X 1 4 3  ! dropping rG additive correlation in age 13
-!drop  X 1 1 1
-!drop  X 1 2 1 X 1 4 3
-!end
-
-!for cognitive empathy
-!drop y 1 1 1 y 1 2 2 ! dropping dominant effects at age 11 that were nonsig.
-!drop  y 1 2 1  ! dropping rG dominant correlation at age 11
-!end
-
-!for emotional empathy
-drop  x 1 2 1 x 1 4 3  ! dropping rG additive correlation at both ages
+! Dropping paths for estimation of the reduced model of cognitive empathy (leave as comment if you don't want to estimate it)
+! (see the results section for justification and details)
+drop  y 1 1 1 y 1 2 2            !dropping non-additive effects at age 11.
+drop  y 1 2 1                       !dropping non-additive genetic correlation at age 11
 end
 
-!equate p 1 3 1 p 1 4 2 ! trying to equate the autoregressive paths
-!equate p 1 3 2 p 1 4 1 ! trying to equate the cross-lagged paths
-!end
 
-!test the significance of the dominant personality residual  D component
-drop G 4 4 4
-end 
+
+! Dropping paths for estimation of the reduced model of emotional empathy (leave as comment if you don't want to estimate it)
+! (see the results section for justification and details)
+!drop  x 1 2 1 x 1 4 3          ! dropping additive genetic correlation at both age 11 and age 13
+!end
 
 

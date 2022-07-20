@@ -1,0 +1,131 @@
+! This script calculates the Saturated Model fit (i.e.,  model in which all variances and covariances for MZ and DZ twins are estimated). 
+! It was written by Kim Saudino and modified for the purposes of Abramson et al.'s study by the paper's authors.
+! After extracting the model's fit, copy the number in the fit output near the text "Saturated model fit" and the df output near the text "Saturated model df" 
+! and paste it into the script 'Biometric_cross_lagged' under the text 'Option sat' (in the end of the script). 
+! This way you can calculate the fit of the model you want to examine. 
+! See the statistical analyses section and the paper by Saudino et al. (2018) for more details.
+
+! Group 1 fits model to MZ data
+! Group 2 fits model to DZ data
+
+
+!pr represents predicted empathy score (i.e., the empathic personality profile); emp represents empathy scores
+!11=Age 11; 13=Age 13; A=Twin A; B=Twin B
+!emo=emotional empathy; cog=cognitive empathy
+
+#define nvar=8
+#ngroups 2
+
+G1: MZ TWIN PAIRS
+Data NInput_vars=19
+ 
+Missing=999
+Labels zygosity sex_B	sex_A 	
+ premo11B	premo13B	empemo11B	empemo13B	
+ prcog11B	prcog13B	empcog11B	empcog13B
+ premo11A	premo13A	empemo11A	empemo13A	
+ prcog11A	prcog13A	empcog11A	empcog13A
+ 
+
+Rectangular file=C:\Users\ShaiW\DWide_4Mx_noifams.dat       !change to your computer relevant path
+Select if zygosity=1 ;
+
+!select only emotional or cognitive empathy vars, according to your desired analysis
+Select premo11A empemo11A premo13A empemo13A premo11B empemo11B premo13B empemo13B;
+
+
+  
+
+Matrices
+  X Lower nvar nvar Free        ! triangular decomposition
+  M Full nvar  1 free                   !means
+ End Matrices;
+ Covariances X*X';
+ Means M;
+start  0 M 1 1 1 ! mean first 
+start  0 M 1 2 1
+start  0 M 1 3 1
+start  0 M 1 4 1
+start  0 M 1 5 1
+start  0 M 1 6 1
+start  0 M 1 7 1
+start  0 M 1 8 1
+start  20.0  X 1 1 1 
+start  1.5 X 1 2 2
+start  75.8 X 1 3 3
+start  5.7 X 1 4 4
+start  28.4  X 1 5 5
+start  1.4  X 1 6 6
+start  77 X 1 7 7
+start  7.6 x 1 8 8
+End 
+
+
+
+G2:  DZ TWIN PAIRS
+Data NInput_vars=19 
+
+Missing=999
+Labels zygosity sex_B	sex_A	
+ premo11B	premo13B	empemo11B	empemo13B	
+ prcog11B	prcog13B	empcog11B	empcog13B
+ premo11A	premo13A	empemo11A	empemo13A	
+ prcog11A	prcog13A	empcog11A	empcog13A
+
+
+Rectangular File=C:\Users\ShaiW\DWide_4Mx_noifams.dat              !change to your computer relevant path
+ Select if zygosity=2 ; 
+
+Select premo11A empemo11A premo13A empemo13A premo11B empemo11B premo13B empemo13B;
+
+
+
+Matrices
+ X Lower nvar nvar Free        ! triangular decomposition
+ M Full nvar 1 free                   !means
+ End Matrices;
+ Covariances X*X';
+ Means M;
+start  0 M 2 1 1 ! mean first 
+start  0 M 2 2 1
+start  0 M 2 3 1
+start  0 M 2 4 1
+start  0 M 2 5 1
+start  0 M 2 6 1
+start  0 M 2 7 1
+start 0 M 2 8 1
+start 20.0  X 2 1 1 
+start  1.5 X 2 2 2
+start  75.8 X 2 3 3
+start    5.7 X 2 4 4
+start  28.4  X 2 5 5
+start 1.4   X 2 6 6
+start 77 X 2 7 7
+start 7.6 x 2 8 8
+Options multiple Issat
+End 
+ 
+save sat4.mxs
+
+get sat4.mxs
+!equate mz and dz means
+equate M 1 1 1 M 2 1 1
+equate M 1 2 1 M 2 2 1
+equate M 1 3 1 M 2 3 1
+equate M 1 4 1 M 2 4 1
+equate M 1 5 1 M 2 5 1
+equate M 1 6 1 M 2 6 1
+equate M 1 7 1 M 2 7 1
+equate M 1 8 1 M 2 8 1
+end
+
+! equate variances for mz and dz twins
+equate  X 1 1 1 X 2 1 1
+equate  X 1 2 2 X 2 2 2
+equate  X 1 3 3 X 2 3 3
+equate  X 1 4 4 X 2 4 4
+equate  X 1 5 5 X 2 5 5
+equate  X 1 6 6  X 2 6 6
+equate  X 1 7 7 x 2 7 7
+equate  X 1 8 8  x 2 8 8
+end
