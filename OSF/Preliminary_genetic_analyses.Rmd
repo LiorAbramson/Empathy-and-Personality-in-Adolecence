@@ -25,7 +25,7 @@ Preparations:
 
 #Import the file (D was created using 'the_empathic_personality_profiles.R' script)
 #change the directory to the relevant path on your computer
-  D <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Dfinal_11_13.csv")
+  D <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Dfinal_11_13.csv")
 
 ```
 
@@ -308,8 +308,8 @@ examining correlations between study variables and age within each time-point
 ```{r}
 
 #import participants age in each wave (change the directory to the relevant path on your computer)
-  participants_ages11 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_participants_age.csv")
-  participants_ages13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_participants_age.csv")
+  participants_ages11 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age11_participants_age.csv")
+  participants_ages13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age13_participants_age.csv")
   
   D<- merge(x=D, y=participants_ages11, by=c("ifam","ID"), all.x=T, all.y=F )     
   D<- merge(x=D, y=participants_ages13, by=c("ifam","ID"), all.x=T, all.y=F ) 
@@ -592,7 +592,7 @@ prepare a file only with the final variables for Mx biometric cross-lagged analy
                   which(col=="EMPQ_cognitive11r_1"),which(col=="EMPQ_cognitive13r_1"))
   
   DWide_4Mx <- DWide[,relvar_4mx]
-  write.csv(DWide_4Mx, file= "~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/DWide_4Mx.csv", row.names = F)         
+  write.csv(DWide_4Mx, file= "~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/DWide_4Mx.csv", row.names = F)         
 ```
 
 
@@ -602,7 +602,7 @@ Check the associations between the study variables and non-self-report empathy m
 #import the data (change all directories to the relevant path on your computer)
   #Parent-reported empathy age 11
   #.2 indicates father reports; .3 indicates mother reports
-  DParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_ParentEmp_anonymized.csv")
+  DParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age11_ParentEmp_anonymized.csv")
 
   #erase invalid observations due to parental rating mistakes (see Appendix 1)
   DParentEmp <- DParentEmp[DParentEmp$whichParentOut!=3,]
@@ -621,7 +621,7 @@ Check the associations between the study variables and non-self-report empathy m
 
   #Parent-reported empathy age 13
   #.2 indicates father reports; .3 indicates mother reports
-  D13ParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_ParentEmp_anonymized.csv")
+  D13ParentEmp <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age13_ParentEmp_anonymized.csv")
   
   #erase invalid observations due to parental rating mistakes (see Appendix 1)
   D13ParentEmp <- D13ParentEmp[D13ParentEmp$whichParentOut==0,]
@@ -638,7 +638,7 @@ Check the associations between the study variables and non-self-report empathy m
 
   
   #subtle facial expressions emotion recognition
-  DEmoR <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_emotion_recognition_test_finalvars_anonymized.csv")
+  DEmoR <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age13_emotion_recognition_test_finalvars_anonymized.csv")
   #remove children who did not have data from all emotion categories (see details in Appendix 1)
   DEmoRshort <- DEmoR[complete.cases(DEmoR[which(colnames(DEmoR)=="ER_c")]),]
 

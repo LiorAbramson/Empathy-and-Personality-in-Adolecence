@@ -18,7 +18,7 @@ Preparations:
   lapply(packages, require, character.only = TRUE)
 
 #Preparing the file (change the directory to the relevant path on your computer)
-  D <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_EmpPer_anonymized.csv")
+  D <- read.csv("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age11_EmpPer_anonymized.csv")
   D <- D[D$isOut==0,]                      #take out children that should not be included (see supplementary method)
   D <- subset(D, !is.na(D$EMPQ_emotional)) #take out children with no empathy measures
 
@@ -481,7 +481,7 @@ Specific items' coefficients visualization - Age 11:
 Data preprocessing - Age 13:
 ```{r}
 #preparing the file (change the directory to the relevant path on your computer)
-  D13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_EmpPer_anonymized.csv")
+  D13 <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age13_EmpPer_anonymized.csv")
   D13 <- D13[D13$isOut==0,]                      #take out children that should not be included (see supplementary method)
   D13 <- subset(D13, !is.na(D13$EMPQ_emotional)) #take out children with no empathy measures
 
@@ -926,8 +926,8 @@ Performing Ridge regression - Train age 11 and test Age 13:
 #we note that in terms of the correlations and MSEs mean and range, the results are similar regardless of the code you use.  
   
 #code for exact replication  
-#  Age11_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age11_gfold.csv")
-#  Age13_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Age13_gfold.csv")
+#  Age11_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age11_gfold.csv")
+#  Age13_gfolds <- read.csv("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Age13_gfold.csv")
 #  DImp1.1<- merge(DImp1.1,Age11_gfolds[,c("ifam","ID","gfold1113")], by=c("ifam","ID"), all.x = T, all.y = F)
 #  D13Imp1.1<- merge(D13Imp1.1,Age13_gfolds[,c("ifam","ID","gfold1113")], by=c("ifam","ID"), all.x = T, all.y = F)
 
@@ -1392,7 +1392,7 @@ Exporting the variables to csv for further analyses (Dfinal_11_13):
 
 
 #import general unidentified participants details of the Longitudinal Israeli Study of Twins 
-  participants_details <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/participants_details.csv")
+  participants_details <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/participants_details.csv")
 
   col <- colnames((participants_details))
   relvar_participants_details <- c(which (col=="ifam"), which (col=="ID"),
@@ -1423,14 +1423,14 @@ Exporting the variables to csv for further analyses (Dfinal_11_13):
   
 
 #export to csv
-  write.csv(Dfinal_11_13,row.names=F,"~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/Dfinal_11_13.csv")
+  write.csv(Dfinal_11_13,row.names=F,"~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/Dfinal_11_13.csv")
 
 ```
 
 check the model prediction on an independent, non-twin sample:
 ```{r}
 #import data (called panel sample)
-  DPan <- read.csv ("~/Documents/projects/Empathy-Personality-Adolecence/OSF/data/panel_results_PerEmp.csv")
+  DPan <- read.csv ("~/Documents/projects/Empathy-Personality-Adolescence/OSF/data/panel_results_PerEmp.csv")
 
 #reversing items
   CreateReverseItems_allData_panel <-function(DPan) {
